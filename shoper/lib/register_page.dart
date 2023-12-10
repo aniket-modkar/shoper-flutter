@@ -1,29 +1,7 @@
 import 'package:flutter/material.dart';
-import 'register_page.dart';
-import 'home_page.dart';
+import 'login_page.dart';
 
-void main() => runApp(MyApp());
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      initialRoute: '/login',
-      routes: {
-        '/login': (context) => LoginPage(),
-        '/register': (context) => RegisterPage(),
-        '/home': (context) => HomePage(),
-      },
-    );
-  }
-}
-
-class LoginPage extends StatefulWidget {
-  @override
-  _LoginPageState createState() => _LoginPageState();
-}
-
-class _LoginPageState extends State<LoginPage> {
+class RegisterPage extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -32,7 +10,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Login Page'),
+        title: Text('Register Page'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -67,18 +45,19 @@ class _LoginPageState extends State<LoginPage> {
               ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
-                    // Simulate authentication, replace with your actual logic
-                    Navigator.pushReplacementNamed(context, '/home');
+                    // Simulate registration, replace with your actual logic
+                    // For simplicity, navigate back to the login page after registration
+                    Navigator.pop(context);
                   }
                 },
-                child: Text('Login'),
+                child: Text('Register'),
               ),
               SizedBox(height: 16.0),
               TextButton(
                 onPressed: () {
-                  Navigator.pushNamed(context, '/register');
+                  Navigator.pop(context); // Go back to the login page
                 },
-                child: Text('Create an account'),
+                child: Text('Back to Login'),
               ),
             ],
           ),
