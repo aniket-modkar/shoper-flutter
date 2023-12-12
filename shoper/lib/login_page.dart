@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shoper/api_service.dart';
 import 'register_page.dart';
 import 'home_page.dart';
 
@@ -24,6 +25,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final ApiService _apiService = ApiService();
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -65,10 +67,26 @@ class _LoginPageState extends State<LoginPage> {
               ),
               SizedBox(height: 32.0),
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   if (_formKey.currentState!.validate()) {
-                    // Simulate authentication, replace with your actual logic
+                    final userData = {
+                      'userName': _usernameController.text,
+                      'password': _passwordController.text
+                    };
+                    try {
+                      final postData = userData;
+                      final response = await _apiService.postData(
+                          'api/v1/account/login', postData);
+
+                      print('Response status: ${response.statusCode}');
+                      print('Response body: ${response.body}');
+                    } catch (error) {
+                      print('Error: $error');
+                    }
+
                     Navigator.pushReplacementNamed(context, '/home');
+
+                    // Simulate authentication, replace with your actual logic
                   }
                 },
                 child: Text('Login'),
