@@ -27,7 +27,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final ApiService _apiService = ApiService();
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
   @override
@@ -44,11 +44,11 @@ class _LoginPageState extends State<LoginPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               TextFormField(
-                controller: _usernameController,
-                decoration: InputDecoration(labelText: 'Username'),
+                controller: _emailController,
+                decoration: InputDecoration(labelText: 'Email'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter your username';
+                    return 'Please enter your email';
                   }
                   return null;
                 },
@@ -70,7 +70,7 @@ class _LoginPageState extends State<LoginPage> {
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     final userData = {
-                      'userName': _usernameController.text,
+                      'email': _emailController.text,
                       'password': _passwordController.text
                     };
                     try {
@@ -80,13 +80,31 @@ class _LoginPageState extends State<LoginPage> {
 
                       print('Response status: ${response.statusCode}');
                       print('Response body: ${response.body}');
+
+                      if (response.statusCode == 200) {
+                        // Successful login
+                        Navigator.pushReplacementNamed(context, '/home');
+                      } else {
+                        // Display an error message
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                                'Login failed. Please check your credentials.'),
+                            duration: Duration(seconds: 3),
+                          ),
+                        );
+                      }
                     } catch (error) {
                       print('Error: $error');
+                      // Display an error message
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                              'An error occurred. Please try again later.'),
+                          duration: Duration(seconds: 3),
+                        ),
+                      );
                     }
-
-                    Navigator.pushReplacementNamed(context, '/home');
-
-                    // Simulate authentication, replace with your actual logic
                   }
                 },
                 child: Text('Login'),

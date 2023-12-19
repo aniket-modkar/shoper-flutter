@@ -46,8 +46,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> fetchData() async {
     try {
-      final response =
-          await _apiService.fetchData('api/v1/cms/fetch?type=PRIVACY');
+      final response = await _apiService.fetchData('api/v1/product/fetch');
       if (response.statusCode == 200) {
         setState(() {
           fetchedData = FetchedData.fromJson(json.decode(response.body));

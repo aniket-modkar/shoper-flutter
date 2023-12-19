@@ -6,31 +6,34 @@ import 'login_page.dart';
 class UserData {
   String firstName;
   String lastName;
-  String mobile;
+  String phone;
   String email;
   String password;
+  String country;
 
   UserData({
     required this.firstName,
     required this.lastName,
-    required this.mobile,
+    required this.phone,
     required this.email,
     required this.password,
+    required this.country,
   });
 
   Map<String, dynamic> toMap() {
     return {
       'firstName': firstName,
       'lastName': lastName,
-      'mobile': mobile,
+      'phone': phone,
       'email': email,
       'password': password,
+      'country': country,
     };
   }
 
   @override
   String toString() {
-    return 'UserData{firstName: $firstName, lastName: $lastName, mobile: $mobile, email: $email, password: $password}';
+    return 'UserData{firstName: $firstName, lastName: $lastName, phone: $phone, email: $email, password: $password,country:$country}';
   }
 }
 
@@ -41,9 +44,10 @@ class RegisterPage extends StatelessWidget {
   final Map<String, TextEditingController> _controllers = {
     'firstName': TextEditingController(),
     'lastName': TextEditingController(),
-    'mobile': TextEditingController(),
+    'phone': TextEditingController(),
     'email': TextEditingController(),
     'password': TextEditingController(),
+    'country': TextEditingController()
   };
 
   Widget _buildTextFormField(
@@ -76,24 +80,37 @@ class RegisterPage extends StatelessWidget {
       final userData = UserData(
         firstName: _controllers['firstName']!.text,
         lastName: _controllers['lastName']!.text,
-        mobile: _controllers['mobile']!.text,
+        phone: _controllers['phone']!.text,
         email: _controllers['email']!.text,
         password: _controllers['password']!.text,
+        country: _controllers['country']!.text,
       );
 
       try {
         final postData = userData.toMap();
         final response = await _apiService.postData(
-            'api/v1/account/adminRegister', postData);
+            'api/v1/account/customerRegister', postData);
 
         print('Response status: ${response.statusCode}');
         print('Response body: ${response.body}');
+
+        if (response.statusCode == 200) {
+          // Registration successful, navigate to login page
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => LoginPage()),
+          );
+        } else {
+          // Handle other status codes or display error messages
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Registration failed. Please try again.'),
+            ),
+          );
+        }
       } catch (error) {
         print('Error: $error');
       }
-
-      print('User Data: $userData');
-      Navigator.pop(context);
     }
   }
 
@@ -110,10 +127,11 @@ class RegisterPage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              _buildTextFormField('Country', key: 'country'),
               _buildTextFormField('FirstName', key: 'firstName'),
               _buildTextFormField('LastName', key: 'lastName'),
-              _buildTextFormField('Mobile',
-                  key: 'mobile', keyboardType: TextInputType.phone),
+              _buildTextFormField('phone',
+                  key: 'phone', keyboardType: TextInputType.phone),
               _buildTextFormField('Email',
                   key: 'email', keyboardType: TextInputType.emailAddress),
               _buildTextFormField('Password',

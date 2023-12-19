@@ -3,7 +3,7 @@ import 'dart:html';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  final String baseUrl = 'https://stage-apis.hdexch.com/';
+  final String baseUrl = 'https://dev-shoper.technomize.com/';
 
   ApiService();
 
@@ -27,10 +27,6 @@ class ApiService {
       final response = await http.post(
         uri,
         body: body,
-        // headers: {
-        //   'Content-Type': 'X-auth-token',
-        //   'bearer ': '' // adjust content type if needed
-        // },
       );
       return response;
     } catch (error) {
@@ -39,4 +35,3 @@ class ApiService {
     }
   }
 }
-// 'api/v1/account/login'
