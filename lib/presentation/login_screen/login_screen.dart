@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shoper_flutter/core/app_export.dart';
+import 'package:shoper_flutter/core/service/api_service.dart';
 import 'package:shoper_flutter/presentation/dashboard_page/dashboard_page.dart';
 import 'package:shoper_flutter/presentation/register_screen/register_screen.dart';
 import 'package:shoper_flutter/widgets/custom_elevated_button.dart';
@@ -9,6 +10,8 @@ import 'package:shoper_flutter/widgets/custom_text_form_field.dart';
 
 // ignore_for_file: must_be_immutable
 class LoginScreen extends StatelessWidget {
+  final ApiService _apiService = ApiService();
+
   LoginScreen({Key? key}) : super(key: key);
 
   TextEditingController emailController = TextEditingController();
