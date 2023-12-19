@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shoper_flutter/core/app_export.dart';
+import 'package:shoper_flutter/presentation/login_screen/login_screen.dart';
 import 'package:shoper_flutter/widgets/custom_elevated_button.dart';
 import 'package:shoper_flutter/widgets/custom_icon_button.dart';
 import 'package:shoper_flutter/widgets/custom_text_form_field.dart';
@@ -44,17 +45,27 @@ class RegisterScreen extends StatelessWidget {
                           SizedBox(height: 20.v),
                           _buildSignUp(context),
                           SizedBox(height: 20.v),
-                          RichText(
-                              text: TextSpan(children: [
-                                TextSpan(
+                          GestureDetector(
+                            onTap: () {
+                              onTapTxtDonthaveanaccount(context);
+                            },
+                            child: RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
                                     text: "msg_have_an_account2".tr,
-                                    style: theme.textTheme.bodySmall),
-                                TextSpan(text: " "),
-                                TextSpan(
+                                    style: theme.textTheme.bodySmall,
+                                  ),
+                                  TextSpan(text: " "),
+                                  TextSpan(
                                     text: "lbl_sign_in".tr,
-                                    style: CustomTextStyles.labelLargePrimary_1)
-                              ]),
-                              textAlign: TextAlign.left),
+                                    style: CustomTextStyles.labelLargePrimary_1,
+                                  ),
+                                ],
+                              ),
+                              textAlign: TextAlign.left,
+                            ),
+                          ),
                           SizedBox(height: 5.v)
                         ])))));
   }
@@ -151,4 +162,11 @@ class RegisterScreen extends StatelessWidget {
   }
 
   void onTapSignUp(BuildContext context) {}
+
+  void onTapTxtDonthaveanaccount(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => LoginScreen()),
+    );
+  }
 }

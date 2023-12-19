@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shoper_flutter/core/app_export.dart';
+import 'package:shoper_flutter/presentation/dashboard_page/dashboard_page.dart';
+import 'package:shoper_flutter/presentation/register_screen/register_screen.dart';
 import 'package:shoper_flutter/widgets/custom_elevated_button.dart';
 import 'package:shoper_flutter/widgets/custom_icon_button.dart';
 import 'package:shoper_flutter/widgets/custom_outlined_button.dart';
@@ -146,7 +148,15 @@ class LoginScreen extends StatelessWidget {
     ]);
   }
 
-  void onTapSignIn(BuildContext context) {}
+  void onTapSignIn(BuildContext context) {
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => DashboardPage()));
+  }
 
-  void onTapTxtDonthaveanaccount(BuildContext context) {}
+  void onTapTxtDonthaveanaccount(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => RegisterScreen()),
+    );
+  }
 }
