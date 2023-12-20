@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shoper_flutter/core/app_export.dart';
+import 'package:shoper_flutter/core/service/api_service.dart';
 import 'package:shoper_flutter/presentation/login_screen/login_screen.dart';
 import 'package:shoper_flutter/widgets/custom_elevated_button.dart';
 import 'package:shoper_flutter/widgets/custom_icon_button.dart';
@@ -7,10 +8,13 @@ import 'package:shoper_flutter/widgets/custom_text_form_field.dart';
 
 // ignore_for_file: must_be_immutable
 class RegisterScreen extends StatelessWidget {
+  final ApiService _apiService = ApiService();
   RegisterScreen({Key? key}) : super(key: key);
 
-  TextEditingController fullNameController = TextEditingController();
-
+  TextEditingController firstNameController = TextEditingController();
+  TextEditingController lastNameController = TextEditingController();
+  TextEditingController mobileController = TextEditingController();
+  TextEditingController countryController = TextEditingController();
   TextEditingController emailController = TextEditingController();
 
   TextEditingController passwordController = TextEditingController();
@@ -35,7 +39,13 @@ class RegisterScreen extends StatelessWidget {
                         children: [
                           _buildPageHeader(context),
                           SizedBox(height: 30.v),
-                          _buildFullName(context),
+                          _buildFirstName(context),
+                          SizedBox(height: 8.v),
+                          _buildLastName(context),
+                          SizedBox(height: 8.v),
+                          _buildMobile(context),
+                          SizedBox(height: 8.v),
+                          _buildCountry(context),
                           SizedBox(height: 8.v),
                           _buildEmail(context),
                           SizedBox(height: 8.v),
@@ -87,10 +97,10 @@ class RegisterScreen extends StatelessWidget {
   }
 
   /// Section Widget
-  Widget _buildFullName(BuildContext context) {
+  Widget _buildFirstName(BuildContext context) {
     return CustomTextFormField(
-        controller: fullNameController,
-        hintText: "lbl_full_name".tr,
+        controller: firstNameController,
+        hintText: "lbl_first_name".tr,
         prefix: Container(
             margin: EdgeInsets.fromLTRB(16.h, 12.v, 10.h, 12.v),
             child: CustomImageView(
@@ -99,6 +109,57 @@ class RegisterScreen extends StatelessWidget {
                 width: 24.adaptSize)),
         prefixConstraints: BoxConstraints(maxHeight: 48.v),
         contentPadding: EdgeInsets.only(top: 15.v, right: 30.h, bottom: 15.v));
+  }
+
+  /// Section Widget
+  Widget _buildLastName(BuildContext context) {
+    return CustomTextFormField(
+        controller: lastNameController,
+        hintText: "lbl_last_name".tr,
+        prefix: Container(
+            margin: EdgeInsets.fromLTRB(16.h, 12.v, 10.h, 12.v),
+            child: CustomImageView(
+                imagePath: ImageConstant.imgUser,
+                height: 24.adaptSize,
+                width: 24.adaptSize)),
+        prefixConstraints: BoxConstraints(maxHeight: 48.v),
+        contentPadding: EdgeInsets.only(top: 15.v, right: 30.h, bottom: 15.v));
+  }
+
+  /// Section Widget
+  Widget _buildMobile(BuildContext context) {
+    return CustomTextFormField(
+      controller: mobileController,
+      hintText: "lbl_mobile".tr,
+      prefix: Container(
+        margin: EdgeInsets.fromLTRB(16.h, 12.v, 10.h, 12.v),
+        child: CustomImageView(
+          imagePath: ImageConstant.imgUser, // Update with the correct path
+          height: 24.adaptSize,
+          width: 24.adaptSize,
+        ),
+      ),
+      prefixConstraints: BoxConstraints(maxHeight: 48.v),
+      contentPadding: EdgeInsets.only(top: 15.v, right: 30.h, bottom: 15.v),
+    );
+  }
+
+  /// Section Widget
+  Widget _buildCountry(BuildContext context) {
+    return CustomTextFormField(
+      controller: countryController,
+      hintText: "lbl_country".tr,
+      prefix: Container(
+        margin: EdgeInsets.fromLTRB(16.h, 12.v, 10.h, 12.v),
+        child: CustomImageView(
+          imagePath: ImageConstant.imgUser, // Update with the correct path
+          height: 24.adaptSize,
+          width: 24.adaptSize,
+        ),
+      ),
+      prefixConstraints: BoxConstraints(maxHeight: 48.v),
+      contentPadding: EdgeInsets.only(top: 15.v, right: 30.h, bottom: 15.v),
+    );
   }
 
   /// Section Widget
@@ -161,7 +222,46 @@ class RegisterScreen extends StatelessWidget {
         });
   }
 
-  void onTapSignUp(BuildContext context) {}
+  Future<void> onTapSignUp(BuildContext context) async {
+    if (_formKey.currentState!.validate()) {
+      if (passwordController.text != passwordController1.text) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Password and confirm password do not match.'),
+          ),
+        );
+        return;
+      }
+      final userData = {
+        'firstName': firstNameController.text,
+        'lastName': lastNameController.text,
+        'phone': mobileController.text,
+        'email': emailController.text,
+        'password': passwordController.text,
+        'country': countryController.text
+      };
+
+      try {
+        final response = await _apiService.postData(
+            'api/v1/account/customerRegister', userData);
+
+        if (response.statusCode == 201) {
+          // Registration successful, navigate to login page
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => LoginScreen()));
+        } else {
+          // Handle other status codes or display error messages
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Registration failed. Please try again.'),
+            ),
+          );
+        }
+      } catch (error) {
+        print('Error: $error');
+      }
+    }
+  }
 
   void onTapTxtDonthaveanaccount(BuildContext context) {
     Navigator.push(

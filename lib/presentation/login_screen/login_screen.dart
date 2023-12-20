@@ -151,9 +151,41 @@ class LoginScreen extends StatelessWidget {
     ]);
   }
 
-  void onTapSignIn(BuildContext context) {
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => DashboardPage()));
+  Future<void> onTapSignIn(BuildContext context) async {
+    if (_formKey.currentState!.validate()) {
+      final userData = {
+        'email': emailController.text,
+        'password': passwordController.text
+      };
+      try {
+        final postData = userData;
+        final response =
+            await _apiService.postData('api/v1/account/login', postData);
+
+        if (response.statusCode == 200) {
+          // Successful login
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => DashboardPage()));
+        } else {
+          // Display an error message
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Login failed. Please check your credentials.'),
+              duration: Duration(seconds: 3),
+            ),
+          );
+        }
+      } catch (error) {
+        print('Error: $error');
+        // Display an error message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('An error occurred. Please try again later.'),
+            duration: Duration(seconds: 3),
+          ),
+        );
+      }
+    }
   }
 
   void onTapTxtDonthaveanaccount(BuildContext context) {
