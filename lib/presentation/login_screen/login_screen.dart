@@ -154,8 +154,10 @@ class LoginScreen extends StatelessWidget {
   Future<void> onTapSignIn(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
       final userData = {
-        'email': emailController.text,
-        'password': passwordController.text
+        // 'email': emailController.text,
+        // 'password': passwordController.text
+        'email': 'admin@gmail.com',
+        'password': '12345678'
       };
       try {
         final postData = userData;
