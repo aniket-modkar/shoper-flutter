@@ -2,8 +2,6 @@ import 'package:shoper_flutter/core/service/api_service.dart';
 
 import '../dashboard_page/widgets/categories_item_widget.dart';
 import '../dashboard_page/widgets/dashboard_item_widget.dart';
-import '../dashboard_page/widgets/fsnikeairmax_item_widget.dart';
-import '../dashboard_page/widgets/msnikeairmax_item_widget.dart';
 import '../dashboard_page/widgets/slider_item_widget.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
@@ -14,8 +12,6 @@ import 'package:shoper_flutter/widgets/app_bar/appbar_trailing_image.dart';
 import 'package:shoper_flutter/widgets/app_bar/custom_app_bar.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'dart:convert';
-import 'dart:js_interop';
-import 'package:flutter/material.dart';
 
 // ignore_for_file: must_be_immutable
 class FetchedData {
@@ -66,50 +62,78 @@ class _DashboardPageState extends State<DashboardPage> {
     statusCode: 0,
   );
 
+  bool isDataFetched = false; // Flag to track whether data has been fetched
+
   @override
   void initState() {
     super.initState();
-    // Fetch data only once when the page loads
     fetchData();
   }
 
   Future<void> fetchData() async {
-    try {
-      final response = await _apiService.fetchData('api/v1/product/fetch');
-      print('API Response: ${response.body}');
-      if (response.statusCode == 200) {
+    if (!isDataFetched) {
+      try {
+        final response = await _apiService.fetchData('api/v1/product/fetch');
+        print('API Response: ${response.body}');
+        if (response.statusCode == 200) {
+          setState(() {
+            fetchedData = FetchedData.fromJson(json.decode(response.body));
+          });
+        }
+      } catch (error) {
         setState(() {
-          fetchedData = FetchedData.fromJson(json.decode(response.body));
+          fetchedData = FetchedData(
+            message: 'Error: $error',
+            responseCode: '',
+            result: {},
+            totalCounts: 0,
+            statusCode: 0,
+          );
         });
       }
-    } catch (error) {
-      setState(() {
-        fetchedData = FetchedData(
-          message: 'Error: $error',
-          responseCode: '',
-          result: {},
-          totalCounts: 0,
-          statusCode: 0,
-        );
-      });
+      isDataFetched = true; // Set the flag to true after fetching data
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    mediaQueryData = MediaQuery.of(context);
-    Map<String, dynamic> result = fetchedData.result;
+    return FutureBuilder(
+      future: fetchData(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return _buildScaffoldWithContent(_buildLoadingWidget());
+        } else if (snapshot.hasError) {
+          return _buildScaffoldWithContent(
+              _buildErrorWidget(snapshot.error.toString()));
+        } else {
+          Map<String, dynamic> result = fetchedData.result;
 
-    if (result.containsKey('products')) {
-      dynamic products = result['products'];
-      print('Number of products: ${products.length}');
+          if (result.containsKey('products')) {
+            dynamic products = result['products'];
+            return ProductGrid(products: products);
+            // return _buildScaffoldWithContent(ProductGrid(products: products));
+          } else {
+            return _buildScaffoldWithContent(
+                _buildErrorWidget("Products key not found."));
+          }
+        }
+      },
+    );
+  }
 
-      var productGrid = ProductGrid(products: products);
-      return _buildScaffoldWithContent(productGrid);
-    } else {
-      print('The key "products" does not exist in the result map.');
-      return _buildScaffoldWithContent(_buildDashboard(context));
-    }
+  Widget _buildErrorWidget(String errorMessage) {
+    return Center(
+      child: Text(
+        'Error: $errorMessage',
+        style: TextStyle(color: Colors.red),
+      ),
+    );
+  }
+
+  Widget _buildLoadingWidget() {
+    return Center(
+      child: CircularProgressIndicator(),
+    );
   }
 
   Widget _buildScaffoldWithContent(Widget content) {
@@ -160,7 +184,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     ),
                   ),
                   SizedBox(height: 12.v),
-                  content, // Replace _buildDashboard(context) with the content parameter
+                  content, // This is where your ProductGrid is placed
                 ],
               ),
             ),
@@ -356,6 +380,16 @@ class ProductGrid extends StatelessWidget {
           SizedBox(height: 8.0),
           Text(
             'Inventory: ${product['inventoryQuantity']}',
+            style: TextStyle(fontSize: 14.0),
+          ),
+          SizedBox(height: 8.0),
+          Text(
+            'status: ${product['status']}',
+            style: TextStyle(fontSize: 14.0),
+          ),
+          SizedBox(height: 8.0),
+          Text(
+            'thresholdQuantity: ${product['thresholdQuantity']}',
             style: TextStyle(fontSize: 14.0),
           ),
         ],
