@@ -1,36 +1,37 @@
-import 'dart:html';
-
-import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:dio/dio.dart';
+import 'storage_service.dart';
 
 class ApiService {
   final String baseUrl = 'https://dev-shoper.technomize.com/';
 
-  ApiService();
+  final Dio dio;
+  final StorageService storageService;
 
-  Future<http.Response> fetchData(String path) async {
+  ApiService(this.dio, this.storageService);
+
+  Future<Response> fetchData(String path,
+      {Map<String, String>? headers}) async {
     final Uri uri = Uri.parse('$baseUrl$path');
 
     try {
-      final response = await http.get(uri);
+      final response =
+          await dio.getUri(uri, options: Options(headers: headers));
       return response;
     } catch (error) {
-      // Handle errors here
       throw Exception('Failed to load data: $error');
     }
   }
 
-  // You can add more methods for other types of requests (POST, PUT, etc.)
-  Future<http.Response> postData(String path, Map<String, dynamic> body) async {
+  Future<Response> postData(String path, Map<String, dynamic> body,
+      {Map<String, String>? headers}) async {
     final Uri uri = Uri.parse('$baseUrl$path');
 
     try {
-      final response = await http.post(
-        uri,
-        body: body,
-      );
+      final response = await dio.postUri(uri,
+          data: body, options: Options(headers: headers));
       return response;
     } catch (error) {
-      // Handle errors here
       throw Exception('Failed to post data: $error');
     }
   }

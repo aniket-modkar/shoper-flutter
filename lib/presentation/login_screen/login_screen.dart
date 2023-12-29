@@ -1,7 +1,11 @@
+import 'dart:convert';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:shoper_flutter/core/app_export.dart';
 import 'package:shoper_flutter/core/service/api_service.dart';
+import 'package:shoper_flutter/core/service/storage_service.dart';
 import 'package:shoper_flutter/presentation/dashboard_page/dashboard_page.dart';
+import 'package:shoper_flutter/presentation/login_screen/sharedLoginPreferences.dart';
 import 'package:shoper_flutter/presentation/register_screen/register_screen.dart';
 import 'package:shoper_flutter/widgets/custom_elevated_button.dart';
 import 'package:shoper_flutter/widgets/custom_icon_button.dart';
@@ -10,9 +14,13 @@ import 'package:shoper_flutter/widgets/custom_text_form_field.dart';
 
 // ignore_for_file: must_be_immutable
 class LoginScreen extends StatelessWidget {
-  final ApiService _apiService = ApiService();
+  final Dio dioInstance;
+  final StorageService storageServiceInstance;
+  final ApiService _apiService;
 
-  LoginScreen({Key? key}) : super(key: key);
+  LoginScreen(this.dioInstance, this.storageServiceInstance)
+      : _apiService = ApiService(dioInstance, storageServiceInstance);
+  // LoginScreen({Key? key}) : super(key: key);
 
   TextEditingController emailController = TextEditingController();
 
@@ -157,19 +165,38 @@ class LoginScreen extends StatelessWidget {
         // 'email': emailController.text,
         // 'password': passwordController.text
         'email': 'admin@gmail.com',
-        'password': '12345678'
+        'password': '12345678',
       };
+
       try {
         final postData = userData;
         final response =
             await _apiService.postData('api/v1/account/login', postData);
 
         if (response.statusCode == 200) {
+          // Access the response data using the 'data' property
+          final responseData = response.data;
+
+          // Parse the response data into a LoginResponse object using json_serializable
+          final loginResponse =
+              LoginResponse.fromJson(jsonDecode(responseData));
+
+          // Save the parsed LoginResponse object to local storage
+          storageServiceInstance.saveResponseToLocalStorage(loginResponse);
+
           // Successful login
           Navigator.push(context,
               MaterialPageRoute(builder: (context) => DashboardPage()));
+        } else if (response.statusCode == 401) {
+          // Handle unauthorized access
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Invalid credentials. Please try again.'),
+              duration: Duration(seconds: 3),
+            ),
+          );
         } else {
-          // Display an error message
+          // Display a generic error message
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Login failed. Please check your credentials.'),

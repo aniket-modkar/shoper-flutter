@@ -1,44 +1,55 @@
-// import 'package:flutter/material.dart';
-// import 'login_page.dart';
-// import 'register_page.dart';
-// import 'home_page.dart';
-
-// void main() => runApp(MyApp());
-
-// class MyApp extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       initialRoute: '/login',
-//       routes: {
-//         '/login': (context) => LoginPage(),
-//         '/register': (context) => RegisterPage(),
-//         '/home': (context) => HomePage(),
-//       },
-//     );
-//   }
-// }
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-// import 'package:flutter/scheduler.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:shoper_flutter/core/service/interceptor_service.dart';
 import 'core/app_export.dart';
-// import 'package:shoper_flutter/theme/theme_helper.dart';
-// import 'package:shoper_flutter/routes/app_routes.dart';
+import 'core/service/api_service.dart';
+import 'core/service/storage_service.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
 
-  ///Please update theme as per your need if required.
   ThemeHelper().changeTheme('primary');
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  late StorageService storageService;
+  late ApiInterceptorService apiInterceptorService;
+  late ApiService apiService;
+
+  @override
+  void initState() {
+    super.initState();
+    storageService = StorageService();
+    apiInterceptorService = ApiInterceptorService(storageService);
+    apiService = ApiService(apiInterceptorService.dio, storageService);
+
+    // Example API call
+    makeApiCall();
+  }
+
+  Future<void> makeApiCall() async {
+    final path = '/your/api/endpoint';
+    final body = {'key': 'value'};
+
+    try {
+      final response = await apiService.postData(path, body);
+      print('API Response: ${response.statusCode}');
+      print('Response Data: ${response}');
+    } catch (error) {
+      print('API Error: $error');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -59,7 +70,6 @@ class MyApp extends StatelessWidget {
         ),
       ],
       initialRoute: AppRoutes.loginScreen,
-      // initialRoute: AppRoutes.splashScreen,
       routes: AppRoutes.routes,
     );
   }

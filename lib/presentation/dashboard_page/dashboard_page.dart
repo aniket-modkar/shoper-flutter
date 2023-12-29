@@ -1,4 +1,6 @@
+import 'package:dio/dio.dart';
 import 'package:shoper_flutter/core/service/api_service.dart';
+import 'package:shoper_flutter/core/service/storage_service.dart';
 
 import '../dashboard_page/widgets/categories_item_widget.dart';
 import '../dashboard_page/widgets/dashboard_item_widget.dart';
@@ -74,11 +76,19 @@ class _DashboardPageState extends State<DashboardPage> {
     if (!isDataFetched) {
       try {
         final response = await _apiService.fetchData('api/v1/product/fetch');
-        print('API Response: ${response.body}');
+        print('API Response: ${response}');
+
         if (response.statusCode == 200) {
+          final responseData = response.data;
+
+          final fetchedDataResponse =
+              FetchedData.fromJson(json.decode(responseData));
+
           setState(() {
-            fetchedData = FetchedData.fromJson(json.decode(response.body));
+            fetchedData = fetchedDataResponse;
           });
+        } else {
+          print('Non-200 status code: ${response.statusCode}');
         }
       } catch (error) {
         setState(() {
@@ -90,10 +100,16 @@ class _DashboardPageState extends State<DashboardPage> {
             statusCode: 0,
           );
         });
-      }
-      isDataFetched = true; // Set the flag to true after fetching data
+      } finally {}
+
+      isDataFetched = true;
     }
   }
+
+  Dio dioInstance =
+      Dio(); // Example definition, replace it with your actual Dio instance creation.
+  StorageService storageServiceInstance =
+      StorageService(); // Example definition, replace it with your actual StorageService instance creation.
 
   @override
   Widget build(BuildContext context) {
@@ -110,8 +126,10 @@ class _DashboardPageState extends State<DashboardPage> {
 
           if (result.containsKey('products')) {
             dynamic products = result['products'];
-            return ProductGrid(products: products);
-            // return _buildScaffoldWithContent(ProductGrid(products: products));
+            return ProductGrid.products(
+                products: products,
+                dioInstance: dioInstance,
+                storageServiceInstance: storageServiceInstance);
           } else {
             return _buildScaffoldWithContent(
                 _buildErrorWidget("Products key not found."));
@@ -332,7 +350,9 @@ class _DashboardPageState extends State<DashboardPage> {
 
   void onTapImgNotificationIcon(BuildContext context) {}
 
-  void onTapProductItem(BuildContext context) {}
+  void onTapProductItem(BuildContext context) {
+    print('onClick Product');
+  }
 
   void onTapTxtMoreCategoryLink(BuildContext context) {}
 
@@ -343,8 +363,21 @@ class _DashboardPageState extends State<DashboardPage> {
 
 class ProductGrid extends StatelessWidget {
   final List<dynamic> products;
+  final Dio dioInstance;
+  final StorageService storageServiceInstance;
+  final ApiService _apiService;
 
-  ProductGrid({required this.products});
+  // Named constructor
+  ProductGrid.apiService(this.dioInstance, this.storageServiceInstance)
+      : _apiService = ApiService(dioInstance, storageServiceInstance),
+        products = [];
+
+  // Named constructor
+  ProductGrid.products(
+      {required this.products,
+      required this.dioInstance,
+      required this.storageServiceInstance})
+      : _apiService = ApiService(dioInstance, storageServiceInstance);
 
   @override
   Widget build(BuildContext context) {
@@ -356,44 +389,109 @@ class ProductGrid extends StatelessWidget {
       ),
       itemCount: products.length,
       itemBuilder: (BuildContext context, int index) {
-        return buildProductCard(products[index]);
+        return buildProductCard(context, products[index]);
       },
     );
   }
 
-  Widget buildProductCard(Map<String, dynamic> product) {
-    return Card(
-      elevation: 4.0,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text(
-            product['title'] ?? 'Unknown Product',
-            style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: 8.0),
-          Text(
-            'Price: \$${product['currentPrice']}',
-            style: TextStyle(fontSize: 14.0),
-          ),
-          SizedBox(height: 8.0),
-          Text(
-            'Inventory: ${product['inventoryQuantity']}',
-            style: TextStyle(fontSize: 14.0),
-          ),
-          SizedBox(height: 8.0),
-          Text(
-            'status: ${product['status']}',
-            style: TextStyle(fontSize: 14.0),
-          ),
-          SizedBox(height: 8.0),
-          Text(
-            'thresholdQuantity: ${product['thresholdQuantity']}',
-            style: TextStyle(fontSize: 14.0),
-          ),
-        ],
+  Widget buildProductCard(BuildContext context, Map<String, dynamic> product) {
+    return GestureDetector(
+      onTap: () {
+        onProductClicked(context, product);
+      },
+      child: Card(
+        elevation: 4.0,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              product['title'] ?? 'Unknown Product',
+              style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 8.0),
+            Text(
+              'Price: \$${product['currentPrice']}',
+              style: TextStyle(fontSize: 14.0),
+            ),
+            SizedBox(height: 8.0),
+            Text(
+              'Inventory: ${product['inventoryQuantity']}',
+              style: TextStyle(fontSize: 14.0),
+            ),
+            SizedBox(height: 8.0),
+            Text(
+              'Status: ${product['status']}',
+              style: TextStyle(fontSize: 14.0),
+            ),
+            SizedBox(height: 8.0),
+            Text(
+              'Threshold Quantity: ${product['thresholdQuantity']}',
+              style: TextStyle(fontSize: 14.0),
+            ),
+          ],
+        ),
       ),
     );
+  }
+
+  void onProductClicked(
+      BuildContext context, Map<String, dynamic> product) async {
+    try {
+      if (product.isEmpty) {
+        return;
+      }
+
+      final userData = {'productId': product['_id']};
+
+      final response =
+          await _apiService.postData('api/v1/cart/addProduct', userData);
+
+      if (response.statusCode == 200) {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => DashboardPage()));
+      }
+    } catch (error) {
+      print('Error: $error');
+      showSnackBar(context, 'An error occurred. Please try again later.');
+    }
+  }
+
+  void showSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: Duration(seconds: 3),
+      ),
+    );
+  }
+
+  void main() {
+    // Define a sample list of products
+    List<dynamic> myProductsList = [
+      {
+        'title': 'Product 1',
+        'currentPrice': 10.0,
+        'inventoryQuantity': 20,
+        'status': 'Available',
+        'thresholdQuantity': 5
+      },
+      {
+        'title': 'Product 2',
+        'currentPrice': 15.0,
+        'inventoryQuantity': 15,
+        'status': 'Out of Stock',
+        'thresholdQuantity': 3
+      },
+      // Add more products as needed
+    ];
+
+    // Create an instance using the named constructor and pass the defined products
+    var grid2 = ProductGrid.products(
+        products: myProductsList,
+        dioInstance: dioInstance,
+        storageServiceInstance: storageServiceInstance);
+
+    // Example: runApp(grid2);
   }
 }
