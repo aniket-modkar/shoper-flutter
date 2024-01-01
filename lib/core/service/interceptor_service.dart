@@ -5,7 +5,7 @@ class ApiInterceptorService {
   final Dio dio;
   final StorageService storageService;
 
-  ApiInterceptorService(this.storageService) : dio = Dio() {
+  ApiInterceptorService(this.dio, this.storageService) {
     dio.interceptors.add(LogInterceptor(requestBody: true, responseBody: true));
     dio.interceptors.add(ApiInterceptor(storageService));
   }

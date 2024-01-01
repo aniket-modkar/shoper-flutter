@@ -1,30 +1,25 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
+import 'package:shoper_flutter/core/service/api_service.dart';
 import 'package:shoper_flutter/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+  testWidgets('Example Widget Test', (WidgetTester tester) async {
+    final ApiService apiService = ApiService(); // Instantiate ApiService here
+
     // Build our app and trigger a frame.
-    await tester.pumpWidget(MyApp());
+    await tester.pumpWidget(MyApp(apiService));
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // Verify that your initial widget is rendered.
+    expect(find.text('Welcome to the home screen.'), findsOneWidget);
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    // Perform interactions or additional tests based on your app's behavior.
+    // For example, you can tap a button and test the updated UI.
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Uncomment the lines below and replace with actual interaction in your app.
+    // await tester.tap(find.byType(YourButtonType));
+    // await tester.pump();
+
+    // Verify the updated UI state.
+    // expect(find.text('Updated Text'), findsOneWidget);
   });
 }

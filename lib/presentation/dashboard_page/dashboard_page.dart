@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:shoper_flutter/core/service/api_service.dart';
-import 'package:shoper_flutter/core/service/storage_service.dart';
 
 import '../dashboard_page/widgets/categories_item_widget.dart';
 import '../dashboard_page/widgets/dashboard_item_widget.dart';
@@ -54,7 +53,7 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
-  final ApiService _apiService = ApiService();
+  late ApiService apiService;
   int sliderIndex = 1;
   FetchedData fetchedData = FetchedData(
     message: '',
@@ -69,26 +68,22 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   void initState() {
     super.initState();
+    apiService = ApiService();
     fetchData();
   }
 
   Future<void> fetchData() async {
     if (!isDataFetched) {
       try {
-        final response = await _apiService.fetchData('api/v1/product/fetch');
-        print('API Response: ${response}');
+        final dio = Dio(); // Create Dio instance
+        apiService.setDioInstance(dio); // Set Dio instance in ApiService
 
+        final response = await apiService.fetchData('api/v1/product/fetch');
+        print('API Response: ${response.data}');
         if (response.statusCode == 200) {
-          final responseData = response.data;
-
-          final fetchedDataResponse =
-              FetchedData.fromJson(json.decode(responseData));
-
           setState(() {
-            fetchedData = fetchedDataResponse;
+            fetchedData = FetchedData.fromJson(json.decode(response.data));
           });
-        } else {
-          print('Non-200 status code: ${response.statusCode}');
         }
       } catch (error) {
         setState(() {
@@ -100,16 +95,10 @@ class _DashboardPageState extends State<DashboardPage> {
             statusCode: 0,
           );
         });
-      } finally {}
-
-      isDataFetched = true;
+      }
+      isDataFetched = true; // Set the flag to true after fetching data
     }
   }
-
-  Dio dioInstance =
-      Dio(); // Example definition, replace it with your actual Dio instance creation.
-  StorageService storageServiceInstance =
-      StorageService(); // Example definition, replace it with your actual StorageService instance creation.
 
   @override
   Widget build(BuildContext context) {
@@ -126,10 +115,8 @@ class _DashboardPageState extends State<DashboardPage> {
 
           if (result.containsKey('products')) {
             dynamic products = result['products'];
-            return ProductGrid.products(
-                products: products,
-                dioInstance: dioInstance,
-                storageServiceInstance: storageServiceInstance);
+            return ProductGrid(products: products);
+            // return _buildScaffoldWithContent(ProductGrid(products: products));
           } else {
             return _buildScaffoldWithContent(
                 _buildErrorWidget("Products key not found."));
@@ -302,24 +289,6 @@ class _DashboardPageState extends State<DashboardPage> {
     ]);
   }
 
-  /// Section Widget
-  Widget _buildDashboard(BuildContext context) {
-    return Padding(
-        padding: EdgeInsets.only(right: 16.h),
-        child: GridView.builder(
-            shrinkWrap: true,
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                mainAxisExtent: 283.v,
-                crossAxisCount: 2,
-                mainAxisSpacing: 13.h,
-                crossAxisSpacing: 13.h),
-            physics: NeverScrollableScrollPhysics(),
-            itemCount: 4,
-            itemBuilder: (context, index) {
-              return DashboardItemWidget();
-            }));
-  }
-
   /// Common widget
   Widget _buildFlashSaleHeader(
     BuildContext context, {
@@ -350,9 +319,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
   void onTapImgNotificationIcon(BuildContext context) {}
 
-  void onTapProductItem(BuildContext context) {
-    print('onClick Product');
-  }
+  void onTapProductItem(BuildContext context) {}
 
   void onTapTxtMoreCategoryLink(BuildContext context) {}
 
@@ -363,21 +330,13 @@ class _DashboardPageState extends State<DashboardPage> {
 
 class ProductGrid extends StatelessWidget {
   final List<dynamic> products;
-  final Dio dioInstance;
-  final StorageService storageServiceInstance;
-  final ApiService _apiService;
+  final Dio dio = Dio();
+  final ApiService _apiService = ApiService(); // Issue here
 
-  // Named constructor
-  ProductGrid.apiService(this.dioInstance, this.storageServiceInstance)
-      : _apiService = ApiService(dioInstance, storageServiceInstance),
-        products = [];
-
-  // Named constructor
-  ProductGrid.products(
-      {required this.products,
-      required this.dioInstance,
-      required this.storageServiceInstance})
-      : _apiService = ApiService(dioInstance, storageServiceInstance);
+  ProductGrid({required this.products}) {
+    // Pass the Dio instance to ApiService constructor
+    _apiService.setDioInstance(dio);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -464,34 +423,5 @@ class ProductGrid extends StatelessWidget {
         duration: Duration(seconds: 3),
       ),
     );
-  }
-
-  void main() {
-    // Define a sample list of products
-    List<dynamic> myProductsList = [
-      {
-        'title': 'Product 1',
-        'currentPrice': 10.0,
-        'inventoryQuantity': 20,
-        'status': 'Available',
-        'thresholdQuantity': 5
-      },
-      {
-        'title': 'Product 2',
-        'currentPrice': 15.0,
-        'inventoryQuantity': 15,
-        'status': 'Out of Stock',
-        'thresholdQuantity': 3
-      },
-      // Add more products as needed
-    ];
-
-    // Create an instance using the named constructor and pass the defined products
-    var grid2 = ProductGrid.products(
-        products: myProductsList,
-        dioInstance: dioInstance,
-        storageServiceInstance: storageServiceInstance);
-
-    // Example: runApp(grid2);
   }
 }
