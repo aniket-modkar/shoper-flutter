@@ -343,6 +343,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
 class ProductGrid extends StatelessWidget {
   final List<dynamic> products;
+  final ApiService _apiService = ApiService();
 
   ProductGrid({required this.products});
 
@@ -356,43 +357,79 @@ class ProductGrid extends StatelessWidget {
       ),
       itemCount: products.length,
       itemBuilder: (BuildContext context, int index) {
-        return buildProductCard(products[index]);
+        return buildProductCard(context, products[index]);
       },
     );
   }
 
-  Widget buildProductCard(Map<String, dynamic> product) {
-    return Card(
-      elevation: 4.0,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text(
-            product['title'] ?? 'Unknown Product',
-            style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: 8.0),
-          Text(
-            'Price: \$${product['currentPrice']}',
-            style: TextStyle(fontSize: 14.0),
-          ),
-          SizedBox(height: 8.0),
-          Text(
-            'Inventory: ${product['inventoryQuantity']}',
-            style: TextStyle(fontSize: 14.0),
-          ),
-          SizedBox(height: 8.0),
-          Text(
-            'status: ${product['status']}',
-            style: TextStyle(fontSize: 14.0),
-          ),
-          SizedBox(height: 8.0),
-          Text(
-            'thresholdQuantity: ${product['thresholdQuantity']}',
-            style: TextStyle(fontSize: 14.0),
-          ),
-        ],
+  Widget buildProductCard(BuildContext context, Map<String, dynamic> product) {
+    return GestureDetector(
+      onTap: () {
+        onProductClicked(context, product);
+      },
+      child: Card(
+        elevation: 4.0,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              product['title'] ?? 'Unknown Product',
+              style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 8.0),
+            Text(
+              'Price: \$${product['currentPrice']}',
+              style: TextStyle(fontSize: 14.0),
+            ),
+            SizedBox(height: 8.0),
+            Text(
+              'Inventory: ${product['inventoryQuantity']}',
+              style: TextStyle(fontSize: 14.0),
+            ),
+            SizedBox(height: 8.0),
+            Text(
+              'Status: ${product['status']}',
+              style: TextStyle(fontSize: 14.0),
+            ),
+            SizedBox(height: 8.0),
+            Text(
+              'Threshold Quantity: ${product['thresholdQuantity']}',
+              style: TextStyle(fontSize: 14.0),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void onProductClicked(
+      BuildContext context, Map<String, dynamic> product) async {
+    try {
+      if (product.isEmpty) {
+        return;
+      }
+
+      final userData = {'productId': product['_id']};
+
+      final response =
+          await _apiService.postData('api/v1/cart/addProduct', userData);
+
+      if (response.statusCode == 200) {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => DashboardPage()));
+      }
+    } catch (error) {
+      print('Error: $error');
+      showSnackBar(context, 'An error occurred. Please try again later.');
+    }
+  }
+
+  void showSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: Duration(seconds: 3),
       ),
     );
   }
