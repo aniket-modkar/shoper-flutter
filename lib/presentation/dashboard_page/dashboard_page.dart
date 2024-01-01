@@ -1,4 +1,5 @@
 import 'package:shoper_flutter/core/service/api_service.dart';
+import 'package:shoper_flutter/presentation/cart_page/cart_page.dart';
 
 import '../dashboard_page/widgets/categories_item_widget.dart';
 import '../dashboard_page/widgets/dashboard_item_widget.dart';
@@ -415,10 +416,10 @@ class ProductGrid extends StatelessWidget {
       final response =
           await _apiService.postData('api/v1/cart/addProduct', userData);
 
-      if (response.statusCode == 200) {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => DashboardPage()));
-      }
+      // if (response.statusCode == 200) {
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => CartPage()));
+      // }
     } catch (error) {
       print('Error: $error');
       showSnackBar(context, 'An error occurred. Please try again later.');

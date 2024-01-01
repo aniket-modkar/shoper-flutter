@@ -11,7 +11,16 @@ class ApiService {
     final Uri uri = Uri.parse('$baseUrl$path');
 
     try {
-      final response = await http.get(uri);
+      Map<String, String> headers = {
+        // 'Content-Type':
+        //     'application/json', // Adjust the content type based on your needs
+        'X-auth-token':
+            'bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NTgxMzVhMDgwMjI0ZDMyZjRiMjdhM2EiLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsInBob25lIjoiNzY5Nzg5MTU0NiIsInR5cGUiOiJBRE1JTiIsImlhdCI6MTcwNDEwOTQ2MCwiZXhwIjoxNzA2NzAxNDYwfQ.5dgAojpGc9bt2NOgjmNy4fBllmdglhxCWAa4qVD5lQQ', // Include authorization header if needed
+      };
+      final response = await http.get(
+        uri,
+        headers: headers,
+      );
       return response;
     } catch (error) {
       // Handle errors here
@@ -24,13 +33,22 @@ class ApiService {
     final Uri uri = Uri.parse('$baseUrl$path');
 
     try {
+      // Adding headers to the request
+      Map<String, String> headers = {
+        // 'Content-Type':
+        //     'application/json', // Adjust the content type based on your needs
+        'X-auth-token':
+            'bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NTgxMzVhMDgwMjI0ZDMyZjRiMjdhM2EiLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsInBob25lIjoiNzY5Nzg5MTU0NiIsInR5cGUiOiJBRE1JTiIsImlhdCI6MTcwNDEwOTQ2MCwiZXhwIjoxNzA2NzAxNDYwfQ.5dgAojpGc9bt2NOgjmNy4fBllmdglhxCWAa4qVD5lQQ', // Include authorization header if needed
+      };
+
       final response = await http.post(
         uri,
+        headers: headers,
         body: body,
       );
+
       return response;
     } catch (error) {
-      // Handle errors here
       throw Exception('Failed to post data: $error');
     }
   }

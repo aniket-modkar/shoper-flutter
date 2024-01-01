@@ -1,3 +1,7 @@
+import 'dart:convert';
+
+import 'package:shoper_flutter/core/service/api_service.dart';
+
 import '../cart_page/widgets/cartlist_item_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:shoper_flutter/core/app_export.dart';
@@ -8,8 +12,87 @@ import 'package:shoper_flutter/widgets/custom_elevated_button.dart';
 import 'package:shoper_flutter/widgets/custom_text_form_field.dart';
 
 // ignore_for_file: must_be_immutable
-class CartPage extends StatelessWidget {
+
+class FetchedData {
+  final String message;
+  final String responseCode;
+  final Map<String, dynamic> result;
+  final int totalCounts;
+  final int statusCode;
+
+  FetchedData({
+    required this.message,
+    required this.responseCode,
+    required this.result,
+    required this.totalCounts,
+    required this.statusCode,
+  });
+
+  factory FetchedData.fromJson(Map<String, dynamic> json) {
+    return FetchedData(
+      message: json['message'] ?? '',
+      responseCode: json['responseCode'] ?? '',
+      result: json['result'] ?? {},
+      totalCounts: json['totalCounts'] ?? 0,
+      statusCode: json['statusCode'] ?? 0,
+    );
+  }
+  @override
+  String toString() {
+    return 'FetchedData { message: $message, responseCode: $responseCode, result: $result, totalCounts: $totalCounts, statusCode: $statusCode }';
+  }
+}
+
+class CartPage extends StatefulWidget {
   CartPage({Key? key}) : super(key: key);
+
+  @override
+  _CartPageState createState() => _CartPageState();
+}
+
+class _CartPageState extends State<CartPage> {
+  final ApiService _apiService = ApiService();
+  FetchedData fetchedData = FetchedData(
+    message: '',
+    responseCode: '',
+    result: {},
+    totalCounts: 0,
+    statusCode: 0,
+  );
+  bool isDataFetched = false; // Flag to track whether data has been fetched
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
+
+  Future<void> fetchData() async {
+    if (!isDataFetched) {
+      try {
+        final response = await _apiService.fetchData('api/v1/cart/fetch');
+        print('API Response: ${response.body}');
+        if (response.statusCode == 200) {
+          setState(() {
+            fetchedData = FetchedData.fromJson(json.decode(response.body));
+          });
+        }
+      } catch (error) {
+        setState(() {
+          fetchedData = FetchedData(
+            message: 'Error: $error',
+            responseCode: '',
+            result: {},
+            totalCounts: 0,
+            statusCode: 0,
+          );
+        });
+      }
+      setState(() {
+        isDataFetched = true; // Set the flag to true after fetching data
+      });
+    }
+  }
 
   TextEditingController cuponCodeController = TextEditingController();
 
