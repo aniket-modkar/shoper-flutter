@@ -1,11 +1,10 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:shoper_flutter/core/service/api_service.dart';
 import 'package:shoper_flutter/presentation/dashboard_page/dashboard_page.dart';
 import 'package:shoper_flutter/routes/app_routes.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
-// ignore: unused_element
 class ProductDetailsPage extends StatefulWidget {
   @override
   _ProductDetailsPageState createState() => _ProductDetailsPageState();
@@ -16,7 +15,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   late FetchedData fetchedData;
   bool isDataFetched = false;
 
-  // Initialize fetchedData in the initState method
   @override
   void initState() {
     super.initState();
@@ -54,8 +52,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
       });
     }
 
-    isDataFetched = true; // Set the flag to true after fetching data
-    // }sDataFetched = true; // Set the flag to true after fetching data
+    isDataFetched = true;
   }
 
   @override
@@ -64,7 +61,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
 
     if (arguments == null || !arguments.containsKey('productId')) {
-      // Handle the case where arguments are null or productId is not found
       return Scaffold(
         appBar: AppBar(
           title: Text('Error'),
@@ -75,7 +71,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
       );
     }
 
-    // Access the parameters
     String productId = arguments['productId'];
 
     return FutureBuilder(
@@ -87,17 +82,10 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
           dynamic productsData = result['products'];
 
           if (productsData is List) {
-            // Handle the case where 'products' is a List
-            List<dynamic> productList = productsData;
-            // You may want to iterate through the list or use specific items
-            // depending on your API response structure
-            return _buildProductList(productList);
+            return _buildProductList(productsData);
           } else if (productsData is Map<String, dynamic>) {
-            // Handle the case where 'products' is a Map
-            Map<String, dynamic> productMap = productsData;
-            return ProductGrid(product: productMap);
+            return ProductGrid(product: productsData);
           } else {
-            // Handle other cases if needed
             return _buildErrorWidget("Unexpected data type for 'products'");
           }
         } else {
@@ -108,14 +96,10 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   }
 
   Widget _buildProductList(List<dynamic> productList) {
-    // Handle the list of products as needed
-    // You may want to create a list view, grid view, or any other UI widget
-    // based on your application requirements.
     return ListView.builder(
       itemCount: productList.length,
       itemBuilder: (context, index) {
         dynamic productItem = productList[index];
-        // Return a widget for each product item
         return ProductGrid(product: productItem);
       },
     );
@@ -131,8 +115,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   }
 }
 
-class ProductDetailsPageState {}
-
 class ProductGrid extends StatelessWidget {
   final Map<String, dynamic> product;
   final ApiService _apiService = ApiService();
@@ -145,12 +127,37 @@ class ProductGrid extends StatelessWidget {
   }
 
   Widget buildProductCard(BuildContext context, Map<String, dynamic> product) {
+    String baseUrl = 'https://dev-shoper.technomize.com/api/';
     return Card(
       elevation: 4.0,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          if (product.containsKey('media') && product['media'] is List)
+            Container(
+              height: 200,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: (product['media'] as List).length,
+                itemBuilder: (context, index) {
+                  String imageUrl =
+                      baseUrl + (product['media'][index] as String);
+                  return Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: CachedNetworkImage(
+                      imageUrl: imageUrl,
+                      width: 150,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) =>
+                          CircularProgressIndicator(),
+                      errorWidget: (context, url, error) => Icon(Icons.error),
+                    ),
+                  );
+                },
+              ),
+            ),
+          SizedBox(height: 8.0),
           Text(
             product['title'] ?? 'Unknown Product',
             style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
@@ -163,15 +170,15 @@ class ProductGrid extends StatelessWidget {
           SizedBox(height: 8.0),
           ElevatedButton(
             onPressed: () {
-              // Add the product to the cart
-              // You can implement your cart logic here
               addToCart(context, product);
             },
             style: ElevatedButton.styleFrom(
-              primary: Colors.blue, // Set the background color of the button
+              primary: Colors.blue,
             ),
-            child: Text('Add to Cart',
-                style: TextStyle(color: Colors.white)), // Set the text color
+            child: Text(
+              'Add to Cart',
+              style: TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),
@@ -189,9 +196,7 @@ class ProductGrid extends StatelessWidget {
       final response =
           await _apiService.postData('api/v1/cart/addProduct', userData);
 
-      // if (response.statusCode == 200) {
       Navigator.pushNamed(context, AppRoutes.cartPage);
-      // }
     } catch (error) {
       print('Error: $error');
       showSnackBar(context, 'An error occurred. Please try again later.');

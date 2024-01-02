@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shoper_flutter/core/service/api_service.dart';
 import 'package:shoper_flutter/presentation/cart_page/cart_page.dart';
 import 'package:shoper_flutter/presentation/dashboard_container_screen/dashboard_container_screen.dart';
@@ -74,8 +75,10 @@ class _DashboardPageState extends State<DashboardPage> {
 
   Future<void> fetchData() async {
     if (!isDataFetched) {
+      final userData = {'status': "PUBLISHED"};
       try {
-        final response = await _apiService.fetchData('api/v1/product/fetch');
+        final response = await _apiService.fetchDataWithFilter(
+            'api/v1/product/fetch', userData);
         print('API Response: ${response.body}');
         if (response.statusCode == 200) {
           setState(() {
@@ -365,6 +368,8 @@ class ProductGrid extends StatelessWidget {
   }
 
   Widget buildProductCard(BuildContext context, Map<String, dynamic> product) {
+    String baseUrl = 'https://dev-shoper.technomize.com/api/';
+
     return GestureDetector(
       onTap: () {
         onProductDetailsClicked(context, product);
@@ -375,6 +380,30 @@ class ProductGrid extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            if (product.containsKey('media') && product['media'] is List)
+              Container(
+                height: 40,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: (product['media'] as List).length,
+                  itemBuilder: (context, index) {
+                    String imageUrl =
+                        baseUrl + (product['media'][index] as String);
+                    return Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: CachedNetworkImage(
+                        imageUrl: imageUrl,
+                        width: 30,
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) =>
+                            CircularProgressIndicator(),
+                        errorWidget: (context, url, error) => Icon(Icons.error),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            SizedBox(height: 8.0),
             Text(
               product['title'] ?? 'Unknown Product',
               style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
