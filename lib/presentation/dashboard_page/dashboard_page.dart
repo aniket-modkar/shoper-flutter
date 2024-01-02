@@ -1,5 +1,6 @@
 import 'package:shoper_flutter/core/service/api_service.dart';
 import 'package:shoper_flutter/presentation/cart_page/cart_page.dart';
+import 'package:shoper_flutter/presentation/dashboard_container_screen/dashboard_container_screen.dart';
 
 import '../dashboard_page/widgets/categories_item_widget.dart';
 import '../dashboard_page/widgets/dashboard_item_widget.dart';
@@ -366,7 +367,7 @@ class ProductGrid extends StatelessWidget {
   Widget buildProductCard(BuildContext context, Map<String, dynamic> product) {
     return GestureDetector(
       onTap: () {
-        onProductClicked(context, product);
+        onProductDetailsClicked(context, product);
       },
       child: Card(
         elevation: 4.0,
@@ -384,19 +385,17 @@ class ProductGrid extends StatelessWidget {
               style: TextStyle(fontSize: 14.0),
             ),
             SizedBox(height: 8.0),
-            Text(
-              'Inventory: ${product['inventoryQuantity']}',
-              style: TextStyle(fontSize: 14.0),
-            ),
-            SizedBox(height: 8.0),
-            Text(
-              'Status: ${product['status']}',
-              style: TextStyle(fontSize: 14.0),
-            ),
-            SizedBox(height: 8.0),
-            Text(
-              'Threshold Quantity: ${product['thresholdQuantity']}',
-              style: TextStyle(fontSize: 14.0),
+            ElevatedButton(
+              onPressed: () {
+                // Add the product to the cart
+                // You can implement your cart logic here
+                addToCart(context, product);
+              },
+              style: ElevatedButton.styleFrom(
+                primary: Colors.blue, // Set the background color of the button
+              ),
+              child: Text('Add to Cart',
+                  style: TextStyle(color: Colors.white)), // Set the text color
             ),
           ],
         ),
@@ -404,8 +403,7 @@ class ProductGrid extends StatelessWidget {
     );
   }
 
-  void onProductClicked(
-      BuildContext context, Map<String, dynamic> product) async {
+  void addToCart(BuildContext context, Map<String, dynamic> product) async {
     try {
       if (product.isEmpty) {
         return;
@@ -417,13 +415,24 @@ class ProductGrid extends StatelessWidget {
           await _apiService.postData('api/v1/cart/addProduct', userData);
 
       // if (response.statusCode == 200) {
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => CartPage()));
+      Navigator.pushNamed(context, AppRoutes.cartPage);
       // }
     } catch (error) {
       print('Error: $error');
       showSnackBar(context, 'An error occurred. Please try again later.');
     }
+  }
+
+  void onProductDetailsClicked(
+      BuildContext context, Map<String, dynamic> product) async {
+    Navigator.pushNamed(
+      context,
+      AppRoutes.productDetailScreen,
+      arguments: {
+        'productId': product['_id'], // Replace with the actual product ID
+        // 'otherParam': 'otherValue', // Replace with other parameters
+      },
+    );
   }
 
   void showSnackBar(BuildContext context, String message) {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shoper_flutter/core/app_export.dart';
 import 'package:shoper_flutter/core/service/api_service.dart';
+import 'package:shoper_flutter/presentation/dashboard_container_screen/dashboard_container_screen.dart';
 import 'package:shoper_flutter/presentation/dashboard_page/dashboard_page.dart';
 import 'package:shoper_flutter/presentation/register_screen/register_screen.dart';
 import 'package:shoper_flutter/widgets/custom_elevated_button.dart';
@@ -166,8 +167,13 @@ class LoginScreen extends StatelessWidget {
 
         if (response.statusCode == 200) {
           // Successful login
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => DashboardPage()));
+          // Navigator.push(context,
+          //     MaterialPageRoute(builder: (context) => DashboardPage()));
+          Navigator.pushNamed(context, AppRoutes.dashboardPage);
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => DashboardContainerScreen()));
         } else {
           // Display an error message
           ScaffoldMessenger.of(context).showSnackBar(
@@ -191,9 +197,6 @@ class LoginScreen extends StatelessWidget {
   }
 
   void onTapTxtDonthaveanaccount(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => RegisterScreen()),
-    );
+    Navigator.pushNamed(context, AppRoutes.registerScreen);
   }
 }
