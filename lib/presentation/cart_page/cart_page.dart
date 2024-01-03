@@ -201,43 +201,61 @@ class _CartPageState extends State<CartPage> {
   }
 
   Widget _buildTotalPriceDetailsColumn(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(15.h),
-      decoration: AppDecoration.outlineBlue50.copyWith(
-        borderRadius: BorderRadiusStyle.roundedBorder5,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          _buildShoppingPriceRow(
-            context,
-            shippingLabel: "lbl_items_3".tr,
-            priceLabel: "lbl_598_86".tr,
-          ),
-          SizedBox(height: 16.v),
-          _buildShoppingPriceRow(
-            context,
-            shippingLabel: "lbl_shipping".tr,
-            priceLabel: "lbl_40_00".tr,
-          ),
-          SizedBox(height: 14.v),
-          _buildShoppingPriceRow(
-            context,
-            shippingLabel: "lbl_import_charges".tr,
-            priceLabel: "lbl_128_00".tr,
-          ),
-          SizedBox(height: 12.v),
-          Divider(),
-          SizedBox(height: 10.v),
-          _buildShoppingPriceRow(
-            context,
-            shippingLabel: "lbl_total_price".tr,
-            priceLabel: "lbl_766_86".tr,
-          ),
-        ],
-      ),
-    );
+    if (fetchedData.result.containsKey('cart')) {
+      dynamic cartData = fetchedData.result['cart'];
+      if (cartData is Map) {
+        final List<dynamic>? products = cartData['products'] as List<dynamic>?;
+
+        if (products != null) {
+          final int cartTotal =
+              int.tryParse(cartData['cartTotal']?.toString() ?? '0') ?? 0;
+
+          return Container(
+            padding: EdgeInsets.all(15.h),
+            decoration: AppDecoration.outlineBlue50.copyWith(
+              borderRadius: BorderRadiusStyle.roundedBorder5,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _buildShoppingPriceRow(
+                  context,
+                  shippingLabel: "${products.length}".tr,
+                  priceLabel: cartTotal.toString(),
+                ),
+                SizedBox(height: 16.v),
+                _buildShoppingPriceRow(
+                  context,
+                  shippingLabel: "lbl_shipping".tr,
+                  priceLabel: "lbl_40_00".tr,
+                ),
+                SizedBox(height: 14.v),
+                _buildShoppingPriceRow(
+                  context,
+                  shippingLabel: "lbl_import_charges".tr,
+                  priceLabel: "lbl_128_00".tr,
+                ),
+                SizedBox(height: 12.v),
+                Divider(),
+                SizedBox(height: 10.v),
+                _buildShoppingPriceRow(
+                  context,
+                  shippingLabel: "lbl_total_price".tr,
+                  priceLabel: cartTotal.toString(),
+                ),
+              ],
+            ),
+          );
+        } else {
+          return _buildErrorWidget("Products key not found or is not a list");
+        }
+      } else {
+        return _buildErrorWidget("Unexpected data type for 'cart'");
+      }
+    } else {
+      return _buildErrorWidget("Cart key not found.");
+    }
   }
 
   Widget _buildShoppingPriceRow(
