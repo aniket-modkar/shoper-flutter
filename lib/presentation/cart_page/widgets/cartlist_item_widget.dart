@@ -1,15 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:shoper_flutter/core/app_export.dart';
+import 'package:shoper_flutter/core/service/api_service.dart';
 
-// ignore: must_be_immutable
 class CartlistItemWidget extends StatelessWidget {
-  const CartlistItemWidget({Key? key})
-      : super(
-          key: key,
-        );
+  final dynamic cartData;
+
+  CartlistItemWidget({Key? key, required this.cartData}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final List<dynamic> products = cartData['products'];
+
+    return Column(
+      children: products.map((product) {
+        return _buildCartItem(context, product);
+      }).toList(),
+    );
+  }
+
+  Widget _buildCartItem(BuildContext context, dynamic product) {
+    final ApiService _apiService = ApiService();
+    String baseUrl = _apiService.imgBaseUrl;
+    final String title = product['productId']['title'] ?? '';
+    final int quantity = product['quantity'] ?? 0;
+    final double price = product['subTotal'] ?? 0.0;
+    final List<String> media =
+        (product['productId']['media'] as List<dynamic>).cast<String>();
+    final String imageUrl = media.isNotEmpty ? media[0] : '';
+
     return Container(
       padding: EdgeInsets.symmetric(vertical: 14.v),
       decoration: AppDecoration.outlineBlue.copyWith(
@@ -19,12 +37,10 @@ class CartlistItemWidget extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           CustomImageView(
-            imagePath: ImageConstant.imgImageProduct,
+            imagePath: baseUrl + imageUrl, // Use the product image
             height: 72.adaptSize,
             width: 72.adaptSize,
-            radius: BorderRadius.circular(
-              5.h,
-            ),
+            radius: BorderRadius.circular(5.h),
             margin: EdgeInsets.symmetric(vertical: 1.v),
           ),
           Column(
@@ -36,7 +52,7 @@ class CartlistItemWidget extends StatelessWidget {
                   SizedBox(
                     width: 150.h,
                     child: Text(
-                      "msg_nike_air_zoom_pegasus".tr,
+                      title,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.labelLarge!.copyWith(
@@ -71,7 +87,7 @@ class CartlistItemWidget extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "lbl_299_43".tr,
+                      "₹ ${price.toStringAsFixed(2)}".tr,
                       style: CustomTextStyles.labelLargePrimary,
                     ),
                     Spacer(),
@@ -79,6 +95,12 @@ class CartlistItemWidget extends StatelessWidget {
                       imagePath: ImageConstant.imgFolder,
                       height: 20.v,
                       width: 33.h,
+                      onTap: () {
+                        // Add your function here
+                        print("Minus icon tapped!");
+                        removedToCart(context, product);
+                        // You can perform any action or call a function when the image is tapped
+                      },
                     ),
                     SizedBox(
                       height: 20.v,
@@ -108,7 +130,7 @@ class CartlistItemWidget extends StatelessWidget {
                               child: Padding(
                                 padding: EdgeInsets.only(right: 17.h),
                                 child: Text(
-                                  "lbl_1".tr,
+                                  "${quantity.toString()}".tr,
                                   style: CustomTextStyles.bodySmallOnPrimary_2,
                                 ),
                               ),
@@ -121,6 +143,12 @@ class CartlistItemWidget extends StatelessWidget {
                       imagePath: ImageConstant.imgPlus,
                       height: 20.v,
                       width: 33.h,
+                      onTap: () {
+                        // Add your function here
+                        print("Plus icon tapped!");
+                        addToCart(context, product);
+                        // You can perform any action or call a function when the image is tapped
+                      },
                     ),
                   ],
                 ),
@@ -128,6 +156,54 @@ class CartlistItemWidget extends StatelessWidget {
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  final ApiService _apiService = ApiService();
+
+  void addToCart(BuildContext context, Map<String, dynamic> product) async {
+    try {
+      if (product.isEmpty) {
+        return;
+      }
+      final String productId = product['productId']['_id'] ?? '';
+      final userData = {'productId': productId};
+
+      final response =
+          await _apiService.postData('api/v1/cart/addProduct', userData);
+
+      Navigator.pushNamed(context, AppRoutes.cartPage);
+    } catch (error) {
+      print('Error: $error');
+      showSnackBar(context, 'An error occurred. Please try again later.');
+    }
+  }
+
+  void removedToCart(BuildContext context, Map<String, dynamic> product) async {
+    try {
+      if (product.isEmpty) {
+        return;
+      }
+
+      final String productId = product['productId']['_id'] ?? '';
+      final userData = {'productId': productId};
+
+      final response =
+          await _apiService.postData('api/v1/cart/removeProduct', userData);
+
+      Navigator.pushNamed(context, AppRoutes.cartPage);
+    } catch (error) {
+      print('Error: $error');
+      showSnackBar(context, 'An error occurred. Please try again later.');
+    }
+  }
+
+  void showSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: Duration(seconds: 3),
       ),
     );
   }
