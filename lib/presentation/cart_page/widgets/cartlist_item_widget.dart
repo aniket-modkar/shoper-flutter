@@ -186,7 +186,7 @@ class CartlistItemWidget extends StatelessWidget {
         return;
       }
 
-      final String productId = product['productId']['_id'] ?? '';
+      final String productId = product['_id'] ?? '';
       final userData = {'productId': productId};
 
       final response =
