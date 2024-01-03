@@ -127,7 +127,7 @@ class ProductGrid extends StatelessWidget {
   }
 
   Widget buildProductCard(BuildContext context, Map<String, dynamic> product) {
-    String baseUrl = 'https://dev-shoper.technomize.com/api/';
+    String baseUrl = _apiService.imgBaseUrl;
     return Card(
       elevation: 4.0,
       child: Column(

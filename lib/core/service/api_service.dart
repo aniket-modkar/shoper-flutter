@@ -4,6 +4,9 @@ import 'package:http/http.dart' as http;
 
 class ApiService {
   final String baseUrl = 'https://dev-shoper.technomize.com/';
+  final String imgBaseUrl = 'https://dev-shoper.technomize.com/api/';
+  // final String baseUrl = 'http://localhost:3000/';
+  // final String imgBaseUrl = 'http://localhost:3000/api/';
 
   ApiService();
 
@@ -13,7 +16,7 @@ class ApiService {
     try {
       Map<String, String> headers = {
         'X-auth-token':
-            'bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NTgxMzVhMDgwMjI0ZDMyZjRiMjdhM2EiLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsInBob25lIjoiNzY5Nzg5MTU0NiIsInR5cGUiOiJBRE1JTiIsImlhdCI6MTcwNDEwOTQ2MCwiZXhwIjoxNzA2NzAxNDYwfQ.5dgAojpGc9bt2NOgjmNy4fBllmdglhxCWAa4qVD5lQQ', // Include authorization header if needed
+            'bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NTk1MDc0NjRhNWFjYjljMTkwNmRmNzUiLCJlbWFpbCI6ImN1c3RvbWVyQGdtYWlsLmNvbSIsInBob25lIjoiNzY5NDQ4NDU2MiIsInR5cGUiOiJDVVNUT01FUiIsImlhdCI6MTcwNDI2NTk0MCwiZXhwIjoxNzA2ODU3OTQwfQ.yBHnN2n4kqh2cJWJ4-D60pB9LBec9W38Wugiw-fih5A', // Include authorization header if needed
       };
       final response = await http.get(
         uri,
@@ -33,7 +36,7 @@ class ApiService {
     try {
       Map<String, String> headers = {
         'X-auth-token':
-            'bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NTgxMzVhMDgwMjI0ZDMyZjRiMjdhM2EiLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsInBob25lIjoiNzY5Nzg5MTU0NiIsInR5cGUiOiJBRE1JTiIsImlhdCI6MTcwNDEwOTQ2MCwiZXhwIjoxNzA2NzAxNDYwfQ.5dgAojpGc9bt2NOgjmNy4fBllmdglhxCWAa4qVD5lQQ',
+            'bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NTk1MDc0NjRhNWFjYjljMTkwNmRmNzUiLCJlbWFpbCI6ImN1c3RvbWVyQGdtYWlsLmNvbSIsInBob25lIjoiNzY5NDQ4NDU2MiIsInR5cGUiOiJDVVNUT01FUiIsImlhdCI6MTcwNDI2NTk0MCwiZXhwIjoxNzA2ODU3OTQwfQ.yBHnN2n4kqh2cJWJ4-D60pB9LBec9W38Wugiw-fih5A',
       };
 
       // Convert queryParams to a string and append them to the URL
@@ -60,15 +63,13 @@ class ApiService {
       // Adding headers to the request
       Map<String, String> headers = {
         'X-auth-token':
-            'bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NTgxMzVhMDgwMjI0ZDMyZjRiMjdhM2EiLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsInBob25lIjoiNzY5Nzg5MTU0NiIsInR5cGUiOiJBRE1JTiIsImlhdCI6MTcwNDEwOTQ2MCwiZXhwIjoxNzA2NzAxNDYwfQ.5dgAojpGc9bt2NOgjmNy4fBllmdglhxCWAa4qVD5lQQ', // Include authorization header if needed
+            'bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NTk1MDc0NjRhNWFjYjljMTkwNmRmNzUiLCJlbWFpbCI6ImN1c3RvbWVyQGdtYWlsLmNvbSIsInBob25lIjoiNzY5NDQ4NDU2MiIsInR5cGUiOiJDVVNUT01FUiIsImlhdCI6MTcwNDI2NTk0MCwiZXhwIjoxNzA2ODU3OTQwfQ.yBHnN2n4kqh2cJWJ4-D60pB9LBec9W38Wugiw-fih5A', // Include authorization header if needed
       };
-
       final response = await http.post(
         uri,
         headers: headers,
         body: body,
       );
-
       return response;
     } catch (error) {
       throw Exception('Failed to post data: $error');
