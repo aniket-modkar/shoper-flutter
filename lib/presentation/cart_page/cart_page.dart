@@ -319,8 +319,26 @@ class _CartPageState extends State<CartPage> {
     );
   }
 
-  void onTapCheckOut(BuildContext context) {
-    // Implement your checkout logic
+  void onTapCheckOut(BuildContext context) async {
+    try {
+      final response =
+          await _apiService.postDataWithoutBody('api/v1/order/create');
+
+      // if (response.statusCode == 200) {
+      Navigator.pushNamed(context, AppRoutes.orderDetailsScreen);
+      // }
+    } catch (error) {
+      showSnackBar(context, 'An error occurred. Please try again later.');
+    }
+  }
+
+  void showSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: Duration(seconds: 3),
+      ),
+    );
   }
 
   void onTapNotificationIcon(BuildContext context) {

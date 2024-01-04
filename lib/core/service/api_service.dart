@@ -75,4 +75,25 @@ class ApiService {
       throw Exception('Failed to post data: $error');
     }
   }
+
+  Future<http.Response> postDataWithoutBody(
+    String path,
+  ) async {
+    final Uri uri = Uri.parse('$baseUrl$path');
+
+    try {
+      // Adding headers to the request
+      Map<String, String> headers = {
+        'X-auth-token':
+            'bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NTk1MDc0NjRhNWFjYjljMTkwNmRmNzUiLCJlbWFpbCI6ImN1c3RvbWVyQGdtYWlsLmNvbSIsInBob25lIjoiNzY5NDQ4NDU2MiIsInR5cGUiOiJDVVNUT01FUiIsImlhdCI6MTcwNDI2NTk0MCwiZXhwIjoxNzA2ODU3OTQwfQ.yBHnN2n4kqh2cJWJ4-D60pB9LBec9W38Wugiw-fih5A', // Include authorization header if needed
+      };
+      final response = await http.post(
+        uri,
+        headers: headers,
+      );
+      return response;
+    } catch (error) {
+      throw Exception('Failed to post data: $error');
+    }
+  }
 }
