@@ -161,6 +161,16 @@ class ProductGrid extends StatelessWidget {
             product['title'] ?? 'Unknown Product',
             style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
           ),
+          SizedBox(height: 4.0),
+          Text(
+            product['subtitle'] ?? '--',
+            style: TextStyle(fontSize: 14.0),
+          ),
+          SizedBox(height: 4.0),
+          Text(
+            product['description'] ?? '--',
+            style: TextStyle(fontSize: 14.0),
+          ),
           SizedBox(height: 8.0),
           Text(
             'Price: \$${product['currentPrice']}',
