@@ -185,7 +185,6 @@ class LoginScreen extends StatelessWidget {
           );
         }
       } catch (error) {
-        print('Error: $error');
         // Display an error message
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

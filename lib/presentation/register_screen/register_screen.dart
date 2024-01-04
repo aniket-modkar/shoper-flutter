@@ -257,9 +257,7 @@ class RegisterScreen extends StatelessWidget {
             ),
           );
         }
-      } catch (error) {
-        print('Error: $error');
-      }
+      } catch (error) {}
     }
   }
 

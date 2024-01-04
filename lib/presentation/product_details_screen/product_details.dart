@@ -33,7 +33,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     try {
       final response =
           await _apiService.fetchDataWithFilter('api/v1/product/fetch', filter);
-      print('API Response: ${response.body}');
 
       if (response.statusCode == 200) {
         setState(() {
@@ -198,7 +197,6 @@ class ProductGrid extends StatelessWidget {
 
       Navigator.pushNamed(context, AppRoutes.cartPage);
     } catch (error) {
-      print('Error: $error');
       showSnackBar(context, 'An error occurred. Please try again later.');
     }
   }
