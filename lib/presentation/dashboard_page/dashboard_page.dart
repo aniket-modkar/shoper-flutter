@@ -79,7 +79,6 @@ class _DashboardPageState extends State<DashboardPage> {
       try {
         final response = await _apiService.fetchDataWithFilter(
             'api/v1/product/fetch', userData);
-        print('API Response: ${response.body}');
         if (response.statusCode == 200) {
           setState(() {
             fetchedData = FetchedData.fromJson(json.decode(response.body));
@@ -142,7 +141,6 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Widget _buildScaffoldWithContent(Widget content) {
-    print('Building scaffold with content: $content');
     return SafeArea(
       child: Scaffold(
         appBar: _buildAppBar(context),
@@ -457,7 +455,6 @@ class ProductGrid extends StatelessWidget {
       Navigator.pushNamed(context, AppRoutes.cartPage);
       // }
     } catch (error) {
-      print('Error: $error');
       showSnackBar(context, 'An error occurred. Please try again later.');
     }
   }

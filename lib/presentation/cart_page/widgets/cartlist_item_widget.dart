@@ -97,7 +97,6 @@ class CartlistItemWidget extends StatelessWidget {
                       width: 33.h,
                       onTap: () {
                         // Add your function here
-                        print("Minus icon tapped!");
                         removedToCart(context, product);
                         // You can perform any action or call a function when the image is tapped
                       },
@@ -145,7 +144,6 @@ class CartlistItemWidget extends StatelessWidget {
                       width: 33.h,
                       onTap: () {
                         // Add your function here
-                        print("Plus icon tapped!");
                         addToCart(context, product);
                         // You can perform any action or call a function when the image is tapped
                       },
@@ -175,7 +173,6 @@ class CartlistItemWidget extends StatelessWidget {
 
       Navigator.pushNamed(context, AppRoutes.cartPage);
     } catch (error) {
-      print('Error: $error');
       showSnackBar(context, 'An error occurred. Please try again later.');
     }
   }
@@ -194,7 +191,6 @@ class CartlistItemWidget extends StatelessWidget {
 
       Navigator.pushNamed(context, AppRoutes.cartPage);
     } catch (error) {
-      print('Error: $error');
       showSnackBar(context, 'An error occurred. Please try again later.');
     }
   }

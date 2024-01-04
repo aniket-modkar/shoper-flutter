@@ -201,8 +201,6 @@ class _CartPageState extends State<CartPage> {
   }
 
   Widget _buildTotalPriceDetailsColumn(BuildContext context) {
-    print("Fetched Data: ${fetchedData.result}");
-
     if (fetchedData.result.containsKey('cart')) {
       dynamic cartData = fetchedData.result['cart'];
 
@@ -222,16 +220,7 @@ class _CartPageState extends State<CartPage> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Add other shopping price rows here
-                  Divider(),
-                  SizedBox(height: 10.v),
-                  // _buildShoppingPriceRow(
-                  //   context,
-                  //   shippingLabel: "lbl_total_price".tr,
-                  //   priceLabel: cartTotal.toString(),
-                  // ),
-                ],
+                children: [],
               ),
             ),
           ],
@@ -336,12 +325,5 @@ class _CartPageState extends State<CartPage> {
 
   void onTapNotificationIcon(BuildContext context) {
     // Implement your notification icon tap logic
-  }
-
-  Widget buildCartItemWidget(dynamic productData) {
-    return ListTile(
-      title: Text(productData['_id']),
-      // Customize based on your product data structure
-    );
   }
 }
