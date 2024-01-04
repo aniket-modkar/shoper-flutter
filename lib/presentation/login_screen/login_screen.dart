@@ -159,7 +159,7 @@ class LoginScreen extends StatelessWidget {
         // 'password': passwordController.text
         // 'email': 'admin@gmail.com',
         'email': 'customer@gmail.com',
-        'password': '123456'
+        'password': '12345678'
       };
       try {
         final postData = userData;

@@ -103,7 +103,8 @@ class AppRoutes {
 
   static const String orderScreen = 'order_screen';
 
-  static const String orderDetailsScreen = 'order_details_screen';
+  // static const String orderDetailsScreen = 'order_details_screen';
+  static const String orderDetailsScreen = 'orderDetailsScreen';
 
   static const String addAddressScreen = 'add_address_screen';
 
@@ -147,7 +148,7 @@ class AppRoutes {
     // profileScreen: (context) => ProfileScreen(),
     changePasswordScreen: (context) => ChangePasswordScreen(),
     orderScreen: (context) => OrderScreen(),
-    orderDetailsScreen: (context) => OrderDetailsScreen(),
+    // orderDetailsScreen: (context) => OrderDetailsScreen(),
     addAddressScreen: (context) => AddAddressScreen(),
     addressScreen: (context) => AddressScreen(),
     addPaymentScreen: (context) => AddPaymentScreen(),

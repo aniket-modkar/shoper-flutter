@@ -3,10 +3,12 @@ import 'dart:html';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  final String baseUrl = 'https://dev-shoper.technomize.com/';
-  final String imgBaseUrl = 'https://dev-shoper.technomize.com/api/';
-  // final String baseUrl = 'http://localhost:3000/';
-  // final String imgBaseUrl = 'http://localhost:3000/api/';
+  // final String baseUrl = 'https://dev-shoper.technomize.com/';
+  // final String imgBaseUrl = 'https://dev-shoper.technomize.com/api/';
+  final String baseUrl = 'http://localhost:3000/';
+  final String imgBaseUrl = 'http://localhost:3000/api/';
+  final String token =
+      'bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NTk0ZmQwM2EyMjE5NDVjZWJiMzYxOGMiLCJlbWFpbCI6ImN1c3RvbWVyQGdtYWlsLmNvbSIsInBob25lIjoiNzY5NDQ4NDU2MiIsInR5cGUiOiJDVVNUT01FUiIsImlhdCI6MTcwNDM2NDMwMSwiZXhwIjoxNzA2OTU2MzAxfQ.RKkAwzrbewCrZPA1qpqafwEBSrreE8UifjVwqf_K0gI';
 
   ApiService();
 
@@ -14,10 +16,7 @@ class ApiService {
     final Uri uri = Uri.parse('$baseUrl$path');
 
     try {
-      Map<String, String> headers = {
-        'X-auth-token':
-            'bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NTk1MDc0NjRhNWFjYjljMTkwNmRmNzUiLCJlbWFpbCI6ImN1c3RvbWVyQGdtYWlsLmNvbSIsInBob25lIjoiNzY5NDQ4NDU2MiIsInR5cGUiOiJDVVNUT01FUiIsImlhdCI6MTcwNDI2NTk0MCwiZXhwIjoxNzA2ODU3OTQwfQ.yBHnN2n4kqh2cJWJ4-D60pB9LBec9W38Wugiw-fih5A', // Include authorization header if needed
-      };
+      Map<String, String> headers = {'X-auth-token': '${token}'};
       final response = await http.get(
         uri,
         headers: headers,
@@ -34,10 +33,7 @@ class ApiService {
     final Uri uri = Uri.parse('$baseUrl$path');
 
     try {
-      Map<String, String> headers = {
-        'X-auth-token':
-            'bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NTk1MDc0NjRhNWFjYjljMTkwNmRmNzUiLCJlbWFpbCI6ImN1c3RvbWVyQGdtYWlsLmNvbSIsInBob25lIjoiNzY5NDQ4NDU2MiIsInR5cGUiOiJDVVNUT01FUiIsImlhdCI6MTcwNDI2NTk0MCwiZXhwIjoxNzA2ODU3OTQwfQ.yBHnN2n4kqh2cJWJ4-D60pB9LBec9W38Wugiw-fih5A',
-      };
+      Map<String, String> headers = {'X-auth-token': '${token}'};
 
       // Convert queryParams to a string and append them to the URL
       String queryString = Uri(queryParameters: queryParams).query;
@@ -62,8 +58,7 @@ class ApiService {
     try {
       // Adding headers to the request
       Map<String, String> headers = {
-        'X-auth-token':
-            'bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NTk1MDc0NjRhNWFjYjljMTkwNmRmNzUiLCJlbWFpbCI6ImN1c3RvbWVyQGdtYWlsLmNvbSIsInBob25lIjoiNzY5NDQ4NDU2MiIsInR5cGUiOiJDVVNUT01FUiIsImlhdCI6MTcwNDI2NTk0MCwiZXhwIjoxNzA2ODU3OTQwfQ.yBHnN2n4kqh2cJWJ4-D60pB9LBec9W38Wugiw-fih5A', // Include authorization header if needed
+        'X-auth-token': '${token} ' // Include authorization header if needed
       };
       final response = await http.post(
         uri,
@@ -84,8 +79,7 @@ class ApiService {
     try {
       // Adding headers to the request
       Map<String, String> headers = {
-        'X-auth-token':
-            'bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NTk1MDc0NjRhNWFjYjljMTkwNmRmNzUiLCJlbWFpbCI6ImN1c3RvbWVyQGdtYWlsLmNvbSIsInBob25lIjoiNzY5NDQ4NDU2MiIsInR5cGUiOiJDVVNUT01FUiIsImlhdCI6MTcwNDI2NTk0MCwiZXhwIjoxNzA2ODU3OTQwfQ.yBHnN2n4kqh2cJWJ4-D60pB9LBec9W38Wugiw-fih5A', // Include authorization header if needed
+        'X-auth-token': '${token} ' // Include authorization header if needed
       };
       final response = await http.post(
         uri,
