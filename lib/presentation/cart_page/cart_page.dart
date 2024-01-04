@@ -201,60 +201,105 @@ class _CartPageState extends State<CartPage> {
   }
 
   Widget _buildTotalPriceDetailsColumn(BuildContext context) {
+    print("Fetched Data: ${fetchedData.result}");
+
     if (fetchedData.result.containsKey('cart')) {
       dynamic cartData = fetchedData.result['cart'];
-      if (cartData is Map) {
-        final List<dynamic>? products = cartData['products'] as List<dynamic>?;
 
-        if (products != null) {
-          final int cartTotal =
-              int.tryParse(cartData['cartTotal']?.toString() ?? '0') ?? 0;
+      if (cartData is List) {
+        int cartTotal =
+            int.tryParse(fetchedData.result['cartTotal']?.toString() ?? '0') ??
+                0;
 
-          return Container(
-            padding: EdgeInsets.all(15.h),
-            decoration: AppDecoration.outlineBlue50.copyWith(
-              borderRadius: BorderRadiusStyle.roundedBorder5,
+        return Column(
+          children: [
+            for (var cartEntry in cartData) _buildCartEntry(context, cartEntry),
+            Container(
+              padding: EdgeInsets.all(15.h),
+              decoration: AppDecoration.outlineBlue50.copyWith(
+                borderRadius: BorderRadiusStyle.roundedBorder5,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Add other shopping price rows here
+                  Divider(),
+                  SizedBox(height: 10.v),
+                  // _buildShoppingPriceRow(
+                  //   context,
+                  //   shippingLabel: "lbl_total_price".tr,
+                  //   priceLabel: cartTotal.toString(),
+                  // ),
+                ],
+              ),
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _buildShoppingPriceRow(
-                  context,
-                  shippingLabel: "${products.length}".tr,
-                  priceLabel: cartTotal.toString(),
-                ),
-                SizedBox(height: 16.v),
-                _buildShoppingPriceRow(
-                  context,
-                  shippingLabel: "lbl_shipping".tr,
-                  priceLabel: "lbl_40_00".tr,
-                ),
-                SizedBox(height: 14.v),
-                _buildShoppingPriceRow(
-                  context,
-                  shippingLabel: "lbl_import_charges".tr,
-                  priceLabel: "lbl_128_00".tr,
-                ),
-                SizedBox(height: 12.v),
-                Divider(),
-                SizedBox(height: 10.v),
-                _buildShoppingPriceRow(
-                  context,
-                  shippingLabel: "lbl_total_price".tr,
-                  priceLabel: cartTotal.toString(),
-                ),
-              ],
-            ),
-          );
-        } else {
-          return _buildErrorWidget("Products key not found or is not a list");
-        }
+          ],
+        );
       } else {
-        return _buildErrorWidget("Unexpected data type for 'cart'");
+        return _buildErrorWidget(
+            "Unexpected data type for 'cartData': ${cartData.runtimeType}");
       }
     } else {
       return _buildErrorWidget("Cart key not found.");
+    }
+  }
+
+  Widget _buildCartEntry(BuildContext context, dynamic cartEntry) {
+    if (cartEntry is Map) {
+      final List<dynamic>? products = cartEntry['products'] as List<dynamic>?;
+
+      if (products != null) {
+        int cartTotal =
+            int.tryParse(fetchedData.result['cartTotal']?.toString() ?? '0') ??
+                0;
+        return Container(
+          padding: EdgeInsets.all(15.h),
+          decoration: AppDecoration.outlineBlue50.copyWith(
+            borderRadius: BorderRadiusStyle.roundedBorder5,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _buildShoppingPriceRow(
+                context,
+                shippingLabel: "Total Cart item(${products.length})".tr,
+                priceLabel: '₹ ${cartTotal.toString()}.00',
+              ),
+              SizedBox(height: 14.v),
+              Divider(),
+
+              _buildShoppingPriceRow(
+                context,
+                shippingLabel: "lbl_shipping".tr,
+                priceLabel: "₹ 40.00".tr,
+              ),
+              SizedBox(height: 14.v),
+              Divider(),
+              _buildShoppingPriceRow(
+                context,
+                shippingLabel: "lbl_import_charges".tr,
+                priceLabel: " ₹ 128.00".tr,
+              ),
+              SizedBox(height: 12.v),
+              Divider(),
+              _buildShoppingPriceRow(
+                context,
+                shippingLabel: "lbl_total_price".tr,
+                priceLabel: '₹ ${cartTotal.toString()}.00',
+              ),
+
+              // Add other shopping price rows here
+            ],
+          ),
+        );
+      } else {
+        return _buildErrorWidget("Products key not found or is not a list");
+      }
+    } else {
+      return _buildErrorWidget(
+          "Unexpected data type for 'cartEntry': ${cartEntry.runtimeType}");
     }
   }
 
