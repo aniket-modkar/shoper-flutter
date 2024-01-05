@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:shoper_flutter/core/app_export.dart';
 import 'package:shoper_flutter/core/service/api_service.dart';
 import 'package:shoper_flutter/presentation/cart_page/widgets/cartlist_item_widget.dart';
+import 'package:shoper_flutter/presentation/order_details_screen/order_details_screen.dart';
 import 'package:shoper_flutter/widgets/app_bar/appbar_title.dart';
 import 'package:shoper_flutter/widgets/app_bar/appbar_trailing_image.dart';
 import 'package:shoper_flutter/widgets/app_bar/custom_app_bar.dart';
@@ -319,8 +320,34 @@ class _CartPageState extends State<CartPage> {
     );
   }
 
-  void onTapCheckOut(BuildContext context) {
-    // Implement your checkout logic
+  void onTapCheckOut(BuildContext context) async {
+    try {
+      final response =
+          await _apiService.postDataWithoutBody('api/v1/order/create');
+
+      if (response.statusCode == 202) {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        final String orderId = responseData['result']['orderId'];
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => OrderDetailsScreen(orderId: orderId),
+          ),
+        );
+      }
+    } catch (error) {
+      showSnackBar(context, 'An error occurred. Please try again later.');
+    }
+  }
+
+  void showSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: Duration(seconds: 3),
+      ),
+    );
   }
 
   void onTapNotificationIcon(BuildContext context) {

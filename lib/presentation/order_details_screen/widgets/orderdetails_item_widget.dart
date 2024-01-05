@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:shoper_flutter/core/app_export.dart';
+import 'package:shoper_flutter/core/service/api_service.dart';
 
 // ignore: must_be_immutable
+
 class OrderdetailsItemWidget extends StatelessWidget {
-  const OrderdetailsItemWidget({Key? key})
-      : super(
-          key: key,
-        );
+  final dynamic product;
+
+  const OrderdetailsItemWidget({Key? key, required this.product})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final ApiService _apiService = ApiService();
+    String baseUrl = _apiService.imgBaseUrl;
     return Container(
       padding: EdgeInsets.symmetric(vertical: 14.v),
       decoration: AppDecoration.outlineBlue.copyWith(
@@ -19,12 +23,12 @@ class OrderdetailsItemWidget extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           CustomImageView(
-            imagePath: ImageConstant.imgImageProduct,
+            imagePath: product.containsKey('media') && product['media'] is List
+                ? baseUrl + (product['media'][0] as String)
+                : ImageConstant.imgImageProduct,
             height: 72.adaptSize,
             width: 72.adaptSize,
-            radius: BorderRadius.circular(
-              5.h,
-            ),
+            radius: BorderRadius.circular(5.h),
             margin: EdgeInsets.symmetric(vertical: 1.v),
           ),
           Column(
@@ -36,7 +40,7 @@ class OrderdetailsItemWidget extends StatelessWidget {
                   SizedBox(
                     width: 150.h,
                     child: Text(
-                      "msg_nike_air_zoom_pegasus".tr,
+                      product['name'],
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.labelLarge!.copyWith(
@@ -71,56 +75,20 @@ class OrderdetailsItemWidget extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "lbl_299_43".tr,
+                      "${product['price']}",
                       style: CustomTextStyles.labelLargePrimary,
                     ),
                     Spacer(),
-                    CustomImageView(
-                      imagePath: ImageConstant.imgFolder,
-                      height: 20.v,
-                      width: 33.h,
-                    ),
-                    SizedBox(
-                      height: 20.v,
-                      width: 41.h,
-                      child: Stack(
-                        alignment: Alignment.topRight,
-                        children: [
-                          Align(
-                            alignment: Alignment.center,
-                            child: Container(
-                              height: 20.v,
-                              width: 41.h,
-                              decoration: BoxDecoration(
-                                color: appTheme.blue50,
-                                border: Border.all(
-                                  color: appTheme.blue50,
-                                  width: 1.h,
-                                  strokeAlign: strokeAlignCenter,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Align(
-                            alignment: Alignment.topRight,
-                            child: Opacity(
-                              opacity: 0.5,
-                              child: Padding(
-                                padding: EdgeInsets.only(right: 17.h),
-                                child: Text(
-                                  "lbl_1".tr,
-                                  style: CustomTextStyles.bodySmallOnPrimary_2,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    CustomImageView(
-                      imagePath: ImageConstant.imgPlus,
-                      height: 20.v,
-                      width: 33.h,
+                    // CustomImageView(
+                    //   imagePath: ImageConstant.imgFolder,
+                    //   height: 20.v,
+                    //   width: 33.h,
+                    // ),
+                    // ... Other widgets as needed
+
+                    Text(
+                      "${product['quantity']}",
+                      style: CustomTextStyles.labelLargePrimary,
                     ),
                   ],
                 ),
