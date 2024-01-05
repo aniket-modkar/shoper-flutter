@@ -3,12 +3,12 @@ import 'dart:html';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  // final String baseUrl = 'https://dev-shoper.technomize.com/';
-  // final String imgBaseUrl = 'https://dev-shoper.technomize.com/api/';
-  final String baseUrl = 'http://localhost:3000/';
-  final String imgBaseUrl = 'http://localhost:3000/api/';
+  final String baseUrl = 'https://dev-shoper.technomize.com/';
+  final String imgBaseUrl = 'https://dev-shoper.technomize.com/api/';
+  // final String baseUrl = 'http://localhost:3000/';
+  // final String imgBaseUrl = 'http://localhost:3000/api/';
   final String token =
-      'bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NTk0ZmQwM2EyMjE5NDVjZWJiMzYxOGMiLCJlbWFpbCI6ImN1c3RvbWVyQGdtYWlsLmNvbSIsInBob25lIjoiNzY5NDQ4NDU2MiIsInR5cGUiOiJDVVNUT01FUiIsImlhdCI6MTcwNDM2NDMwMSwiZXhwIjoxNzA2OTU2MzAxfQ.RKkAwzrbewCrZPA1qpqafwEBSrreE8UifjVwqf_K0gI';
+      'bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NTk1MDc0NjRhNWFjYjljMTkwNmRmNzUiLCJlbWFpbCI6ImN1c3RvbWVyQGdtYWlsLmNvbSIsInBob25lIjoiNzY5NDQ4NDU2MiIsInR5cGUiOiJDVVNUT01FUiIsImlhdCI6MTcwNDQ0MDIwMiwiZXhwIjoxNzA3MDMyMjAyfQ.1uCXfLGgbLIKqFbpgH57VhzDZDTrLGcAfjbWK2IDhbo';
 
   ApiService();
 

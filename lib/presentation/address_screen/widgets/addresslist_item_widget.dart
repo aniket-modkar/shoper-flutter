@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:shoper_flutter/core/app_export.dart';
 
-// ignore: must_be_immutable
 class AddresslistItemWidget extends StatelessWidget {
-  const AddresslistItemWidget({Key? key})
-      : super(
-          key: key,
-        );
+  final dynamic addressData;
+
+  AddresslistItemWidget({Key? key, required this.addressData})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final Map<String, dynamic> countryId = addressData['countryId'];
+
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal: 23.h,
@@ -24,15 +25,15 @@ class AddresslistItemWidget extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            "lbl_priscekila".tr,
-            style: theme.textTheme.titleSmall,
+            "${addressData['firstName']} ${addressData['lastName']}".tr,
+            style: theme.textTheme.titleSmall, // Make sure 'theme' is defined
           ),
           SizedBox(height: 19.v),
           Container(
             width: 264.h,
             margin: EdgeInsets.only(right: 30.h),
             child: Text(
-              "msg_3711_spring_hill".tr,
+              "Type: ${addressData['type']}".tr,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: theme.textTheme.bodySmall!.copyWith(
@@ -42,7 +43,13 @@ class AddresslistItemWidget extends StatelessWidget {
           ),
           SizedBox(height: 20.v),
           Text(
-            "lbl_99_1234567890".tr,
+            "${addressData['address1']} ${addressData['city']},${addressData['postalCode']}"
+                .tr,
+            style: theme.textTheme.bodySmall,
+          ),
+          SizedBox(height: 19.v),
+          Text(
+            "Country Name: ${countryId['displayName']}",
             style: theme.textTheme.bodySmall,
           ),
           SizedBox(height: 19.v),
@@ -52,12 +59,10 @@ class AddresslistItemWidget extends StatelessWidget {
                 "lbl_edit".tr,
                 style: CustomTextStyles.titleSmallPrimary,
               ),
-              Padding(
-                padding: EdgeInsets.only(left: 32.h),
-                child: Text(
-                  "lbl_delete".tr,
-                  style: CustomTextStyles.titleSmallPink300,
-                ),
+              SizedBox(width: 32.h),
+              Text(
+                "lbl_delete".tr,
+                style: CustomTextStyles.titleSmallPink300,
               ),
             ],
           ),
