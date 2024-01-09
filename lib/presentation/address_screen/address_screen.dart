@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shoper_flutter/core/app_export.dart';
 import 'package:shoper_flutter/core/service/api_service.dart';
+import 'package:shoper_flutter/presentation/add_address_screen/add_address_screen.dart';
 import 'package:shoper_flutter/presentation/address_screen/widgets/addresslist_item_widget.dart';
 import 'package:shoper_flutter/widgets/app_bar/appbar_leading_image.dart';
 import 'package:shoper_flutter/widgets/app_bar/appbar_subtitle.dart';
@@ -184,7 +185,19 @@ class _AddressScreenState extends State<AddressScreen> {
     return CustomElevatedButton(
       text: "lbl_add_address".tr,
       margin: EdgeInsets.only(left: 16.h, right: 16.h, bottom: 50.v),
+      onPressed: () {
+        navigateToAddressScreen(context);
+      },
     );
+  }
+
+  void navigateToAddressScreen(BuildContext context) {
+    // Navigator.pushNamed(context, AppRoutes.addAddressScreen);
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) =>
+                AddAddressScreen(addressData: {'key': 'value'})));
   }
 
   void onTapArrowLeft(BuildContext context) {}
