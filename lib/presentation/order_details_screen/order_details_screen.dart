@@ -46,10 +46,6 @@ class FetchedData {
 }
 
 class OrderDetailsScreen extends StatefulWidget {
-  final String orderId;
-
-  const OrderDetailsScreen({Key? key, required this.orderId}) : super(key: key);
-
   @override
   _OrderDetailsScreenState createState() => _OrderDetailsScreenState();
 }
@@ -62,17 +58,31 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   @override
   void initState() {
     super.initState();
-    fetchData();
+
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
+      // Accessing the arguments and calling fetchData
+      Map<String, dynamic>? arguments =
+          ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
+
+      if (arguments != null && arguments.containsKey('orderId')) {
+        String orderId = arguments['orderId'];
+        print(orderId);
+        // Await the fetchData method
+        fetchData(orderId);
+      }
+    });
   }
 
-  Future<void> fetchData() async {
+  Future<void> fetchData(String orderId) async {
     if (!isDataFetched) {
       try {
-        final String orderId = widget.orderId;
+        print('Fetching data for orderId: $orderId');
         final userData = {'orderId': orderId};
-
         final response = await _apiService.fetchDataWithFilter(
-            'api/v1/order/customerOrders', userData);
+          'api/v1/order/customerOrders',
+          userData,
+        );
+
         if (response.statusCode == 202) {
           setState(() {
             fetchedData = FetchedData.fromJson(json.decode(response.body));
@@ -100,7 +110,9 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    mediaQueryData = MediaQuery.of(context);
+    MediaQueryData mediaQueryData =
+        MediaQuery.of(context); // Assign a value to mediaQueryData
+
     if (!isDataFetched) {
       return Scaffold(
         body: Center(
@@ -110,29 +122,39 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     }
 
     return SafeArea(
-        child: Scaffold(
-            appBar: _buildAppBar(context),
-            body: Container(
-                width: double.maxFinite,
-                padding: EdgeInsets.symmetric(vertical: 10.v),
-                child: Column(children: [
-                  SizedBox(height: 27.v),
-                  Expanded(
-                      child: SingleChildScrollView(
-                          child: Padding(
-                              padding: EdgeInsets.only(
-                                  left: 15.h, right: 15.h, bottom: 5.v),
-                              child: Column(children: [
-                                _buildTracking(context),
-                                SizedBox(height: 24.v),
-                                _buildProduct(context),
-                                SizedBox(height: 24.v),
-                                _buildShippingDetails(context),
-                                SizedBox(height: 46.v),
-                                _buildPaymentDetails(context)
-                              ]))))
-                ])),
-            bottomNavigationBar: _buildNotifyMe(context)));
+      child: Scaffold(
+        appBar: _buildAppBar(context),
+        body: Container(
+          width: double.maxFinite,
+          padding: EdgeInsets.symmetric(vertical: 10.v),
+          child: Column(
+            children: [
+              SizedBox(height: 27.v),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding:
+                        EdgeInsets.only(left: 15.h, right: 15.h, bottom: 5.v),
+                    child: Column(
+                      children: [
+                        _buildTracking(context),
+                        SizedBox(height: 24.v),
+                        _buildProduct(context),
+                        SizedBox(height: 24.v),
+                        _buildShippingDetails(context),
+                        SizedBox(height: 46.v),
+                        _buildPaymentDetails(context),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        bottomNavigationBar: _buildNotifyMe(context),
+      ),
+    );
   }
 
   /// Section Widget

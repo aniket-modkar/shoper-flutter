@@ -462,16 +462,13 @@ class _CartPageState extends State<CartPage> {
     try {
       final response =
           await _apiService.postDataWithoutBody('api/v1/order/create');
-
       if (response.statusCode == 202) {
         final Map<String, dynamic> responseData = json.decode(response.body);
         final String orderId = responseData['result']['orderId'];
-
-        Navigator.push(
+        Navigator.pushNamed(
           context,
-          MaterialPageRoute(
-            builder: (context) => OrderDetailsScreen(orderId: orderId),
-          ),
+          AppRoutes.orderDetailsScreen,
+          arguments: {'orderId': orderId},
         );
       }
     } catch (error) {
