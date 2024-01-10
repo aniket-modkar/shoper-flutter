@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shoper_flutter/core/app_export.dart';
 import 'package:shoper_flutter/presentation/address_screen/address_screen.dart';
+import 'package:shoper_flutter/presentation/order_screen/order_screen.dart';
 import 'package:shoper_flutter/widgets/app_bar/appbar_title.dart';
 import 'package:shoper_flutter/widgets/app_bar/appbar_trailing_image.dart';
 import 'package:shoper_flutter/widgets/app_bar/custom_app_bar.dart';
@@ -33,7 +34,7 @@ class AccountPage extends StatelessWidget {
                 bagIconImage: ImageConstant.imgBagIcon,
                 orderText: "lbl_order".tr,
                 onTapAccountOptionOrder: () {
-                  Navigator.pushNamed(context, AppRoutes.orderScreen);
+                  onTapAccountOption(context, "lbl_order");
                 },
               ),
               _buildAccountOptionOrder(
@@ -120,6 +121,11 @@ class AccountPage extends StatelessWidget {
       case "lbl_profile":
         // Navigate to the profile screen or any other screen as needed
         Navigator.pushNamed(context, AppRoutes.profileScreen);
+        break;
+      case "lbl_order":
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => OrderScreen()));
+        // Navigator.pushNamed(context, AppRoutes.addressScreen);
         break;
       case "lbl_address":
         Navigator.push(

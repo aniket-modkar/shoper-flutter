@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:shoper_flutter/core/app_export.dart';
 
 // ignore: must_be_immutable
 class OrderlistItemWidget extends StatelessWidget {
-  const OrderlistItemWidget({Key? key})
+  final dynamic order;
+  const OrderlistItemWidget({Key? key, required this.order})
       : super(
           key: key,
         );
 
   @override
   Widget build(BuildContext context) {
+    DateTime createdAt = DateTime.parse(order['createdAt']);
+    String formattedDate = DateFormat.yMMMMd().format(createdAt);
     return Container(
       padding: EdgeInsets.symmetric(vertical: 4.v),
       decoration: AppDecoration.outlineBlue.copyWith(
@@ -37,7 +41,7 @@ class OrderlistItemWidget extends StatelessWidget {
               child: Padding(
                 padding: EdgeInsets.only(left: 16.h),
                 child: Text(
-                  "msg_order_at_e_com".tr,
+                  "Order at E-com ${formattedDate}".tr,
                   style: CustomTextStyles.bodySmallOnPrimary_1,
                 ),
               ),
@@ -62,7 +66,7 @@ class OrderlistItemWidget extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  "lbl_shipping".tr,
+                  "${order['status']}".tr,
                   style: CustomTextStyles.bodySmallOnPrimary,
                 ),
               ],
@@ -85,7 +89,7 @@ class OrderlistItemWidget extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  "msg_1_items_purchased".tr,
+                  "${order['products'].length}items purchased".tr,
                   style: CustomTextStyles.bodySmallOnPrimary,
                 ),
               ],
@@ -105,7 +109,7 @@ class OrderlistItemWidget extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  "lbl_299_43".tr,
+                  "₹ ${order['orderTotal']}".tr,
                   style: CustomTextStyles.labelLargePrimary,
                 ),
               ],
