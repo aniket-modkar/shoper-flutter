@@ -301,6 +301,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
 
         // Extract relevant data for shipping details
         var billingAddress = order['billingAddress'];
+        var countryDetails = billingAddress['countryId'];
         DateTime createdAt = DateTime.parse(billingAddress['createdAt']);
         String formattedDate = DateFormat.yMMMMd().format(createdAt);
 
@@ -343,7 +344,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                 _buildShipping(context,
                     shippingLabel: '-',
                     pOSReggular:
-                        "${billingAddress['city']}, ${billingAddress['postalCode']}, ${billingAddress['countryId']}")
+                        "${billingAddress['city']}, ${billingAddress['postalCode']}, ${countryDetails['displayName']}")
               ],
             ),
           ),
