@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shoper_flutter/core/app_export.dart';
 import 'package:shoper_flutter/core/service/api_service.dart';
+import 'package:shoper_flutter/presentation/address_screen/address_screen.dart';
+import 'package:shoper_flutter/presentation/address_screen/widgets/addresslist_item_widget.dart';
 import 'package:shoper_flutter/presentation/cart_page/widgets/cartlist_item_widget.dart';
 import 'package:shoper_flutter/presentation/order_details_screen/order_details_screen.dart';
 import 'package:shoper_flutter/widgets/app_bar/appbar_title.dart';
@@ -42,6 +44,37 @@ class FetchedData {
   }
 }
 
+class FetchedAddressData {
+  final String message;
+  final String responseCode;
+  final Map<String, dynamic> result;
+  final int totalCounts;
+  final int statusCode;
+
+  FetchedAddressData({
+    required this.message,
+    required this.responseCode,
+    required this.result,
+    required this.totalCounts,
+    required this.statusCode,
+  });
+
+  factory FetchedAddressData.fromJson(Map<String, dynamic> json) {
+    return FetchedAddressData(
+      message: json['message'] ?? '',
+      responseCode: json['responseCode'] ?? '',
+      result: json['result'] ?? {},
+      totalCounts: json['totalCounts'] ?? 0,
+      statusCode: json['statusCode'] ?? 0,
+    );
+  }
+
+  @override
+  String toString() {
+    return 'FetchedData { message: $message, responseCode: $responseCode, result: $result, totalCounts: $totalCounts, statusCode: $statusCode }';
+  }
+}
+
 class CartPage extends StatefulWidget {
   CartPage({Key? key}) : super(key: key);
 
@@ -52,12 +85,16 @@ class CartPage extends StatefulWidget {
 class _CartPageState extends State<CartPage> {
   final ApiService _apiService = ApiService();
   late FetchedData fetchedData;
+  late FetchedAddressData fetchedAddressData;
+
   bool isDataFetched = false;
+  bool isAddressDataFetched = false;
 
   @override
   void initState() {
     super.initState();
     fetchData();
+    fetchAddressData();
   }
 
   Future<void> fetchData() async {
@@ -82,6 +119,41 @@ class _CartPageState extends State<CartPage> {
             statusCode: 0,
           );
         });
+      }
+    }
+  }
+
+  Future<void> fetchAddressData() async {
+    if (!isAddressDataFetched) {
+      try {
+        final response = await _apiService.fetchData('api/v1/address/fetch');
+        if (response.statusCode == 200) {
+          if (mounted) {
+            setState(() {
+              fetchedAddressData =
+                  FetchedAddressData.fromJson(json.decode(response.body));
+              isAddressDataFetched = true;
+            });
+          }
+          print('Fetched Data: $fetchedData');
+        } else {
+          // Handle non-200 status code
+          print('Error: ${response.statusCode}');
+        }
+      } catch (error) {
+        // Handle errors
+        print('Error: $error');
+        if (mounted) {
+          setState(() {
+            fetchedAddressData = FetchedAddressData(
+              message: 'Error: $error',
+              responseCode: '',
+              result: {},
+              totalCounts: 0,
+              statusCode: 0,
+            );
+          });
+        }
       }
     }
   }
@@ -111,6 +183,8 @@ class _CartPageState extends State<CartPage> {
               SizedBox(height: 52.v),
               _buildCouponCodeRow(context),
               SizedBox(height: 16.v),
+              _buildAddressList(context),
+              SizedBox(height: 20.v),
               _buildTotalPriceDetailsColumn(context),
               SizedBox(height: 16.v),
               CustomElevatedButton(
@@ -198,6 +272,70 @@ class _CartPageState extends State<CartPage> {
           buttonTextStyle: CustomTextStyles.labelLargeOnPrimaryContainer,
         ),
       ],
+    );
+  }
+
+  Widget _buildAddressList(BuildContext context) {
+    if (fetchedAddressData.result.containsKey('addresses')) {
+      dynamic addressData = fetchedAddressData.result['addresses'];
+      print(addressData);
+
+      if (addressData is List && addressData.isNotEmpty) {
+        return Expanded(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.h),
+            child: ListView.separated(
+              physics: BouncingScrollPhysics(),
+              shrinkWrap: true,
+              separatorBuilder: (context, index) {
+                return SizedBox(height: 12.v);
+              },
+              itemCount: addressData.length,
+              itemBuilder: (context, index) {
+                return AddresslistItemSelectionWidget(
+                  addressData: addressData[index],
+                );
+              },
+            ),
+          ),
+        );
+      } else {
+        // Display "Add Address" button when there are no addresses
+        return buildAddAddressButton(context);
+      }
+    } else {
+      return _buildErrorWidget("Address key not found.");
+    }
+  }
+
+  Widget buildAddAddressButton(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () {
+        // Add logic to navigate or perform actions for adding an address
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => AddressScreen()),
+        );
+      },
+      child: Row(
+        mainAxisAlignment:
+            MainAxisAlignment.center, // Center the children horizontally
+        children: [
+          Text(
+            "Add Address",
+            style: TextStyle(
+              // Add default styling here
+              fontSize: 16.0, // Example font size, adjust as needed
+              fontWeight: FontWeight.bold,
+              color: Colors.white, // Example text color, adjust as needed
+            ),
+          ),
+          SizedBox(width: 8.h), // Adjust the spacing if needed
+        ],
+      ),
+      style: ElevatedButton.styleFrom(
+          // Add styling properties if needed
+          ),
     );
   }
 
@@ -352,5 +490,131 @@ class _CartPageState extends State<CartPage> {
 
   void onTapNotificationIcon(BuildContext context) {
     // Implement your notification icon tap logic
+  }
+}
+
+class AddresslistItemSelectionWidget extends StatelessWidget {
+  final dynamic addressData;
+  final ApiService _apiService = ApiService();
+
+  AddresslistItemSelectionWidget({Key? key, required this.addressData})
+      : super(key: key);
+  Widget build(BuildContext context) {
+    final Map<String, dynamic> countryId = addressData['countryId'];
+
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: 23.h,
+        vertical: 21.v,
+      ),
+      decoration: AppDecoration.outlinePrimary.copyWith(
+        borderRadius: BorderRadiusStyle.roundedBorder5,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            "${addressData['firstName']} ${addressData['lastName']}".tr,
+            style: theme.textTheme.titleSmall, // Make sure 'theme' is defined
+          ),
+          SizedBox(height: 19.v),
+          Container(
+            width: 264.h,
+            margin: EdgeInsets.only(right: 30.h),
+            child: Text(
+              "Type: ${addressData['type']}".tr,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.bodySmall!.copyWith(
+                height: 1.80,
+              ),
+            ),
+          ),
+          SizedBox(height: 20.v),
+          Text(
+            "${addressData['address1']} ${addressData['city']},${addressData['postalCode']}"
+                .tr,
+            style: theme.textTheme.bodySmall,
+          ),
+          SizedBox(height: 19.v),
+          Text(
+            "Country Name: ${countryId['displayName']}",
+            style: theme.textTheme.bodySmall,
+          ),
+          SizedBox(height: 19.v),
+          Row(
+            children: [
+              GestureDetector(
+                onTap: () {
+                  onSelectPressed(context, addressData['_id']);
+                },
+                child: Text(
+                  "Select Address".tr,
+                  style: CustomTextStyles.titleSmallPrimary,
+                ),
+              ),
+              SizedBox(width: 32.h),
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  void onSelectPressed(BuildContext context, String address) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirmation'),
+          content: Text('Are you sure you want to Select this address?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.of(context).pop(); // Close the dialog
+
+                try {
+                  final userData = {
+                    'billingAddressId': address,
+                    'shippingAddressId': address
+                  };
+                  final response = await _apiService.postData(
+                      'api/v1/cart/setAddress', userData);
+
+                  if (response.statusCode == 200) {
+                    Navigator.pushNamed(context, AppRoutes.cartPage);
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Failed. Please check.'),
+                        duration: Duration(seconds: 3),
+                      ),
+                    );
+                  }
+                } catch (error) {
+                  // Display an error message
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content:
+                          Text('An error occurred. Please try again later.'),
+                      duration: Duration(seconds: 3),
+                    ),
+                  );
+                }
+              },
+              child: Text('Delete'),
+            ),
+          ],
+        );
+      },
+    );
   }
 }
