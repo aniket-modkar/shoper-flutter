@@ -71,6 +71,26 @@ class ApiService {
     }
   }
 
+  Future<http.Response> deteleData(
+    String path,
+  ) async {
+    final Uri uri = Uri.parse('$baseUrl$path');
+
+    try {
+      // Adding headers to the request
+      Map<String, String> headers = {
+        'X-auth-token': '${token} ' // Include authorization header if needed
+      };
+      final response = await http.post(
+        uri,
+        headers: headers,
+      );
+      return response;
+    } catch (error) {
+      throw Exception('Failed to post data: $error');
+    }
+  }
+
   Future<http.Response> postDataWithoutBody(
     String path,
   ) async {
