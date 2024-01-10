@@ -1,0 +1,55 @@
+name: shoper_flutter
+description: A new Flutter project.
+version: 1.0.0+1
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  provider: ^6.0.5
+  cached_network_image: ^3.2.1
+  flutter_svg: ^1.1.6
+  flutter_rating_bar: ^4.0.0
+  carousel_slider: ^4.0.0
+  smooth_page_indicator: ^1.0.0+2
+  intl: ^0.18.0
+  shared_preferences: ^2.0.8
+  http: ^1.1.2
+  dio: ^4.0.6 
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  # flutter_lints: ^2.0.0
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/
+    - assets/images/
+  fonts:
+    - family: Poppins
+      fonts:
+        - asset: assets/fonts/PoppinsRegular.ttf
+          weight: 400
+        - asset: assets/fonts/PoppinsBold.ttf
+          weight: 700
+        - asset: assets/fonts/PoppinsSemiBold.ttf
+          weight: 600
+# name: shoper
+# description: "A new Flutter project."
+# version: 1.0.0+1
+
+# environment:
+#   sdk: '>=3.2.2 <4.0.0'
+# dependencies:
+#   flutter:
+#     sdk: flutter
+#   cupertino_icons: ^1.0.2
+#   form_field_validator: ^1.1.0
+# dev_dependencies:
+#   flutter_test:
+#     sdk: flutter
+#   flutter_lints: ^2.0.0
+# flutter:
+#   uses-material-design: true
