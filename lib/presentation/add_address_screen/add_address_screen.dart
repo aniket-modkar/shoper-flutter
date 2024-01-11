@@ -373,6 +373,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
   }
 
   Widget _buildAddAddress(BuildContext context) {
+    print('add line: ${widget.addressData}');
     final buttonText =
         widget.addressData.isNotEmpty ? "Update".tr : "lbl_add_address".tr;
 
@@ -385,7 +386,9 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
     );
   }
 
-  void onTapArrowLeft(BuildContext context) {}
+  void onTapArrowLeft(BuildContext context) {
+    Navigator.pop(context);
+  }
 
   Future<void> onTapAddAddress(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
@@ -405,17 +408,9 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
         final response =
             await _apiService.postData('api/v1/address/create', postData);
 
-        // if (response.statusCode == 200) {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => AddressScreen()));
-        // } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('failed. Please check .'),
-            duration: Duration(seconds: 3),
-          ),
-        );
-        // }
+        if (response.statusCode == 201) {
+          Navigator.pop(context);
+        }
       } catch (error) {
         // Display an error message
         ScaffoldMessenger.of(context).showSnackBar(
@@ -426,9 +421,5 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
         );
       }
     }
-  }
-
-  void onTapTxtDonthaveanaccount(BuildContext context) {
-    Navigator.pushNamed(context, AppRoutes.registerScreen);
   }
 }

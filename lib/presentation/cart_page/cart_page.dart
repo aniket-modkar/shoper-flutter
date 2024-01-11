@@ -135,14 +135,9 @@ class _CartPageState extends State<CartPage> {
               isAddressDataFetched = true;
             });
           }
-          print('Fetched Data: $fetchedData');
-        } else {
-          // Handle non-200 status code
-          print('Error: ${response.statusCode}');
         }
       } catch (error) {
         // Handle errors
-        print('Error: $error');
         if (mounted) {
           setState(() {
             fetchedAddressData = FetchedAddressData(
@@ -278,8 +273,6 @@ class _CartPageState extends State<CartPage> {
   Widget _buildAddressList(BuildContext context) {
     if (fetchedAddressData.result.containsKey('addresses')) {
       dynamic addressData = fetchedAddressData.result['addresses'];
-      print(addressData);
-
       if (addressData is List && addressData.isNotEmpty) {
         return Expanded(
           child: Padding(
@@ -401,14 +394,14 @@ class _CartPageState extends State<CartPage> {
               _buildShoppingPriceRow(
                 context,
                 shippingLabel: "lbl_shipping".tr,
-                priceLabel: "₹ 40.00".tr,
+                priceLabel: "₹ 00.00".tr,
               ),
               SizedBox(height: 14.v),
               Divider(),
               _buildShoppingPriceRow(
                 context,
                 shippingLabel: "lbl_import_charges".tr,
-                priceLabel: " ₹ 128.00".tr,
+                priceLabel: " ₹ 00.00".tr,
               ),
               SizedBox(height: 12.v),
               Divider(),
@@ -462,16 +455,13 @@ class _CartPageState extends State<CartPage> {
     try {
       final response =
           await _apiService.postDataWithoutBody('api/v1/order/create');
-
       if (response.statusCode == 202) {
         final Map<String, dynamic> responseData = json.decode(response.body);
         final String orderId = responseData['result']['orderId'];
-
-        Navigator.push(
+        Navigator.pushNamed(
           context,
-          MaterialPageRoute(
-            builder: (context) => OrderDetailsScreen(orderId: orderId),
-          ),
+          AppRoutes.orderDetailsScreen,
+          arguments: {'orderId': orderId},
         );
       }
     } catch (error) {
@@ -563,58 +553,33 @@ class AddresslistItemSelectionWidget extends StatelessWidget {
     );
   }
 
-  void onSelectPressed(BuildContext context, String address) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Confirmation'),
-          content: Text('Are you sure you want to Select this address?'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
-              child: Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () async {
-                Navigator.of(context).pop(); // Close the dialog
+  void onSelectPressed(BuildContext context, String address) async {
+    try {
+      final userData = {
+        'billingAddressId': address,
+        'shippingAddressId': address
+      };
+      final response =
+          await _apiService.postData('api/v1/cart/setAddress', userData);
 
-                try {
-                  final userData = {
-                    'billingAddressId': address,
-                    'shippingAddressId': address
-                  };
-                  final response = await _apiService.postData(
-                      'api/v1/cart/setAddress', userData);
-
-                  if (response.statusCode == 200) {
-                    Navigator.pushNamed(context, AppRoutes.cartPage);
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Failed. Please check.'),
-                        duration: Duration(seconds: 3),
-                      ),
-                    );
-                  }
-                } catch (error) {
-                  // Display an error message
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content:
-                          Text('An error occurred. Please try again later.'),
-                      duration: Duration(seconds: 3),
-                    ),
-                  );
-                }
-              },
-              child: Text('Delete'),
-            ),
-          ],
+      if (response.statusCode == 200) {
+        Navigator.pushNamed(context, AppRoutes.cartPage);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed. Please check.'),
+            duration: Duration(seconds: 3),
+          ),
         );
-      },
-    );
+      }
+    } catch (error) {
+      // Display an error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('An error occurred. Please try again later.'),
+          duration: Duration(seconds: 3),
+        ),
+      );
+    }
   }
 }
