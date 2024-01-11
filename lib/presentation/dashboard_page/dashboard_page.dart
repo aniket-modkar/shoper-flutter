@@ -101,6 +101,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
   @override
   Widget build(BuildContext context) {
+    mediaQueryData = MediaQuery.of(context);
     return FutureBuilder(
       future: fetchData(),
       builder: (context, snapshot) {

@@ -72,7 +72,6 @@ class _OrderScreenState extends State<OrderScreen> {
               isDataFetched = true;
             });
           }
-          print('Fetched Data: $fetchedData');
         } else {
           // Handle non-200 status code
           print('Error: ${response.statusCode}');
@@ -119,7 +118,6 @@ class _OrderScreenState extends State<OrderScreen> {
                 itemCount: orders.length,
                 itemBuilder: (context, index) {
                   var order = orders[index];
-                  print('orderData:${orders}');
                   return OrderlistItemWidget(
                     order: order,
                   );
@@ -149,5 +147,7 @@ class _OrderScreenState extends State<OrderScreen> {
             text: "lbl_order".tr, margin: EdgeInsets.only(left: 12.h)));
   }
 
-  void onTapArrowLeft(BuildContext context) {}
+  void onTapArrowLeft(BuildContext context) {
+    Navigator.pop(context);
+  }
 }

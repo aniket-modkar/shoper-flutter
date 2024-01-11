@@ -66,7 +66,6 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
 
       if (arguments != null && arguments.containsKey('orderId')) {
         String orderId = arguments['orderId'];
-        print(orderId);
         // Await the fetchData method
         fetchData(orderId);
       }
@@ -76,7 +75,6 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   Future<void> fetchData(String orderId) async {
     if (!isDataFetched) {
       try {
-        print('Fetching data for orderId: $orderId');
         final userData = {'orderId': orderId};
         final response = await _apiService.fetchDataWithFilter(
           'api/v1/order/customerOrders',
@@ -90,7 +88,6 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
           });
 
           // Print the fetched data
-          print('Fetched Data: $fetchedData');
         } else {
           // Handle non-200 status code, if needed
         }
@@ -490,5 +487,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     ]);
   }
 
-  void onTapArrowLeft(BuildContext context) {}
+  void onTapArrowLeft(BuildContext context) {
+    Navigator.pushNamed(context, AppRoutes.dashboardPage);
+  }
 }

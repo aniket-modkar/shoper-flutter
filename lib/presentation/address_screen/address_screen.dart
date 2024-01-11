@@ -71,7 +71,6 @@ class _AddressScreenState extends State<AddressScreen> {
               isDataFetched = true;
             });
           }
-          print('Fetched Data: $fetchedData');
         } else {
           // Handle non-200 status code
           print('Error: ${response.statusCode}');
@@ -144,7 +143,6 @@ class _AddressScreenState extends State<AddressScreen> {
   Widget _buildAddressList(BuildContext context) {
     if (fetchedData.result.containsKey('addresses')) {
       dynamic addressData = fetchedData.result['addresses'];
-      print(addressData);
       if (addressData is List) {
         return Expanded(
           child: Padding(
@@ -196,9 +194,10 @@ class _AddressScreenState extends State<AddressScreen> {
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) =>
-                AddAddressScreen(addressData: {'key': 'value'})));
+            builder: (context) => AddAddressScreen(addressData: null)));
   }
 
-  void onTapArrowLeft(BuildContext context) {}
+  void onTapArrowLeft(BuildContext context) {
+    Navigator.pop(context);
+  }
 }

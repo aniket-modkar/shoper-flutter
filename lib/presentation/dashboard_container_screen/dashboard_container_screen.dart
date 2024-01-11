@@ -11,31 +11,33 @@ import 'package:shoper_flutter/widgets/custom_bottom_bar.dart';
 class DashboardContainerScreen extends StatelessWidget {
   DashboardContainerScreen({Key? key}) : super(key: key);
 
-  GlobalKey<NavigatorState> navigatorKey = GlobalKey();
-
   @override
   Widget build(BuildContext context) {
     mediaQueryData = MediaQuery.of(context);
+
     return SafeArea(
-        child: Scaffold(
-            body: Navigator(
-                key: navigatorKey,
-                initialRoute: AppRoutes.dashboardPage,
-                onGenerateRoute: (routeSetting) => PageRouteBuilder(
-                    pageBuilder: (ctx, ani, ani1) =>
-                        getCurrentPage(routeSetting.name!),
-                    transitionDuration: Duration(seconds: 0))),
-            bottomNavigationBar: _buildBottomBar(context)));
+      child: Scaffold(
+        body: Navigator(
+          initialRoute: AppRoutes.dashboardPage,
+          onGenerateRoute: (routeSetting) => PageRouteBuilder(
+            pageBuilder: (ctx, ani, ani1) => getCurrentPage(routeSetting.name!),
+            transitionDuration: Duration(seconds: 0),
+          ),
+        ),
+        bottomNavigationBar: _buildBottomBar(context),
+      ),
+    );
   }
 
-  /// Section Widget
   Widget _buildBottomBar(BuildContext context) {
-    return CustomBottomBar(onChanged: (BottomBarEnum type) {
-      Navigator.pushNamed(navigatorKey.currentContext!, getCurrentRoute(type));
-    });
+    return CustomBottomBar(
+      onChanged: (BottomBarEnum type) {
+        final route = getCurrentRoute(type);
+        Navigator.pushNamed(context, route);
+      },
+    );
   }
 
-  ///Handling route based on bottom click actions
   String getCurrentRoute(BottomBarEnum type) {
     switch (type) {
       case BottomBarEnum.Home:
@@ -53,7 +55,6 @@ class DashboardContainerScreen extends StatelessWidget {
     }
   }
 
-  ///Handling page based on route
   Widget getCurrentPage(String currentRoute) {
     switch (currentRoute) {
       case AppRoutes.dashboardPage:

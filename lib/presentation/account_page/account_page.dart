@@ -123,14 +123,15 @@ class AccountPage extends StatelessWidget {
         Navigator.pushNamed(context, AppRoutes.profileScreen);
         break;
       case "lbl_order":
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => OrderScreen()));
-        // Navigator.pushNamed(context, AppRoutes.addressScreen);
+        // Navigator.push(
+        //     context, MaterialPageRoute(builder: (context) => OrderScreen()));
+
+        Navigator.pushNamed(context, AppRoutes.orderScreen);
         break;
       case "lbl_address":
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => AddressScreen()));
-        // Navigator.pushNamed(context, AppRoutes.addressScreen);
+        // Navigator.push(
+        //     context, MaterialPageRoute(builder: (context) => AddressScreen()));
+        Navigator.pushNamed(context, AppRoutes.addressScreen);
         break;
       case "lbl_payment":
         // Handle payment screen navigation

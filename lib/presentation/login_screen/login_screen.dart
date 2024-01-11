@@ -13,7 +13,11 @@ import 'package:shoper_flutter/widgets/custom_text_form_field.dart';
 class LoginScreen extends StatelessWidget {
   final ApiService _apiService = ApiService();
 
-  LoginScreen({Key? key}) : super(key: key);
+  LoginScreen({Key? key}) : super(key: key) {
+    // Set default values for email and password controllers
+    emailController.text = "customer@gmail.com";
+    passwordController.text = "123456";
+  }
 
   TextEditingController emailController = TextEditingController();
 
@@ -155,11 +159,8 @@ class LoginScreen extends StatelessWidget {
   Future<void> onTapSignIn(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
       final userData = {
-        // 'email': emailController.text,
-        // 'password': passwordController.text
-        // 'email': 'admin@gmail.com',
-        'email': 'customer@gmail.com',
-        'password': '123456'
+        'email': emailController.text,
+        'password': passwordController.text
       };
       try {
         final postData = userData;
@@ -167,14 +168,11 @@ class LoginScreen extends StatelessWidget {
             await _apiService.postData('api/v1/account/login', postData);
 
         if (response.statusCode == 200) {
-          // Successful login
-          // Navigator.push(context,
-          //     MaterialPageRoute(builder: (context) => DashboardPage()));
-          Navigator.pushNamed(context, AppRoutes.dashboardPage);
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => DashboardContainerScreen()));
+          Navigator.pushNamed(context, AppRoutes.dashboardContainerScreen);
+          // Navigator.push(
+          //     context,
+          //     MaterialPageRoute(
+          //         builder: (context) => DashboardContainerScreen()));
         } else {
           // Display an error message
           ScaffoldMessenger.of(context).showSnackBar(

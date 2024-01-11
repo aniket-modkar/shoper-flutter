@@ -1,7 +1,13 @@
+import 'dart:js';
+
 import 'package:flutter/material.dart';
+import 'package:shoper_flutter/presentation/account_page/account_page.dart';
 import 'package:shoper_flutter/presentation/cart_page/cart_page.dart';
 import 'package:shoper_flutter/presentation/dashboard_page/dashboard_page.dart';
+import 'package:shoper_flutter/presentation/explore_page/explore_page.dart';
+import 'package:shoper_flutter/presentation/offer_screen_page/offer_screen_page.dart';
 import 'package:shoper_flutter/presentation/product_details_screen/product_details.dart';
+import 'package:shoper_flutter/presentation/profile_page/profile-screen.dart';
 import 'package:shoper_flutter/presentation/splash_screen/splash_screen.dart';
 import 'package:shoper_flutter/presentation/login_screen/login_screen.dart';
 import 'package:shoper_flutter/presentation/register_screen/register_screen.dart';
@@ -145,7 +151,7 @@ class AppRoutes {
     // paymentMethodScreen: (context) => PaymentMethodScreen(),
     chooseCreditOrDebitCardScreen: (context) => ChooseCreditOrDebitCardScreen(),
     // successScreen: (context) => SuccessScreen(),
-    // profileScreen: (context) => ProfileScreen(),
+    profileScreen: (context) => ProfileScreen(),
     changePasswordScreen: (context) => ChangePasswordScreen(),
     orderScreen: (context) => OrderScreen(),
     orderDetailsScreen: (context) => OrderDetailsScreen(),
@@ -155,7 +161,9 @@ class AppRoutes {
     creditCardAndDebitScreen: (context) => CreditCardAndDebitScreen(),
     // addCardScreen: (context) => AddCardScreen(),
     cartPage: (context) => CartPage(),
-
+    explorePage: (context) => ExplorePage(),
+    accountPage: (context) => AccountPage(),
+    offerScreenPage: (context) => OfferScreenPage(),
     lailyfaFebrinaCardScreen: (context) => LailyfaFebrinaCardScreen(),
     appNavigationScreen: (context) => AppNavigationScreen()
   };
