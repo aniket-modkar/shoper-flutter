@@ -117,10 +117,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                 SizedBox(height: 16.v),
                                 Container(
                                     height: 8.v,
-                                    margin: EdgeInsets.only(
-                                      left: 135.h,
-                                      top: 240.v,
-                                    ),
+                                    margin: EdgeInsets.only(left: 135.h),
                                     child: AnimatedSmoothIndicator(
                                         activeIndex: sliderIndex,
                                         count: 1,
@@ -144,15 +141,11 @@ class _DashboardPageState extends State<DashboardPage> {
                                         onTapFlashSaleHeader: () {
                                       onTapFlashSaleHeader(context);
                                     })),
-                                SizedBox(
-                                  height: 12.v,
-                                ),
+                                SizedBox(height: 12.v),
                                 // _buildFsNikeAirMax(context),
                                 // SizedBox(height: 23.v),
                                 Padding(
-                                    padding: EdgeInsets.only(
-                                      right: 16.h,
-                                    ),
+                                    padding: EdgeInsets.only(right: 16.h),
                                     child: _buildFlashSaleHeader(context,
                                         flashSaleText: "lbl_mega_sale".tr,
                                         seeMoreText: "lbl_see_more".tr)),
@@ -218,7 +211,7 @@ class _DashboardPageState extends State<DashboardPage> {
   /// Section Widget
   Widget _buildSlider(BuildContext context) {
     return Padding(
-        padding: EdgeInsets.only(right: 16.h, top: 230.v),
+        padding: EdgeInsets.only(right: 16.h),
         child: CarouselSlider.builder(
             options: CarouselOptions(
                 height: 206.v,
@@ -240,7 +233,7 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget _buildCategories(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Padding(
-          padding: EdgeInsets.only(right: 16.h, top: 0.v),
+          padding: EdgeInsets.only(right: 16.h),
           child: _buildFlashSaleHeader(context,
               flashSaleText: "lbl_category".tr,
               seeMoreText: "lbl_more_category".tr, onTapSeeMoreLink: () {
@@ -261,39 +254,37 @@ class _DashboardPageState extends State<DashboardPage> {
     ]);
   }
 
-  // / Section Widget
-  Widget _buildFsNikeAirMax(BuildContext context) {
-    return SizedBox(
-        height: 238.v,
-        child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            separatorBuilder: (context, index) {
-              return SizedBox(width: 16.h);
-            },
-            itemCount: 4,
-            itemBuilder: (context, index) {
-              return FsnikeairmaxItemWidget(onTapProductItem: () {
-                onTapProductItem(context);
-              });
-            }));
-  }
-
   /// Section Widget
-  Widget _buildMsNikeAirMax(BuildContext context) {
-    return SizedBox(
-        height: 238.v,
-        child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            separatorBuilder: (context, index) {
-              return SizedBox(
-                width: 16.h,
-              );
-            },
-            itemCount: 4,
-            itemBuilder: (context, index) {
-              return MsnikeairmaxItemWidget();
-            }));
-  }
+  // Widget _buildFsNikeAirMax(BuildContext context) {
+  //   return SizedBox(
+  //       height: 238.v,
+  //       child: ListView.separated(
+  //           scrollDirection: Axis.horizontal,
+  //           separatorBuilder: (context, index) {
+  //             return SizedBox(width: 16.h);
+  //           },
+  //           itemCount: 4,
+  //           itemBuilder: (context, index) {
+  //             return FsnikeairmaxItemWidget(onTapProductItem: () {
+  //               onTapProductItem(context);
+  //             });
+  //           }));
+  // }
+
+  // /// Section Widget
+  // Widget _buildMsNikeAirMax(BuildContext context) {
+  //   return SizedBox(
+  //       height: 238.v,
+  //       child: ListView.separated(
+  //           scrollDirection: Axis.horizontal,
+  //           separatorBuilder: (context, index) {
+  //             return SizedBox(width: 16.h);
+  //           },
+  //           itemCount: 4,
+  //           itemBuilder: (context, index) {
+  //             return MsnikeairmaxItemWidget();
+  //           }));
+  // }
 
   /// Section Widget
   Widget _buildDashboard(BuildContext context) {
@@ -301,11 +292,11 @@ class _DashboardPageState extends State<DashboardPage> {
       dynamic products = fetchedData.result['products'];
       if (products is List) {
         return Padding(
-            padding: EdgeInsets.only(right: 16.h, top: 440.v, bottom: 10.v),
+            padding: EdgeInsets.only(right: 16.h),
             child: GridView.builder(
                 shrinkWrap: true,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    mainAxisExtent: 450.v,
+                    mainAxisExtent: 283.v,
                     crossAxisCount: 2,
                     mainAxisSpacing: 13.h,
                     crossAxisSpacing: 13.h),
