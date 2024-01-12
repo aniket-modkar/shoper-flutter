@@ -204,15 +204,45 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
   }
 
   Widget _buildCountry(BuildContext context) {
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text("msg_country_or_region".tr, style: theme.textTheme.titleSmall),
-      SizedBox(height: 11.v),
-      CustomTextFormField(
-          controller: countryController,
-          hintText: "msg_enter_the_country".tr,
-          borderDecoration: TextFormFieldStyleHelper.outlineBlueTL5,
-          filled: false)
-    ]);
+    List<Map<String, dynamic>> countries = [];
+    Map<String, dynamic>? selectedType;
+
+    if (fetchedData.result.containsKey('countries')) {
+      countries =
+          List<Map<String, dynamic>>.from(fetchedData.result['countries']);
+      selectedType = countries.isNotEmpty ? countries[0] : null;
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text("msg_country_or_region".tr, style: theme.textTheme.titleSmall),
+        SizedBox(height: 11.v),
+        DropdownButtonFormField<Map<String, dynamic>>(
+          value: selectedType,
+          onChanged: (Map<String, dynamic>? newValue) {
+            if (newValue != null) {
+              setState(() {
+                selectedType = newValue;
+                countryController.text = selectedType![
+                    '_id']; // Update the controller value with the country name
+              });
+            }
+          },
+          items: countries.map((Map<String, dynamic> country) {
+            return DropdownMenuItem<Map<String, dynamic>>(
+              value: country,
+              child: Text(country['displayName']),
+            );
+          }).toList(),
+          decoration: InputDecoration(
+            border: OutlineInputBorder(),
+            contentPadding:
+                EdgeInsets.symmetric(vertical: 10.v, horizontal: 12.h),
+          ),
+        ),
+      ],
+    );
   }
 
   Widget _buildType(BuildContext context) {
