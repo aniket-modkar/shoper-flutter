@@ -204,13 +204,13 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
   }
 
   Widget _buildCountry(BuildContext context) {
-    List<Map<String, dynamic>> countries = [];
+    List<Map<String, dynamic>?> countries = [];
     Map<String, dynamic>? selectedType;
 
     if (fetchedData.result.containsKey('countries')) {
       countries =
-          List<Map<String, dynamic>>.from(fetchedData.result['countries']);
-      selectedType = countries.isNotEmpty ? countries[0] : null;
+          List<Map<String, dynamic>?>.from(fetchedData.result['countries']);
+      selectedType = null;
     }
 
     return Column(
@@ -218,7 +218,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
       children: [
         Text("msg_country_or_region".tr, style: theme.textTheme.titleSmall),
         SizedBox(height: 11.v),
-        DropdownButtonFormField<Map<String, dynamic>>(
+        DropdownButtonFormField<Map<String, dynamic>?>(
           value: selectedType,
           onChanged: (Map<String, dynamic>? newValue) {
             if (newValue != null) {
@@ -229,10 +229,14 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
               });
             }
           },
-          items: countries.map((Map<String, dynamic> country) {
-            return DropdownMenuItem<Map<String, dynamic>>(
+          items: countries.map((Map<String, dynamic>? country) {
+            return DropdownMenuItem<Map<String, dynamic>?>(
               value: country,
-              child: Text(country['displayName']),
+              child: country != null
+                  ? Text(country['displayName'])
+                  : Text("Select Country",
+                      style:
+                          TextStyle(color: Colors.grey)), // Placeholder style
             );
           }).toList(),
           decoration: InputDecoration(
@@ -246,26 +250,34 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
   }
 
   Widget _buildType(BuildContext context) {
-    List<String> addressTypes = ["BILLING", "SHIPPING"];
-    String selectedType = addressTypes[0]; // Default selected type
+    List<String?> addressTypes = [null, "BILLING", "SHIPPING"];
+    String? selectedType = null; // Default selected type
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text("Address Type".tr, style: theme.textTheme.titleSmall),
         SizedBox(height: 11.v),
-        DropdownButtonFormField<String>(
+        DropdownButtonFormField<String?>(
           value: selectedType,
           onChanged: (String? newValue) {
             setState(() {
-              selectedType = newValue!;
-              typeController.text = selectedType; // Update the controller value
+              selectedType = newValue;
+              if (selectedType != null) {
+                typeController.text =
+                    selectedType!; // Update the controller value
+              }
             });
           },
-          items: addressTypes.map((String type) {
-            return DropdownMenuItem<String>(
+          items: addressTypes.map((String? type) {
+            return DropdownMenuItem<String?>(
               value: type,
-              child: Text(type),
+              child: type != null
+                  ? Text(type)
+                  : Text("Select Address Type",
+                      style: TextStyle(
+                          color: Colors
+                              .grey)), // Use a different style for the placeholder
             );
           }).toList(),
           decoration: InputDecoration(
