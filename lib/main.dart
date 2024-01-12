@@ -1,39 +1,42 @@
-// import 'package:flutter/material.dart';
-// import 'login_page.dart';
-// import 'register_page.dart';
-// import 'home_page.dart';
-
-// void main() => runApp(MyApp());
-
-// class MyApp extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       initialRoute: '/login',
-//       routes: {
-//         '/login': (context) => LoginPage(),
-//         '/register': (context) => RegisterPage(),
-//         '/home': (context) => HomePage(),
-//       },
-//     );
-//   }
-// }
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-// import 'package:flutter/scheduler.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http_interceptor/http_interceptor.dart';
 import 'core/app_export.dart';
-// import 'package:shoper_flutter/theme/theme_helper.dart';
-// import 'package:shoper_flutter/routes/app_routes.dart';
 
-void main() {
+class ApiInterceptor implements InterceptorContract {
+  final HttpClientWithInterceptor _client;
+
+  ApiInterceptor()
+      : _client = HttpClientWithInterceptor.build(interceptors: []);
+
+  @override
+  Future<RequestData> interceptRequest({required RequestData data}) async {
+    // Implement your request interception logic here
+    return data;
+  }
+
+  @override
+  Future<ResponseData> interceptResponse({required ResponseData data}) async {
+    // Implement your response interception logic here
+    return data;
+  }
+
+  // Getter for the HttpClientWithInterceptor instance
+  HttpClientWithInterceptor get client => _client;
+}
+
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-  ]);
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
-  ///Please update theme as per your need if required.
+  final apiInterceptor = ApiInterceptor();
+
+  // Pass the client to the AppRoutes to be used for API calls
+  AppRoutes.client = apiInterceptor.client;
+
   ThemeHelper().changeTheme('primary');
   runApp(MyApp());
 }
