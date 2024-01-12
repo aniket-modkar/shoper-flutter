@@ -1,11 +1,109 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:shoper_flutter/core/app_export.dart';
+import 'package:shoper_flutter/core/service/api_service.dart';
 import 'package:shoper_flutter/widgets/app_bar/appbar_leading_image.dart';
 import 'package:shoper_flutter/widgets/app_bar/appbar_subtitle.dart';
 import 'package:shoper_flutter/widgets/app_bar/custom_app_bar.dart';
 
-class ProfileScreen extends StatelessWidget {
+class FetchedData {
+  final String message;
+  final String responseCode;
+  final List<Map<String, dynamic>> result; // Specify List<Map<String, dynamic>>
+  final int totalCounts;
+  final int statusCode;
+
+  FetchedData({
+    required this.message,
+    required this.responseCode,
+    required this.result,
+    required this.totalCounts,
+    required this.statusCode,
+  });
+
+  factory FetchedData.fromJson(Map<String, dynamic> json) {
+    return FetchedData(
+      message: json['message'] ?? '',
+      responseCode: json['responseCode'] ?? '',
+      result:
+          (json['result'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ??
+              [], // Explicitly cast to List<Map<String, dynamic>>
+      totalCounts: json['totalCounts'] ?? 0,
+      statusCode: json['statusCode'] ?? 0,
+    );
+  }
+
+  @override
+  String toString() {
+    return 'FetchedData { message: $message, responseCode: $responseCode, result: $result, totalCounts: $totalCounts, statusCode: $statusCode }';
+  }
+}
+
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
+
+  @override
+  _ProfileScreenState createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  final ApiService _apiService = ApiService();
+  late FetchedData fetchedData;
+  bool isDataFetched = false;
+  bool isError = false;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
+
+  Future<void> fetchData() async {
+    if (!isDataFetched && !isError) {
+      try {
+        final response =
+            await _apiService.fetchData('api/v1/account/fetchProfile');
+        if (response.statusCode == 200) {
+          if (mounted) {
+            setState(() {
+              fetchedData = FetchedData.fromJson(json.decode(response.body));
+              isDataFetched = true;
+            });
+          }
+        } else {
+          handleNon200StatusCode(response.statusCode);
+        }
+      } catch (error) {
+        handleError(error);
+      }
+    }
+  }
+
+  void handleNon200StatusCode(int statusCode) {
+    // Handle non-200 status code
+    print('Error: $statusCode');
+    setState(() {
+      isError = true;
+    });
+  }
+
+  void handleError(dynamic error) {
+    // Handle errors
+    print('Error: $error');
+    if (mounted) {
+      setState(() {
+        fetchedData = FetchedData(
+          message: 'Error: $error',
+          responseCode: '',
+          result: [],
+          totalCounts: 0,
+          statusCode: 0,
+        );
+        isError = true;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -126,4 +224,6 @@ class ProfileScreen extends StatelessWidget {
   void onTapProfileDetailOption(BuildContext context) {}
 }
 
-void onTapArrowLeft(BuildContext context) {}
+void onTapArrowLeft(BuildContext context) {
+  Navigator.pop(context);
+}
