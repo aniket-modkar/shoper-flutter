@@ -1,8 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:shoper_flutter/core/app_export.dart';
 import 'package:shoper_flutter/core/service/api_service.dart';
+import 'package:shoper_flutter/core/service/storage-service.dart';
 import 'package:shoper_flutter/presentation/dashboard_container_screen/dashboard_container_screen.dart';
 import 'package:shoper_flutter/presentation/dashboard_page/dashboard_page.dart';
+import 'package:shoper_flutter/presentation/login_screen/shared_login_preferences.dart';
 import 'package:shoper_flutter/presentation/register_screen/register_screen.dart';
 import 'package:shoper_flutter/widgets/custom_elevated_button.dart';
 import 'package:shoper_flutter/widgets/custom_icon_button.dart';
@@ -12,7 +16,7 @@ import 'package:shoper_flutter/widgets/custom_text_form_field.dart';
 // ignore_for_file: must_be_immutable
 class LoginScreen extends StatelessWidget {
   final ApiService _apiService = ApiService();
-
+  final StorageService _storageService = StorageService();
   LoginScreen({Key? key}) : super(key: key) {
     // Set default values for email and password controllers
     emailController.text = "customer@gmail.com";
@@ -168,11 +172,9 @@ class LoginScreen extends StatelessWidget {
             await _apiService.postData('api/v1/account/login', postData);
 
         if (response.statusCode == 200) {
+          _storageService.saveResponseToLocalStorage(
+              loginResponse, response.body);
           Navigator.pushNamed(context, AppRoutes.dashboardContainerScreen);
-          // Navigator.push(
-          //     context,
-          //     MaterialPageRoute(
-          //         builder: (context) => DashboardContainerScreen()));
         } else {
           // Display an error message
           ScaffoldMessenger.of(context).showSnackBar(
