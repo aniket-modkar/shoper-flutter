@@ -32,4 +32,9 @@ class StorageService {
         await getStoredResponseFromLocalStorage(loginResponse);
     return storedResponse?.result?.token;
   }
+
+  Future<void> clearStorage() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.clear(); // Clear all data in SharedPreferences
+  }
 }
