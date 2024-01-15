@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shoper_flutter/core/app_export.dart';
 import 'package:shoper_flutter/core/service/api_service.dart';
+import 'package:shoper_flutter/core/service/storage-service.dart';
 import 'package:shoper_flutter/widgets/app_bar/appbar_leading_image.dart';
 import 'package:shoper_flutter/widgets/app_bar/appbar_subtitle.dart';
 import 'package:shoper_flutter/widgets/app_bar/custom_app_bar.dart';
@@ -10,7 +11,7 @@ import 'package:shoper_flutter/widgets/app_bar/custom_app_bar.dart';
 class FetchedData {
   final String message;
   final String responseCode;
-  final List<Map<String, dynamic>> result; // Specify List<Map<String, dynamic>>
+  final List<Map<String, dynamic>> result;
   final int totalCounts;
   final int statusCode;
 
@@ -26,14 +27,18 @@ class FetchedData {
     return FetchedData(
       message: json['message'] ?? '',
       responseCode: json['responseCode'] ?? '',
-      result:
-          (json['result'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ??
-              [], // Explicitly cast to List<Map<String, dynamic>>
+      result: (json['result'] is List<dynamic>)
+          ? (json['result'] as List<dynamic>)
+              .map((item) => item is Map<String, dynamic>
+                  ? item
+                  : <String,
+                      dynamic>{}) // Explicit casting to Map<String, dynamic>
+              .toList()
+          : [json['result'] ?? <String, dynamic>{}], // Handle object case
       totalCounts: json['totalCounts'] ?? 0,
       statusCode: json['statusCode'] ?? 0,
     );
   }
-
   @override
   String toString() {
     return 'FetchedData { message: $message, responseCode: $responseCode, result: $result, totalCounts: $totalCounts, statusCode: $statusCode }';
@@ -108,63 +113,98 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     mediaQueryData = MediaQuery.of(context);
-    return SafeArea(
-        child: Scaffold(
-            appBar: _buildAppBar(context),
-            body: Container(
-                width: double.maxFinite,
-                padding: EdgeInsets.symmetric(vertical: 36.v),
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                          padding: EdgeInsets.only(left: 16.h),
-                          child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                CustomImageView(
-                                    imagePath:
-                                        ImageConstant.imgProfilePicture72x72,
-                                    height: 72.adaptSize,
-                                    width: 72.adaptSize,
-                                    radius: BorderRadius.circular(36.h)),
-                                Padding(
-                                    padding: EdgeInsets.only(
-                                        left: 16.h, top: 9.v, bottom: 14.v),
-                                    child: Column(children: [
-                                      Text("lbl_dominic_ovo".tr,
-                                          style: theme.textTheme.titleSmall),
-                                      SizedBox(height: 8.v),
-                                      Text("lbl_dominic_ovo2".tr,
-                                          style: theme.textTheme.bodySmall)
-                                    ]))
-                              ])),
-                      SizedBox(height: 32.v),
-                      _buildProfileDetailOption(context,
-                          dateIcon: ImageConstant.imgGenderIcon,
-                          birthdayText: "lbl_gender".tr,
-                          birthDateValue: "lbl_male".tr),
-                      _buildProfileDetailOption(context,
-                          dateIcon: ImageConstant.imgDateIcon,
-                          birthdayText: "lbl_birthday".tr,
-                          birthDateValue: "lbl_12_12_2000".tr),
-                      _buildProfileDetailOption(context,
-                          dateIcon: ImageConstant.imgMailPrimary,
-                          birthdayText: "lbl_email".tr,
-                          birthDateValue: "msg_rex4dom_gmail_com".tr),
-                      _buildProfileDetailOption(context,
-                          dateIcon: ImageConstant.imgCreditCardIcon,
-                          birthdayText: "lbl_phone_number".tr,
-                          birthDateValue: "lbl_307_555_0133".tr),
-                      SizedBox(height: 5.v),
-                      _buildProfileDetailOption(context,
-                          dateIcon: ImageConstant.imgLockPrimary,
-                          birthdayText: "lbl_change_password".tr,
-                          birthDateValue: "msg".tr,
-                          onTapProfileDetailOption: () {
-                        onTapProfileDetailOption(context);
-                      })
-                    ]))));
+    if (!isDataFetched) {
+      return Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    } else {
+      String baseUrl = _apiService.imgBaseUrl;
+
+      if (fetchedData != null && fetchedData.result != null) {
+        List<dynamic> profiles = fetchedData.result;
+
+        if (profiles.isNotEmpty) {
+          Map<String, dynamic> firstProfile = profiles.first;
+
+          String imagePath = firstProfile['media'] ?? '';
+          String completeImagePath = baseUrl + imagePath;
+          String completeName =
+              firstProfile['firstName'] + firstProfile['lastName'] ?? '';
+          String email = firstProfile['email'] ?? '';
+          if (profiles.isNotEmpty) {
+            return SafeArea(
+                child: Scaffold(
+                    appBar: _buildAppBar(context),
+                    body: Container(
+                        width: double.maxFinite,
+                        padding: EdgeInsets.symmetric(vertical: 36.v),
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                  padding: EdgeInsets.only(left: 16.h),
+                                  child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        CustomImageView(
+                                            imagePath: completeImagePath,
+                                            height: 72.adaptSize,
+                                            width: 72.adaptSize,
+                                            radius:
+                                                BorderRadius.circular(36.h)),
+                                        Padding(
+                                            padding: EdgeInsets.only(
+                                                left: 16.h,
+                                                top: 9.v,
+                                                bottom: 14.v),
+                                            child: Column(children: [
+                                              Text("${completeName}".tr,
+                                                  style: theme
+                                                      .textTheme.titleSmall),
+                                              SizedBox(height: 8.v),
+                                              Text("@${completeName}".tr,
+                                                  style:
+                                                      theme.textTheme.bodySmall)
+                                            ]))
+                                      ])),
+                              SizedBox(height: 32.v),
+                              _buildProfileDetailOption(context,
+                                  dateIcon: ImageConstant.imgGenderIcon,
+                                  birthdayText: "lbl_gender".tr,
+                                  birthDateValue: "lbl_male".tr),
+                              _buildProfileDetailOption(context,
+                                  dateIcon: ImageConstant.imgDateIcon,
+                                  birthdayText: "lbl_birthday".tr,
+                                  birthDateValue: "lbl_12_12_2000".tr),
+                              _buildProfileDetailOption(context,
+                                  dateIcon: ImageConstant.imgMailPrimary,
+                                  birthdayText: "lbl_email".tr,
+                                  birthDateValue: "${email}".tr),
+                              _buildProfileDetailOption(context,
+                                  dateIcon: ImageConstant.imgCreditCardIcon,
+                                  birthdayText: "lbl_phone_number".tr,
+                                  birthDateValue: "lbl_307_555_0133".tr),
+                              SizedBox(height: 5.v),
+                              _buildProfileDetailOption(context,
+                                  dateIcon: ImageConstant.imgLockPrimary,
+                                  birthdayText: "lbl_change_password".tr,
+                                  birthDateValue: "msg".tr,
+                                  onTapProfileDetailOption: () {
+                                onTapProfileDetailOption(context);
+                              }),
+                              SizedBox(height: 50.v),
+                              _buildLogoutButton(
+                                context,
+                              ),
+                            ]))));
+          }
+        }
+      }
+    }
+    return Container();
   }
 
   /// Section Widget
@@ -226,4 +266,66 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
 void onTapArrowLeft(BuildContext context) {
   Navigator.pop(context);
+}
+
+final StorageService _storageService = StorageService();
+
+Widget _buildLogoutButton(BuildContext context) {
+  return Padding(
+    padding: EdgeInsets.symmetric(horizontal: 16.h, vertical: 15.v),
+    child: SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: () {
+          _showLogoutConfirmationDialog(context);
+        },
+        style: ElevatedButton.styleFrom(
+          // Customize the button style
+          primary: Colors.red, // Example: Set the button color to red
+        ),
+        child: Text(
+          "Logout",
+          style: TextStyle(color: Colors.white), // Customize text style
+        ),
+      ),
+    ),
+  );
+}
+
+// ... existing code ...
+
+void _showLogoutConfirmationDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text("Confirm Logout"),
+        content: Text("Are you sure you want to logout?"),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // Close the dialog
+            },
+            child: Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () {
+              // Pass context to the method
+              _performLogout(context);
+            },
+            child: Text("Logout"),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+void _performLogout(BuildContext context) async {
+  await _storageService.clearStorage();
+  Navigator.pushNamedAndRemoveUntil(
+    context,
+    AppRoutes.loginScreen,
+    (Route<dynamic> route) => false,
+  );
 }
