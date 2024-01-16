@@ -131,9 +131,9 @@ class _ProductDetailsPageState extends State<ProductDetailScreen> {
                     SizedBox(height: 24.v),
                     _buildSpecifications(context),
                     SizedBox(height: 23.v),
-                    _buildReview(context),
-                    SizedBox(height: 23.v),
-                    // _buildYouMightAlsoLike(context)
+                    // _buildReview(context),
+                    // SizedBox(height: 23.v),
+                    _buildYouMightAlsoLike(context)
                   ],
                 ),
               ),
@@ -284,7 +284,8 @@ class _ProductDetailsPageState extends State<ProductDetailScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: EdgeInsets.only(left: 16.h, top: 310.v),
+          padding: EdgeInsets.only(left: 16.h),
+          // padding: EdgeInsets.only(left: 16.h, top: 310.v),
           child: Text("lbl_select_size".tr, style: theme.textTheme.titleSmall),
         ),
         SizedBox(height: 13.v),
@@ -314,7 +315,8 @@ class _ProductDetailsPageState extends State<ProductDetailScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: EdgeInsets.only(left: 7.h, top: 190.v),
+            padding: EdgeInsets.only(left: 7.h),
+            // padding: EdgeInsets.only(left: 7.h, top: 190.v),
             child:
                 Text("lbl_select_color".tr, style: theme.textTheme.titleSmall),
           ),
@@ -342,18 +344,19 @@ class _ProductDetailsPageState extends State<ProductDetailScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("lbl_specification".tr, style: theme.textTheme.titleSmall),
-          SizedBox(height: 12.v),
-          _buildStyle(context,
-              styleText: "lbl_shown".tr,
-              styleCodeText: "msg_laser_blue_anth".tr),
-          SizedBox(height: 18.v),
-          _buildStyle(context,
-              styleText: "lbl_style".tr, styleCodeText: "lbl_cd0113_400".tr),
-          SizedBox(height: 19.v),
+          // Text("lbl_specification".tr, style: theme.textTheme.titleSmall),
+          // SizedBox(height: 12.v),
+          // _buildStyle(context,
+          //     styleText: "lbl_shown".tr,
+          //     styleCodeText: "msg_laser_blue_anth".tr),
+          // SizedBox(height: 18.v),
+          // _buildStyle(context,
+          //     styleText: "lbl_style".tr, styleCodeText: "lbl_cd0113_400".tr),
+          // SizedBox(height: 19.v),
           Container(
             width: 320.h,
-            margin: EdgeInsets.only(right: 31.h, top: 400.v),
+            margin: EdgeInsets.only(right: 31.h),
+            // margin: EdgeInsets.only(right: 31.h, top: 400.v),
             child: Text(
               "${productsData[0]['title'] ?? 'Unknown Product'}".tr,
               maxLines: 4,
