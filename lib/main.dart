@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http_interceptor/http_interceptor.dart';
+import 'package:shoper_flutter/core/service/auth_guard.dart';
 import 'core/app_export.dart';
 
 class ApiInterceptor implements InterceptorContract {
@@ -42,6 +43,8 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
+  final AuthGuard _authGuard = AuthGuard(); // Instantiate the AuthGuard
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -61,6 +64,7 @@ class MyApp extends StatelessWidget {
           '',
         ),
       ],
+      navigatorObservers: [_authGuard], // Pass the AuthGuard instance
       initialRoute: AppRoutes.loginScreen,
       // initialRoute: AppRoutes.splashScreen,
       routes: AppRoutes.routes,
