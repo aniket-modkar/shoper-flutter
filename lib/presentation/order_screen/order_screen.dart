@@ -97,7 +97,13 @@ class _OrderScreenState extends State<OrderScreen> {
   @override
   Widget build(BuildContext context) {
     mediaQueryData = MediaQuery.of(context);
-
+    if (!isDataFetched) {
+      return Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
     if (fetchedData != null && fetchedData.result != null) {
       List<dynamic> orders = fetchedData.result;
 
