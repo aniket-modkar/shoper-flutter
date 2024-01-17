@@ -210,7 +210,7 @@ class _ProductDetailsPageState extends State<ProductDetailScreen> {
           ),
           itemCount: 1,
           itemBuilder: (context, index, realIndex) {
-            return FortyeightItemWidget();
+            return FortyeightItemWidget(product: productsData[0]);
           },
         ),
         SizedBox(height: 16.v),

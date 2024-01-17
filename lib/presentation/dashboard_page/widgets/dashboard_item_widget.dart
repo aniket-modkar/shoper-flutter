@@ -13,7 +13,8 @@ class DashboardItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String baseUrl = _apiService.imgBaseUrl;
-
+    double percentageDiscount = calculatePercentageDiscount(
+        product['originalPrice'], product['currentPrice']);
     return GestureDetector(
       onTap: () {
         onProductDetailsClicked(context, product);
@@ -78,14 +79,14 @@ class DashboardItemWidget extends StatelessWidget {
             ),
             SizedBox(height: 18.v),
             Text(
-              'Price: \ ₹${product['currentPrice']}',
+              'Price: \ ₹ ${product['currentPrice']}',
               style: CustomTextStyles.labelLargePrimary,
             ),
             SizedBox(height: 5.v),
             Row(
               children: [
                 Text(
-                  "lbl_534_33".tr,
+                  "'₹ ${product['originalPrice']}'".tr,
                   style: CustomTextStyles.bodySmall10.copyWith(
                     decoration: TextDecoration.lineThrough,
                   ),
@@ -93,7 +94,8 @@ class DashboardItemWidget extends StatelessWidget {
                 Padding(
                   padding: EdgeInsets.only(left: 8.h),
                   child: Text(
-                    "lbl_24_off".tr,
+                    "${percentageDiscount.toStringAsFixed(1)}%off".tr,
+                    overflow: TextOverflow.ellipsis,
                     style: theme.textTheme.labelMedium,
                   ),
                 ),
@@ -156,4 +158,14 @@ class DashboardItemWidget extends StatelessWidget {
       ),
     );
   }
+}
+
+double calculatePercentageDiscount(double originalPrice, double currentPrice) {
+  if (originalPrice <= 0) {
+    return 0.0; // Avoid division by zero
+  }
+
+  double percentageDiscount =
+      ((originalPrice - currentPrice) / originalPrice) * 100;
+  return percentageDiscount;
 }
