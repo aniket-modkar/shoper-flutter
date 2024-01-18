@@ -178,7 +178,9 @@ class _CartPageState extends State<CartPage> {
               SizedBox(height: 52.v),
               _buildCouponCodeRow(context),
               SizedBox(height: 16.v),
-              _buildAddressList(context),
+              // _buildAddressList(context),
+              // SizedBox(height: 20.v),
+              _buildAddressSelection(context),
               SizedBox(height: 20.v),
               _buildTotalPriceDetailsColumn(context),
               SizedBox(height: 16.v),
@@ -270,35 +272,84 @@ class _CartPageState extends State<CartPage> {
     );
   }
 
-  Widget _buildAddressList(BuildContext context) {
-    if (fetchedAddressData.result.containsKey('addresses')) {
-      dynamic addressData = fetchedAddressData.result['addresses'];
-      if (addressData is List && addressData.isNotEmpty) {
-        return Expanded(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.h),
-            child: ListView.separated(
-              physics: BouncingScrollPhysics(),
-              shrinkWrap: true,
-              separatorBuilder: (context, index) {
-                return SizedBox(height: 12.v);
-              },
-              itemCount: addressData.length,
-              itemBuilder: (context, index) {
-                return AddresslistItemSelectionWidget(
-                  addressData: addressData[index],
-                );
-              },
-            ),
-          ),
-        );
-      } else {
-        // Display "Add Address" button when there are no addresses
-        return buildAddAddressButton(context);
-      }
-    } else {
-      return _buildErrorWidget("Address key not found.");
-    }
+  Widget _buildAddressSelection(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () {
+        _showAddressSelectionDialog(context);
+      },
+      style: ElevatedButton.styleFrom(
+        primary: Colors.blue, // Set the button color
+        padding: EdgeInsets.symmetric(horizontal: 16.h, vertical: 16.v),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(5.0),
+        ),
+      ),
+      child: Text(
+        "Select Address",
+        style: TextStyle(
+          fontSize: 16,
+          color: Colors.white, // Set the text color
+        ),
+      ),
+    );
+  }
+
+  void _showAddressSelectionDialog(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        if (fetchedAddressData.result.containsKey('addresses')) {
+          dynamic addressData = fetchedAddressData.result['addresses'];
+
+          if (addressData is List && addressData.isNotEmpty) {
+            return Container(
+              padding: EdgeInsets.all(16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      physics: BouncingScrollPhysics(),
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16.h),
+                        child: Column(
+                          children: [
+                            ListView.separated(
+                              physics: NeverScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              separatorBuilder: (context, index) {
+                                return SizedBox(height: 12.v);
+                              },
+                              itemCount: addressData.length,
+                              itemBuilder: (context, index) {
+                                return AddresslistItemSelectionWidget(
+                                  addressData: addressData[index],
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          } else {
+            // Display "Add Address" button when there are no addresses
+            return Container(
+              padding: EdgeInsets.all(16),
+              child: buildAddAddressButton(context),
+            );
+          }
+        } else {
+          return Container(
+            padding: EdgeInsets.all(16),
+            child: _buildErrorWidget("Address key not found."),
+          );
+        }
+      },
+    );
   }
 
   Widget buildAddAddressButton(BuildContext context) {
