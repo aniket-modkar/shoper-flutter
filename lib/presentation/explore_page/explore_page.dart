@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:shoper_flutter/core/service/api_service.dart';
 import 'package:shoper_flutter/presentation/account_page/account_page.dart';
 import 'package:shoper_flutter/presentation/cart_page/cart_page.dart';
 import 'package:shoper_flutter/presentation/dashboard_page/dashboard_page.dart';
@@ -13,6 +16,40 @@ import 'package:shoper_flutter/widgets/app_bar/appbar_trailing_image.dart';
 import 'package:shoper_flutter/widgets/app_bar/custom_app_bar.dart';
 
 // ignore_for_file: must_be_immutable
+
+class FetchedData {
+  final String message;
+  final String responseCode;
+  final List<Map<String, dynamic>> result; // Specify List<Map<String, dynamic>>
+  final int totalCounts;
+  final int statusCode;
+
+  FetchedData({
+    required this.message,
+    required this.responseCode,
+    required this.result,
+    required this.totalCounts,
+    required this.statusCode,
+  });
+
+  factory FetchedData.fromJson(Map<String, dynamic> json) {
+    return FetchedData(
+      message: json['message'] ?? '',
+      responseCode: json['responseCode'] ?? '',
+      result:
+          (json['result'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ??
+              [], // Explicitly cast to List<Map<String, dynamic>>
+      totalCounts: json['totalCounts'] ?? 0,
+      statusCode: json['statusCode'] ?? 0,
+    );
+  }
+
+  @override
+  String toString() {
+    return 'FetchedData { message: $message, responseCode: $responseCode, result: $result, totalCounts: $totalCounts, statusCode: $statusCode }';
+  }
+}
+
 class ExplorePage extends StatefulWidget {
   ExplorePage({Key? key}) : super(key: key);
 
@@ -23,30 +60,82 @@ class ExplorePage extends StatefulWidget {
 class _ExplorePageState extends State<ExplorePage> {
   String currentRoute = AppRoutes.explorePage;
   TextEditingController searchController = TextEditingController();
+  final ApiService _apiService = ApiService();
+  late FetchedData fetchedData;
+
+  bool isDataFetched = false;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
+
+  Future<void> fetchData() async {
+    if (!isDataFetched) {
+      try {
+        final response = await _apiService
+            .fetchData('api/v1/product_category/fetchCategories');
+        if (response.statusCode == 200) {
+          setState(() {
+            fetchedData = FetchedData.fromJson(json.decode(response.body));
+            isDataFetched = true;
+          });
+        } else {
+          // Handle non-200 status code, if needed
+        }
+      } catch (error) {
+        setState(() {
+          fetchedData = FetchedData(
+            message: 'Error: $error',
+            responseCode: '',
+            result: [],
+            totalCounts: 0,
+            statusCode: 0,
+          );
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     mediaQueryData = MediaQuery.of(context);
-    return SafeArea(
-        child: Scaffold(
-      appBar: _buildAppBar(context),
-      body: Container(
-          width: double.maxFinite,
-          padding: EdgeInsets.symmetric(horizontal: 16.h, vertical: 25.v),
-          child: Column(children: [
-            _buildManFashion(context),
-            SizedBox(height: 37.v),
-            _buildWomanFashion(context),
-            SizedBox(height: 5.v)
-          ])),
-      bottomNavigationBar: CustomBottomBar(
-        currentRoute: currentRoute,
-        onChanged: (BottomBarEnum type) {
-          setState(() {
-            currentRoute = getCurrentRoute(type);
-          });
-        },
-      ),
-    ));
+    if (!isDataFetched) {
+      return Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+    if (fetchedData != null && fetchedData.result != null) {
+      List<dynamic> categories = fetchedData.result;
+
+      if (categories.isNotEmpty) {
+        return SafeArea(
+            child: Scaffold(
+          appBar: _buildAppBar(context),
+          body: Container(
+              width: double.maxFinite,
+              padding: EdgeInsets.symmetric(horizontal: 16.h, vertical: 25.v),
+              child: Column(children: [
+                _buildCategories(context, categories),
+                SizedBox(height: 37.v),
+                // _buildWomanFashion(context),
+                // SizedBox(height: 5.v)
+              ])),
+          bottomNavigationBar: CustomBottomBar(
+            currentRoute: currentRoute,
+            onChanged: (BottomBarEnum type) {
+              setState(() {
+                currentRoute = getCurrentRoute(type);
+              });
+            },
+          ),
+        ));
+      }
+    }
+    return Container();
   }
 
   /// Section Widget
@@ -85,23 +174,71 @@ class _ExplorePageState extends State<ExplorePage> {
   }
 
   /// Section Widget
-  Widget _buildManFashion(BuildContext context) {
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text("lbl_man_fashion".tr, style: theme.textTheme.titleSmall),
-      SizedBox(height: 13.v),
-      GridView.builder(
-          shrinkWrap: true,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              mainAxisExtent: 94.v,
-              crossAxisCount: 4,
-              mainAxisSpacing: 21.h,
-              crossAxisSpacing: 21.h),
-          physics: NeverScrollableScrollPhysics(),
-          itemCount: 6,
-          itemBuilder: (context, index) {
-            return ManworkequipmentItemWidget();
-          })
-    ]);
+  Widget _buildCategories(BuildContext context, List<dynamic> categories) {
+    String baseUrl = _apiService.imgBaseUrl;
+    if (categories.isNotEmpty) {
+      return ListView.builder(
+        shrinkWrap: true,
+        itemCount: categories.length,
+        itemBuilder: (context, index) {
+          var category = categories[index];
+          var subCategories = category['Childs'];
+          var categoryName = toTitleCase(category['name']);
+          String imageUrl = baseUrl + (category['categoryImg'] as String);
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  CustomImageView(
+                    imagePath: imageUrl,
+                    height: 24.adaptSize,
+                    width: 24.adaptSize,
+                    alignment: Alignment.topLeft,
+                    onTap: () {
+                      onTapImgNotificationIcon(context);
+                    },
+                  ),
+                  SizedBox(width: 8.h), // Adjust spacing as needed
+                  Text(
+                    "${categoryName}".tr,
+                    style: theme.textTheme.titleSmall,
+                  ),
+                ],
+              ),
+              SizedBox(height: 13.v),
+              GridView.builder(
+                shrinkWrap: true,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  mainAxisExtent: 94.v,
+                  crossAxisCount: 4,
+                  mainAxisSpacing: 21.h,
+                  crossAxisSpacing: 21.h,
+                ),
+                physics: NeverScrollableScrollPhysics(),
+                itemCount: subCategories.length,
+                itemBuilder: (context, subIndex) {
+                  var subCategory = subCategories[subIndex];
+                  return ManworkequipmentItemWidget(category: subCategory);
+                },
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      return _buildErrorWidget("Unexpected data type for 'Category'");
+    }
+  }
+
+  Widget _buildErrorWidget(String errorMessage) {
+    return Center(
+      child: Text(
+        'Error: $errorMessage',
+        style: TextStyle(color: Colors.red),
+      ),
+    );
   }
 
   /// Section Widget
@@ -140,5 +277,18 @@ class _ExplorePageState extends State<ExplorePage> {
       default:
         return "/";
     }
+  }
+
+  String toTitleCase(String text) {
+    if (text == null || text.isEmpty) {
+      return '';
+    }
+
+    return text.split(' ').map((word) {
+      if (word.isEmpty) {
+        return '';
+      }
+      return word[0].toUpperCase() + word.substring(1).toLowerCase();
+    }).join(' ');
   }
 }

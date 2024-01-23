@@ -4,7 +4,8 @@ import 'package:shoper_flutter/widgets/custom_icon_button.dart';
 
 // ignore: must_be_immutable
 class ManworkequipmentItemWidget extends StatelessWidget {
-  const ManworkequipmentItemWidget({Key? key})
+  final dynamic category;
+  const ManworkequipmentItemWidget({Key? key, required this.category})
       : super(
           key: key,
         );
