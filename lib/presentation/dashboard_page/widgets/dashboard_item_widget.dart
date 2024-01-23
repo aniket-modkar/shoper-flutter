@@ -20,7 +20,7 @@ class DashboardItemWidget extends StatelessWidget {
         onProductDetailsClicked(context, product);
       },
       child: Container(
-        padding: EdgeInsets.all(15.h),
+        padding: EdgeInsets.all(15),
         decoration: AppDecoration.outlineBlue50.copyWith(
           borderRadius: BorderRadiusStyle.roundedBorder5,
         ),
@@ -29,28 +29,28 @@ class DashboardItemWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (product.containsKey('media') && product['media'] is List)
-              Container(
-                height: 133.adaptSize,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: (product['media'] as List).length,
-                  itemBuilder: (context, index) {
-                    String imageUrl =
-                        baseUrl + (product['media'][index] as String);
-                    return CustomImageView(
-                      imagePath: imageUrl,
-                      height: 133.adaptSize,
-                      width: 133.adaptSize,
-                      radius: BorderRadius.circular(
-                        5.h,
-                      ),
-                    );
-                  },
+              Expanded(
+                child: Container(
+                  height: 133,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: (product['media'] as List).length,
+                    itemBuilder: (context, index) {
+                      String imageUrl =
+                          baseUrl + (product['media'][index] as String);
+                      return CustomImageView(
+                        imagePath: imageUrl,
+                        height: 133,
+                        width: 133,
+                        radius: BorderRadius.circular(5),
+                      );
+                    },
+                  ),
                 ),
               ),
-            SizedBox(height: 8.v),
+            SizedBox(height: 8),
             SizedBox(
-              width: 107.h,
+              width: 107,
               child: Text(
                 product['title'] ?? 'Unknown Product',
                 maxLines: 1,
@@ -60,41 +60,41 @@ class DashboardItemWidget extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: 5.v),
+            SizedBox(height: 5),
             Text(
               product['subtitle'] ?? '--',
               overflow: TextOverflow.ellipsis,
               style: TextStyle(fontSize: 14.0),
             ),
             SizedBox(height: 2.0),
-            Text(
-              product['description'] ?? '--',
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 14.0),
-            ),
-            SizedBox(height: 2.0),
+            // Text(
+            //   product['description'] ?? '--',
+            //   overflow: TextOverflow.ellipsis,
+            //   style: TextStyle(fontSize: 14.0),
+            // ),
+            // SizedBox(height: 2.0),
             CustomRatingBar(
               ignoreGestures: true,
               initialRating: 4,
             ),
-            SizedBox(height: 18.v),
+            SizedBox(height: 18),
             Text(
-              'Price: \ ₹ ${product['currentPrice']}',
+              'Price: ₹ ${product['currentPrice']}',
               style: CustomTextStyles.labelLargePrimary,
             ),
-            SizedBox(height: 5.v),
+            SizedBox(height: 5),
             Row(
               children: [
                 Text(
-                  "'₹ ${product['originalPrice']}'".tr,
+                  '₹ ${product['originalPrice']}',
                   style: CustomTextStyles.bodySmall10.copyWith(
                     decoration: TextDecoration.lineThrough,
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.only(left: 8.h),
+                  padding: EdgeInsets.only(left: 8),
                   child: Text(
-                    "${percentageDiscount.toStringAsFixed(1)}%off".tr,
+                    "${percentageDiscount.toStringAsFixed(1)}%off",
                     overflow: TextOverflow.ellipsis,
                     style: theme.textTheme.labelMedium,
                   ),
@@ -142,9 +142,11 @@ class DashboardItemWidget extends StatelessWidget {
       final response =
           await _apiService.postData('api/v1/cart/addProduct', userData);
 
-      // if (response.statusCode == 200) {
-      Navigator.pushNamed(context, AppRoutes.cartPage);
-      // }
+      if (response.statusCode == 200) {
+        Navigator.pushNamed(context, AppRoutes.cartPage);
+      } else {
+        showSnackBar(context, 'An error occurred. Please try again later.');
+      }
     } catch (error) {
       showSnackBar(context, 'An error occurred. Please try again later.');
     }

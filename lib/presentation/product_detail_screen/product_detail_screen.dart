@@ -552,7 +552,11 @@ void addToCart(BuildContext context, Map<String, dynamic> product) async {
     final response =
         await _apiService.postData('api/v1/cart/addProduct', userData);
 
-    Navigator.pushNamed(context, AppRoutes.cartPage);
+    if (response.statusCode == 200) {
+      Navigator.pushNamed(context, AppRoutes.cartPage);
+    } else {
+      showSnackBar(context, 'An error occurred. Please try again later.');
+    }
   } catch (error) {
     showSnackBar(context, 'An error occurred. Please try again later.');
   }

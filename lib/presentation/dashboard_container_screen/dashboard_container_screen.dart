@@ -8,8 +8,14 @@ import 'package:shoper_flutter/presentation/offer_screen_page/offer_screen_page.
 import 'package:shoper_flutter/widgets/custom_bottom_bar.dart';
 
 // ignore_for_file: must_be_immutable
-class DashboardContainerScreen extends StatelessWidget {
+class DashboardContainerScreen extends StatefulWidget {
   DashboardContainerScreen({Key? key}) : super(key: key);
+  @override
+  _DashboardContainerState createState() => _DashboardContainerState();
+}
+
+class _DashboardContainerState extends State<DashboardContainerScreen> {
+  String currentRoute = AppRoutes.accountPage;
 
   @override
   Widget build(BuildContext context) {
@@ -24,17 +30,15 @@ class DashboardContainerScreen extends StatelessWidget {
             transitionDuration: Duration(seconds: 0),
           ),
         ),
-        bottomNavigationBar: _buildBottomBar(context),
+        bottomNavigationBar: CustomBottomBar(
+          currentRoute: currentRoute,
+          onChanged: (BottomBarEnum type) {
+            setState(() {
+              currentRoute = getCurrentRoute(type);
+            });
+          },
+        ),
       ),
-    );
-  }
-
-  Widget _buildBottomBar(BuildContext context) {
-    return CustomBottomBar(
-      onChanged: (BottomBarEnum type) {
-        final route = getCurrentRoute(type);
-        Navigator.pushNamed(context, route);
-      },
     );
   }
 

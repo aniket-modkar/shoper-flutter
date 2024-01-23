@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:shoper_flutter/core/app_export.dart';
 
-// ignore: must_be_immutable
 class CustomBottomBar extends StatefulWidget {
-  CustomBottomBar({this.onChanged});
+  final Function(BottomBarEnum)? onChanged;
+  final String currentRoute;
 
-  Function(BottomBarEnum)? onChanged;
+  CustomBottomBar({this.onChanged, required this.currentRoute});
 
   @override
   CustomBottomBarState createState() => CustomBottomBarState();
@@ -46,6 +46,29 @@ class CustomBottomBarState extends State<CustomBottomBar> {
       type: BottomBarEnum.Account,
     )
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    selectedIndex = getCurrentIndex(widget.currentRoute);
+  }
+
+  int getCurrentIndex(String currentRoute) {
+    switch (currentRoute) {
+      case AppRoutes.dashboardPage:
+        return 0;
+      case AppRoutes.explorePage:
+        return 1;
+      case AppRoutes.cartPage:
+        return 2;
+      case AppRoutes.offerScreenPage:
+        return 3;
+      case AppRoutes.accountPage:
+        return 4;
+      default:
+        return 0;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -120,11 +143,34 @@ class CustomBottomBarState extends State<CustomBottomBar> {
               selectedIndex = index;
               widget.onChanged?.call(bottomMenuList[index].type);
               setState(() {});
+              navigateToPage(bottomMenuList[index].type);
             },
           ),
         ),
       ],
     );
+  }
+
+  void navigateToPage(BottomBarEnum type) {
+    final route = getCurrentRoute(type);
+    Navigator.pushNamed(context, route);
+  }
+
+  String getCurrentRoute(BottomBarEnum type) {
+    switch (type) {
+      case BottomBarEnum.Home:
+        return AppRoutes.dashboardPage;
+      case BottomBarEnum.Explore:
+        return AppRoutes.explorePage;
+      case BottomBarEnum.Cart:
+        return AppRoutes.cartPage;
+      case BottomBarEnum.Offer:
+        return AppRoutes.offerScreenPage;
+      case BottomBarEnum.Account:
+        return AppRoutes.accountPage;
+      default:
+        return "/";
+    }
   }
 }
 
@@ -145,11 +191,8 @@ class BottomMenuModel {
   });
 
   String icon;
-
   String activeIcon;
-
   String? title;
-
   BottomBarEnum type;
 }
 

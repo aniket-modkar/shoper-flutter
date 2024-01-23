@@ -4,9 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:shoper_flutter/core/app_export.dart';
 import 'package:shoper_flutter/core/service/api_service.dart';
 import 'package:shoper_flutter/presentation/address_screen/address_screen.dart';
-import 'package:shoper_flutter/presentation/address_screen/widgets/addresslist_item_widget.dart';
 import 'package:shoper_flutter/presentation/cart_page/widgets/cartlist_item_widget.dart';
-import 'package:shoper_flutter/presentation/order_details_screen/order_details_screen.dart';
+import 'package:shoper_flutter/widgets/app_bar/appbar_leading_image.dart';
 import 'package:shoper_flutter/widgets/app_bar/appbar_title.dart';
 import 'package:shoper_flutter/widgets/app_bar/appbar_trailing_image.dart';
 import 'package:shoper_flutter/widgets/app_bar/custom_app_bar.dart';
@@ -200,6 +199,12 @@ class _CartPageState extends State<CartPage> {
 
   PreferredSizeWidget _buildAppBar(BuildContext context) {
     return CustomAppBar(
+      leadingWidth: 40.h,
+      leading: AppbarLeadingImage(
+        imagePath: ImageConstant.imgArrowLeftBlueGray300,
+        margin: EdgeInsets.only(left: 16.h, top: 16.v, bottom: 15.v),
+        onTap: () => onTapArrowLeft(context),
+      ),
       title: AppbarTitle(
         text: "lbl_your_cart".tr,
         margin: EdgeInsets.only(left: 16.h),
@@ -214,6 +219,10 @@ class _CartPageState extends State<CartPage> {
         ),
       ],
     );
+  }
+
+  void onTapArrowLeft(BuildContext context) {
+    Navigator.pop(context);
   }
 
   Widget _buildCartList(BuildContext context) {

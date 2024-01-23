@@ -1,3 +1,9 @@
+import 'package:shoper_flutter/presentation/account_page/account_page.dart';
+import 'package:shoper_flutter/presentation/cart_page/cart_page.dart';
+import 'package:shoper_flutter/presentation/dashboard_page/dashboard_page.dart';
+import 'package:shoper_flutter/presentation/offer_screen_page/offer_screen_page.dart';
+import 'package:shoper_flutter/widgets/custom_bottom_bar.dart';
+
 import '../explore_page/widgets/manworkequipment_item_widget.dart';
 import '../explore_page/widgets/womantshirticon_item_widget.dart';
 import 'package:flutter/material.dart';
@@ -7,26 +13,40 @@ import 'package:shoper_flutter/widgets/app_bar/appbar_trailing_image.dart';
 import 'package:shoper_flutter/widgets/app_bar/custom_app_bar.dart';
 
 // ignore_for_file: must_be_immutable
-class ExplorePage extends StatelessWidget {
+class ExplorePage extends StatefulWidget {
   ExplorePage({Key? key}) : super(key: key);
 
-  TextEditingController searchController = TextEditingController();
+  @override
+  _ExplorePageState createState() => _ExplorePageState();
+}
 
+class _ExplorePageState extends State<ExplorePage> {
+  String currentRoute = AppRoutes.explorePage;
+  TextEditingController searchController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     mediaQueryData = MediaQuery.of(context);
     return SafeArea(
         child: Scaffold(
-            appBar: _buildAppBar(context),
-            body: Container(
-                width: double.maxFinite,
-                padding: EdgeInsets.symmetric(horizontal: 16.h, vertical: 25.v),
-                child: Column(children: [
-                  _buildManFashion(context),
-                  SizedBox(height: 37.v),
-                  _buildWomanFashion(context),
-                  SizedBox(height: 5.v)
-                ]))));
+      appBar: _buildAppBar(context),
+      body: Container(
+          width: double.maxFinite,
+          padding: EdgeInsets.symmetric(horizontal: 16.h, vertical: 25.v),
+          child: Column(children: [
+            _buildManFashion(context),
+            SizedBox(height: 37.v),
+            _buildWomanFashion(context),
+            SizedBox(height: 5.v)
+          ])),
+      bottomNavigationBar: CustomBottomBar(
+        currentRoute: currentRoute,
+        onChanged: (BottomBarEnum type) {
+          setState(() {
+            currentRoute = getCurrentRoute(type);
+          });
+        },
+      ),
+    ));
   }
 
   /// Section Widget
@@ -105,4 +125,20 @@ class ExplorePage extends StatelessWidget {
   }
 
   void onTapImgNotificationIcon(BuildContext context) {}
+  String getCurrentRoute(BottomBarEnum type) {
+    switch (type) {
+      case BottomBarEnum.Home:
+        return AppRoutes.dashboardPage;
+      case BottomBarEnum.Explore:
+        return AppRoutes.explorePage;
+      case BottomBarEnum.Cart:
+        return AppRoutes.cartPage;
+      case BottomBarEnum.Offer:
+        return AppRoutes.offerScreenPage;
+      case BottomBarEnum.Account:
+        return AppRoutes.accountPage;
+      default:
+        return "/";
+    }
+  }
 }

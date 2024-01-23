@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:shoper_flutter/core/app_export.dart';
-import 'package:shoper_flutter/presentation/address_screen/address_screen.dart';
-import 'package:shoper_flutter/presentation/order_screen/order_screen.dart';
 import 'package:shoper_flutter/widgets/app_bar/appbar_title.dart';
 import 'package:shoper_flutter/widgets/app_bar/appbar_trailing_image.dart';
 import 'package:shoper_flutter/widgets/app_bar/custom_app_bar.dart';
+import 'package:shoper_flutter/widgets/custom_bottom_bar.dart';
 
-class AccountPage extends StatelessWidget {
+class AccountPage extends StatefulWidget {
   const AccountPage({Key? key}) : super(key: key);
+
+  @override
+  _AccountPageState createState() => _AccountPageState();
+}
+
+class _AccountPageState extends State<AccountPage> {
+  String currentRoute = AppRoutes.accountPage;
 
   @override
   Widget build(BuildContext context) {
@@ -56,6 +62,14 @@ class AccountPage extends StatelessWidget {
               ),
             ],
           ),
+        ),
+        bottomNavigationBar: CustomBottomBar(
+          currentRoute: currentRoute,
+          onChanged: (BottomBarEnum type) {
+            setState(() {
+              currentRoute = getCurrentRoute(type);
+            });
+          },
         ),
       ),
     );
@@ -119,31 +133,40 @@ class AccountPage extends StatelessWidget {
   void onTapAccountOption(BuildContext context, String option) {
     switch (option) {
       case "lbl_profile":
-        // Navigate to the profile screen or any other screen as needed
         Navigator.pushNamed(context, AppRoutes.profileScreen);
         break;
       case "lbl_order":
-        // Navigator.push(
-        //     context, MaterialPageRoute(builder: (context) => OrderScreen()));
-
         Navigator.pushNamed(context, AppRoutes.orderScreen);
         break;
       case "lbl_address":
-        // Navigator.push(
-        //     context, MaterialPageRoute(builder: (context) => AddressScreen()));
         Navigator.pushNamed(context, AppRoutes.addressScreen);
         break;
       case "lbl_payment":
         // Handle payment screen navigation
-        // Navigator.pushNamed(context, AppRoutes.paymentScreen);
         break;
       default:
-        // Handle other cases
         break;
     }
   }
 
   void onTapNotificationIcon(BuildContext context) {
     // Your implementation here
+  }
+
+  String getCurrentRoute(BottomBarEnum type) {
+    switch (type) {
+      case BottomBarEnum.Home:
+        return AppRoutes.dashboardPage;
+      case BottomBarEnum.Explore:
+        return AppRoutes.explorePage;
+      case BottomBarEnum.Cart:
+        return AppRoutes.cartPage;
+      case BottomBarEnum.Offer:
+        return AppRoutes.offerScreenPage;
+      case BottomBarEnum.Account:
+        return AppRoutes.accountPage;
+      default:
+        return "/";
+    }
   }
 }
