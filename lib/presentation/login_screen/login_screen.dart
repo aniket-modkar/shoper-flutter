@@ -174,7 +174,7 @@ class LoginScreen extends StatelessWidget {
         if (response.statusCode == 200) {
           _storageService.saveResponseToLocalStorage(
               loginResponse, response.body);
-          Navigator.pushNamed(context, AppRoutes.dashboardContainerScreen);
+          Navigator.pushNamed(context, AppRoutes.dashboardPage);
         } else {
           // Display an error message
           ScaffoldMessenger.of(context).showSnackBar(

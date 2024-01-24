@@ -77,6 +77,11 @@ class CartlistItemWidget extends StatelessWidget {
                       left: 8.h,
                       bottom: 10.v,
                     ),
+                    onTap: () {
+                      // Add your function here
+                      removedToCart(context, product);
+                      // You can perform any action or call a function when the image is tapped
+                    },
                   ),
                 ],
               ),
@@ -97,7 +102,7 @@ class CartlistItemWidget extends StatelessWidget {
                       width: 33.h,
                       onTap: () {
                         // Add your function here
-                        removedToCart(context, product);
+                        decrementToCart(context, product);
                         // You can perform any action or call a function when the image is tapped
                       },
                     ),
@@ -144,7 +149,7 @@ class CartlistItemWidget extends StatelessWidget {
                       width: 33.h,
                       onTap: () {
                         // Add your function here
-                        addToCart(context, product);
+                        incrementToCart(context, product);
                         // You can perform any action or call a function when the image is tapped
                       },
                     ),
@@ -160,7 +165,8 @@ class CartlistItemWidget extends StatelessWidget {
 
   final ApiService _apiService = ApiService();
 
-  void addToCart(BuildContext context, Map<String, dynamic> product) async {
+  void incrementToCart(
+      BuildContext context, Map<String, dynamic> product) async {
     try {
       if (product.isEmpty) {
         return;
@@ -168,8 +174,26 @@ class CartlistItemWidget extends StatelessWidget {
       final String productId = product['productId']['_id'] ?? '';
       final userData = {'productId': productId};
 
-      final response =
-          await _apiService.postData('api/v1/cart/addProduct', userData);
+      final response = await _apiService.postData(
+          'api/v1/cart/incrementProductQuantity', userData);
+
+      Navigator.pushNamed(context, AppRoutes.cartPage);
+    } catch (error) {
+      showSnackBar(context, 'An error occurred. Please try again later.');
+    }
+  }
+
+  void decrementToCart(
+      BuildContext context, Map<String, dynamic> product) async {
+    try {
+      if (product.isEmpty) {
+        return;
+      }
+      final String productId = product['_id'] ?? '';
+      final userData = {'productId': productId};
+
+      final response = await _apiService.postData(
+          'api/v1/cart/decrementProductQuantity', userData);
 
       Navigator.pushNamed(context, AppRoutes.cartPage);
     } catch (error) {

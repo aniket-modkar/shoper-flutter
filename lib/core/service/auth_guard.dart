@@ -20,7 +20,7 @@ class AuthGuard extends RouteObserver<PageRoute<dynamic>> {
         route.settings.name == AppRoutes.loginScreen) {
       // If the token is valid and the current route is the login screen, navigate to the dashboardContainerScreen
       Navigator.of(route.navigator!.context).pushReplacementNamed(
-        AppRoutes.dashboardContainerScreen,
+        AppRoutes.dashboardPage,
       );
     }
   }

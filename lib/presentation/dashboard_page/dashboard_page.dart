@@ -1,6 +1,11 @@
 import 'dart:convert';
 
 import 'package:shoper_flutter/core/service/api_service.dart';
+import 'package:shoper_flutter/presentation/account_page/account_page.dart';
+import 'package:shoper_flutter/presentation/cart_page/cart_page.dart';
+import 'package:shoper_flutter/presentation/explore_page/explore_page.dart';
+import 'package:shoper_flutter/presentation/offer_screen_page/offer_screen_page.dart';
+import 'package:shoper_flutter/widgets/custom_bottom_bar.dart';
 
 import '../dashboard_page/widgets/categories_item_widget.dart';
 import '../dashboard_page/widgets/dashboard_item_widget.dart';
@@ -54,6 +59,8 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
+  String currentRoute = AppRoutes.dashboardPage;
+
   final ApiService _apiService = ApiService();
   int sliderIndex = 1;
   late FetchedData fetchedData;
@@ -102,72 +109,80 @@ class _DashboardPageState extends State<DashboardPage> {
       );
     } else {
       return SafeArea(
-          child: Scaffold(
-              appBar: _buildAppBar(context),
-              body: SizedBox(
-                  width: mediaQueryData.size.width,
-                  child: SingleChildScrollView(
-                      padding: EdgeInsets.only(top: 27.v),
-                      child: Padding(
-                          padding: EdgeInsets.only(left: 16.h, bottom: 5.v),
-                          child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                _buildSlider(context),
-                                SizedBox(height: 16.v),
-                                Container(
-                                    height: 8.v,
-                                    margin: EdgeInsets.only(
-                                      left: 135.h,
-                                      top: 240.v,
-                                    ),
-                                    child: AnimatedSmoothIndicator(
-                                        activeIndex: sliderIndex,
-                                        count: 1,
-                                        axisDirection: Axis.horizontal,
-                                        effect: ScrollingDotsEffect(
-                                            spacing: 8,
-                                            activeDotColor: theme
-                                                .colorScheme.primary
-                                                .withOpacity(1),
-                                            dotColor: appTheme.blue50,
-                                            dotHeight: 8.v,
-                                            dotWidth: 8.h))),
-                                SizedBox(height: 25.v),
-                                _buildCategories(context),
-                                SizedBox(height: 23.v),
-                                Padding(
-                                    padding: EdgeInsets.only(right: 16.h),
-                                    child: _buildFlashSaleHeader(context,
-                                        flashSaleText: "lbl_flash_sale".tr,
-                                        seeMoreText: "lbl_see_more".tr,
-                                        onTapFlashSaleHeader: () {
-                                      onTapFlashSaleHeader(context);
-                                    })),
-                                SizedBox(
-                                  height: 12.v,
+        child: Scaffold(
+          appBar: _buildAppBar(context),
+          body: SizedBox(
+              width: mediaQueryData.size.width,
+              child: SingleChildScrollView(
+                  padding: EdgeInsets.only(top: 27.v),
+                  child: Padding(
+                      padding: EdgeInsets.only(left: 16.h, bottom: 5.v),
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildSlider(context),
+                            SizedBox(height: 16.v),
+                            Container(
+                                height: 8.v,
+                                margin: EdgeInsets.only(
+                                  left: 135.h,
                                 ),
-                                // _buildFsNikeAirMax(context),
-                                // SizedBox(height: 23.v),
-                                Padding(
-                                    padding: EdgeInsets.only(
-                                      right: 16.h,
-                                    ),
-                                    child: _buildFlashSaleHeader(context,
-                                        flashSaleText: "lbl_mega_sale".tr,
-                                        seeMoreText: "lbl_see_more".tr)),
-                                SizedBox(height: 10.v),
-                                // _buildMsNikeAirMax(context),
-                                // SizedBox(height: 29.v),
-                                CustomImageView(
-                                    imagePath:
-                                        ImageConstant.imgRecomendedProduct,
-                                    height: 206.v,
-                                    width: 343.h,
-                                    radius: BorderRadius.circular(5.h)),
-                                SizedBox(height: 16.v),
-                                _buildDashboard(context)
-                              ]))))));
+                                child: AnimatedSmoothIndicator(
+                                    activeIndex: sliderIndex,
+                                    count: 1,
+                                    axisDirection: Axis.horizontal,
+                                    effect: ScrollingDotsEffect(
+                                        spacing: 8,
+                                        activeDotColor: theme
+                                            .colorScheme.primary
+                                            .withOpacity(1),
+                                        dotColor: appTheme.blue50,
+                                        dotHeight: 8.v,
+                                        dotWidth: 8.h))),
+                            SizedBox(height: 25.v),
+                            // _buildCategories(context),
+                            // SizedBox(height: 23.v),
+                            // Padding(
+                            //     padding: EdgeInsets.only(right: 16.h),
+                            //     child: _buildFlashSaleHeader(context,
+                            //         flashSaleText: "lbl_flash_sale".tr,
+                            //         seeMoreText: "lbl_see_more".tr,
+                            //         onTapFlashSaleHeader: () {
+                            //       onTapFlashSaleHeader(context);
+                            //     })),
+                            // SizedBox(
+                            //   height: 12.v,
+                            // ),
+                            // _buildFsNikeAirMax(context),
+                            // SizedBox(height: 23.v),
+                            // Padding(
+                            //     padding: EdgeInsets.only(
+                            //       right: 16.h,
+                            //     ),
+                            //     child: _buildFlashSaleHeader(context,
+                            //         flashSaleText: "lbl_mega_sale".tr,
+                            //         seeMoreText: "lbl_see_more".tr)),
+                            // SizedBox(height: 10.v),
+                            // _buildMsNikeAirMax(context),
+                            // SizedBox(height: 29.v),
+                            CustomImageView(
+                                imagePath: ImageConstant.imgRecomendedProduct,
+                                height: 206.v,
+                                width: 343.h,
+                                radius: BorderRadius.circular(5.h)),
+                            SizedBox(height: 16.v),
+                            _buildDashboard(context)
+                          ])))),
+          bottomNavigationBar: CustomBottomBar(
+            currentRoute: currentRoute,
+            onChanged: (BottomBarEnum type) {
+              setState(() {
+                currentRoute = getCurrentRoute(type);
+              });
+            },
+          ),
+        ),
+      );
     }
   }
 
@@ -218,7 +233,9 @@ class _DashboardPageState extends State<DashboardPage> {
   /// Section Widget
   Widget _buildSlider(BuildContext context) {
     return Padding(
-        padding: EdgeInsets.only(right: 16.h, top: 230.v),
+        padding: EdgeInsets.only(
+          right: 16.h,
+        ),
         child: CarouselSlider.builder(
             options: CarouselOptions(
                 height: 206.v,
@@ -240,7 +257,9 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget _buildCategories(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Padding(
-          padding: EdgeInsets.only(right: 16.h, top: 0.v),
+          padding: EdgeInsets.only(
+            right: 16.h,
+          ),
           child: _buildFlashSaleHeader(context,
               flashSaleText: "lbl_category".tr,
               seeMoreText: "lbl_more_category".tr, onTapSeeMoreLink: () {
@@ -301,11 +320,13 @@ class _DashboardPageState extends State<DashboardPage> {
       dynamic products = fetchedData.result['products'];
       if (products is List) {
         return Padding(
-            padding: EdgeInsets.only(right: 16.h, top: 440.v, bottom: 10.v),
+            padding: EdgeInsets.only(
+              right: 16.h,
+            ),
             child: GridView.builder(
                 shrinkWrap: true,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    mainAxisExtent: 450.v,
+                    mainAxisExtent: 283.v,
                     crossAxisCount: 2,
                     mainAxisSpacing: 13.h,
                     crossAxisSpacing: 13.h),
@@ -368,4 +389,21 @@ class _DashboardPageState extends State<DashboardPage> {
   void onTapDownload(BuildContext context) {}
 
   void onTapSearchProduct(BuildContext context) {}
+
+  String getCurrentRoute(BottomBarEnum type) {
+    switch (type) {
+      case BottomBarEnum.Home:
+        return AppRoutes.dashboardPage;
+      case BottomBarEnum.Explore:
+        return AppRoutes.explorePage;
+      case BottomBarEnum.Cart:
+        return AppRoutes.cartPage;
+      case BottomBarEnum.Offer:
+        return AppRoutes.offerScreenPage;
+      case BottomBarEnum.Account:
+        return AppRoutes.accountPage;
+      default:
+        return "/";
+    }
+  }
 }

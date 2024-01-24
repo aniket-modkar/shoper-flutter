@@ -1,3 +1,5 @@
+import 'package:shoper_flutter/widgets/custom_bottom_bar.dart';
+
 import '../offer_screen_page/widgets/offerscreen_item_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:shoper_flutter/core/app_export.dart';
@@ -5,9 +7,14 @@ import 'package:shoper_flutter/widgets/app_bar/appbar_title.dart';
 import 'package:shoper_flutter/widgets/app_bar/appbar_trailing_image.dart';
 import 'package:shoper_flutter/widgets/app_bar/custom_app_bar.dart';
 
-class OfferScreenPage extends StatelessWidget {
+class OfferScreenPage extends StatefulWidget {
   const OfferScreenPage({Key? key}) : super(key: key);
+  @override
+  _OfferPageState createState() => _OfferPageState();
+}
 
+class _OfferPageState extends State<OfferScreenPage> {
+  String currentRoute = AppRoutes.offerScreenPage;
   @override
   Widget build(BuildContext context) {
     mediaQueryData = MediaQuery.of(context);
@@ -21,7 +28,15 @@ class OfferScreenPage extends StatelessWidget {
                   _buildCuponPromotion(context),
                   SizedBox(height: 16.v),
                   _buildOfferScreen(context)
-                ]))));
+                ])),
+            bottomNavigationBar: CustomBottomBar(
+              currentRoute: currentRoute,
+              onChanged: (BottomBarEnum type) {
+                setState(() {
+                  currentRoute = getCurrentRoute(type);
+                });
+              },
+            )));
   }
 
   /// Section Widget
@@ -71,4 +86,21 @@ class OfferScreenPage extends StatelessWidget {
   }
 
   void onTapNotificationIcon(BuildContext context) {}
+
+  String getCurrentRoute(BottomBarEnum type) {
+    switch (type) {
+      case BottomBarEnum.Home:
+        return AppRoutes.dashboardPage;
+      case BottomBarEnum.Explore:
+        return AppRoutes.explorePage;
+      case BottomBarEnum.Cart:
+        return AppRoutes.cartPage;
+      case BottomBarEnum.Offer:
+        return AppRoutes.offerScreenPage;
+      case BottomBarEnum.Account:
+        return AppRoutes.accountPage;
+      default:
+        return "/";
+    }
+  }
 }
