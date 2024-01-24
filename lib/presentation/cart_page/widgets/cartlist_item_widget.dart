@@ -189,7 +189,7 @@ class CartlistItemWidget extends StatelessWidget {
       if (product.isEmpty) {
         return;
       }
-      final String productId = product['productId']['_id'] ?? '';
+      final String productId = product['_id'] ?? '';
       final userData = {'productId': productId};
 
       final response = await _apiService.postData(

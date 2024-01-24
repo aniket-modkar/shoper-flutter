@@ -139,8 +139,8 @@ class DashboardItemWidget extends StatelessWidget {
 
       final userData = {'productId': product['_id']};
 
-      final response =
-          await _apiService.postData('api/v1/cart/addProduct', userData);
+      final response = await _apiService.postData(
+          'api/v1/cart/incrementProductQuantity', userData);
 
       if (response.statusCode == 200) {
         Navigator.pushNamed(context, AppRoutes.cartPage);

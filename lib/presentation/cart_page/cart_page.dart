@@ -200,11 +200,11 @@ class _CartPageState extends State<CartPage> {
   PreferredSizeWidget _buildAppBar(BuildContext context) {
     return CustomAppBar(
       leadingWidth: 40.h,
-      leading: AppbarLeadingImage(
-        imagePath: ImageConstant.imgArrowLeftBlueGray300,
-        margin: EdgeInsets.only(left: 16.h, top: 16.v, bottom: 15.v),
-        onTap: () => onTapArrowLeft(context),
-      ),
+      // leading: AppbarLeadingImage(
+      //   imagePath: ImageConstant.imgArrowLeftBlueGray300,
+      //   margin: EdgeInsets.only(left: 16.h, top: 16.v, bottom: 15.v),
+      //   onTap: () => onTapArrowLeft(context),
+      // ),
       title: AppbarTitle(
         text: "lbl_your_cart".tr,
         margin: EdgeInsets.only(left: 16.h),
