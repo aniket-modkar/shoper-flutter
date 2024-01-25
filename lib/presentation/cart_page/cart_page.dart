@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:shoper_flutter/core/app_export.dart';
 import 'package:shoper_flutter/core/service/api_service.dart';
 import 'package:shoper_flutter/presentation/address_screen/address_screen.dart';
+import 'package:shoper_flutter/presentation/address_screen/widgets/addresslist_item_widget.dart';
 import 'package:shoper_flutter/presentation/cart_page/widgets/cartlist_item_widget.dart';
 import 'package:shoper_flutter/widgets/app_bar/appbar_leading_image.dart';
 import 'package:shoper_flutter/widgets/app_bar/appbar_title.dart';
@@ -282,23 +283,86 @@ class _CartPageState extends State<CartPage> {
   }
 
   Widget _buildAddressSelection(BuildContext context) {
-    return ElevatedButton(
-      onPressed: () {
-        _showAddressSelectionDialog(context);
-      },
-      style: ElevatedButton.styleFrom(
-        primary: Colors.blue, // Set the button color
-        padding: EdgeInsets.symmetric(horizontal: 16.h, vertical: 16.v),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(5.0),
-        ),
+    final dynamic addressData =
+        fetchedData.result['cart'][0]['billingAddressId'];
+    if (addressData != null) {
+      final Map<String, dynamic> countryId = addressData['countryId'];
+
+      return _buildAddressContainer(
+        "${addressData['firstName']} ${addressData['lastName']}".tr,
+        "${addressData['address1']} ${addressData['city']},${addressData['postalCode']}"
+            .tr,
+        "Country Name: ${countryId['displayName']}",
+        CustomTextStyles.titleSmallPink300,
+        "Change Address".tr,
+        context,
+      );
+    } else {
+      return _buildAddressContainer(
+        "",
+        "",
+        "",
+        CustomTextStyles.titleSmallPink300,
+        "Add Address".tr,
+        context,
+      );
+    }
+  }
+
+  Widget _buildAddressContainer(
+    String name,
+    String address,
+    String country,
+    TextStyle textStyle,
+    String buttonText,
+    BuildContext context,
+  ) {
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: 20.h,
+        vertical: 18.v,
       ),
-      child: Text(
-        "Select Address",
-        style: TextStyle(
-          fontSize: 16,
-          color: Colors.white, // Set the text color
-        ),
+      decoration: AppDecoration.outlinePrimary.copyWith(
+        borderRadius: BorderRadiusStyle.roundedBorder5,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            name,
+            style: textStyle,
+          ),
+          SizedBox(height: 9.v),
+          Text(
+            address,
+            style: theme.textTheme.bodySmall,
+          ),
+          SizedBox(height: 9.v),
+          Text(
+            country,
+            style: theme.textTheme.bodySmall,
+          ),
+          SizedBox(height: 9.v),
+          Align(
+            alignment: Alignment.bottomRight,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    _showAddressSelectionDialog(context);
+                  },
+                  child: Text(
+                    buttonText,
+                    style: textStyle,
+                  ),
+                ),
+              ],
+            ),
+          )
+        ],
       ),
     );
   }

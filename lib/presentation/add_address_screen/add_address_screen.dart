@@ -91,17 +91,6 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
   void initState() {
     super.initState();
     fetchCountryData();
-
-    // Initialize controllers based on addressData
-    countryController.text =
-        widget.addressData['countryId']?['displayName'] ?? '';
-    firstNameController.text = widget.addressData['firstName'] ?? '';
-    lastNameController.text = widget.addressData['lastName'] ?? '';
-    streetaddressController.text = widget.addressData['address1'] ?? '';
-    streetaddressController1.text = widget.addressData['address2'] ?? '';
-    cityController.text = widget.addressData['city'] ?? '';
-    zipcodeController.text = widget.addressData['postalCode'] ?? '';
-    typeController.text = widget.addressData['type'] ?? '';
   }
 
   Future<void> fetchCountryData() async {
@@ -133,6 +122,25 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
   @override
   Widget build(BuildContext context) {
     mediaQueryData = MediaQuery.of(context);
+    if (!isDataFetched) {
+      return Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+    if (widget.addressData.isNotEmpty && isDataFetched) {
+      // Initialize controllers based on addressData
+      // countryController.text =
+      //     widget.addressData['countryId']['displayName'] ?? '';
+      firstNameController.text = widget.addressData['firstName'] ?? '';
+      lastNameController.text = widget.addressData['lastName'] ?? '';
+      streetaddressController.text = widget.addressData['address1'] ?? '';
+      streetaddressController1.text = widget.addressData['address2'] ?? '';
+      cityController.text = widget.addressData['city'] ?? '';
+      zipcodeController.text = widget.addressData['postalCode'] ?? '';
+      typeController.text = widget.addressData['type'] ?? '';
+    }
     return SafeArea(
       child: Scaffold(
         resizeToAvoidBottomInset: false,
@@ -187,6 +195,9 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
   }
 
   PreferredSizeWidget _buildAppBar(BuildContext context) {
+    final buttonText = widget.addressData.isNotEmpty
+        ? "Update Address".tr
+        : "lbl_add_address".tr;
     return CustomAppBar(
       leadingWidth: 40.h,
       leading: AppbarLeadingImage(
@@ -197,19 +208,20 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
         },
       ),
       title: AppbarSubtitle(
-        text: "lbl_add_address".tr,
+        text: buttonText,
         margin: EdgeInsets.only(left: 12.h),
       ),
     );
   }
 
   Widget _buildCountry(BuildContext context) {
-    List<Map<String, dynamic>?> countries = [];
+    List<Map<String, dynamic>> countries = [];
     Map<String, dynamic>? selectedType;
-
+    // selectedType = (widget.addressData['countryId']);
+    // final countryData =  widget.addressData['countryId']['_id'] ?? null;
     if (fetchedData.result.containsKey('countries')) {
       countries =
-          List<Map<String, dynamic>?>.from(fetchedData.result['countries']);
+          List<Map<String, dynamic>>.from(fetchedData.result['countries']);
       selectedType = null;
     }
 
@@ -218,25 +230,22 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
       children: [
         Text("msg_country_or_region".tr, style: theme.textTheme.titleSmall),
         SizedBox(height: 11.v),
-        DropdownButtonFormField<Map<String, dynamic>?>(
-          value: selectedType,
+        DropdownButtonFormField<Map<String, dynamic>>(
+          value: selectedType ?? null,
           onChanged: (Map<String, dynamic>? newValue) {
             if (newValue != null) {
               setState(() {
                 selectedType = newValue;
-                countryController.text = selectedType![
-                    '_id']; // Update the controller value with the country name
+                countryController.text = selectedType!['_id'];
               });
             }
           },
-          items: countries.map((Map<String, dynamic>? country) {
-            return DropdownMenuItem<Map<String, dynamic>?>(
+          items: countries.map((Map<String, dynamic> country) {
+            return DropdownMenuItem<Map<String, dynamic>>(
               value: country,
-              child: country != null
-                  ? Text(country['displayName'])
-                  : Text("Select Country",
-                      style:
-                          TextStyle(color: Colors.grey)), // Placeholder style
+              child: Text(
+                country != null ? country['displayName'] : 'Select',
+              ),
             );
           }).toList(),
           decoration: InputDecoration(
@@ -251,7 +260,9 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
 
   Widget _buildType(BuildContext context) {
     List<String?> addressTypes = [null, "BILLING", "SHIPPING"];
-    String? selectedType = null; // Default selected type
+
+    String? selectedType = widget.addressData['type'] ?? null;
+    null; // Default selected type
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -447,11 +458,18 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
       };
       try {
         final postData = userData;
-        final response =
-            await _apiService.postData('api/v1/address/create', postData);
-
-        if (response.statusCode == 201) {
-          Navigator.pop(context);
+        if (widget.addressData.isNotEmpty) {
+          final response = await _apiService.postData(
+              'api/v1/address/update/${widget.addressData['_id']}', postData);
+          if (response.statusCode == 202) {
+            Navigator.pushNamed(context, AppRoutes.addressScreen);
+          }
+        } else {
+          final response =
+              await _apiService.postData('api/v1/address/create', postData);
+          if (response.statusCode == 201) {
+            Navigator.pushNamed(context, AppRoutes.addressScreen);
+          }
         }
       } catch (error) {
         // Display an error message

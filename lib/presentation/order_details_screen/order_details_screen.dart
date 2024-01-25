@@ -357,13 +357,19 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                 SizedBox(height: 15.v),
                 _buildShipping(context,
                     shippingLabel: "lbl_address".tr,
-                    pOSReggular:
-                        "${billingAddress['address1']}, ${billingAddress['address2']},"),
+                    pOSReggular: "${billingAddress['address1']}"),
                 SizedBox(height: 8.v),
                 _buildShipping(context,
-                    shippingLabel: '-',
+                    shippingLabel: "".tr,
+                    pOSReggular: "${billingAddress['address2']}"),
+                SizedBox(height: 8.v),
+                _buildShipping(context,
+                    shippingLabel: '',
                     pOSReggular:
-                        "${billingAddress['city']}, ${billingAddress['postalCode']}, ${countryDetails['displayName']}")
+                        "${billingAddress['city']}, ${billingAddress['postalCode']}"),
+                _buildShipping(context,
+                    shippingLabel: '',
+                    pOSReggular: " ${countryDetails['displayName']}")
               ],
             ),
           ),

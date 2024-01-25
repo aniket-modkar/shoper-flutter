@@ -117,10 +117,8 @@ class AddresslistItemWidget extends StatelessWidget {
                       .deteleData('api/v1/address/delete/${address}');
 
                   if (response.statusCode == 202) {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => AddressScreen()));
+                    Navigator.pushNamed(context, AppRoutes.addressScreen);
+                    ;
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(

@@ -52,7 +52,7 @@ class DashboardItemWidget extends StatelessWidget {
             SizedBox(
               width: 107,
               child: Text(
-                product['title'] ?? 'Unknown Product',
+                _getTitleCase(product['title']) ?? 'Unknown Product',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: theme.textTheme.labelLarge!.copyWith(
@@ -110,8 +110,14 @@ class DashboardItemWidget extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 primary: Colors.blue, // Set the background color of the button
               ),
-              child: Text('Add to Cart',
-                  style: TextStyle(color: Colors.white)), // Set the text color
+              child: Padding(
+                padding:
+                    const EdgeInsets.all(8.0), // Adjust the padding as needed
+                child: Text(
+                  'Add to Cart',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ), // Set the text color
             ),
           ],
         ),
@@ -170,4 +176,23 @@ double calculatePercentageDiscount(double originalPrice, double currentPrice) {
   double percentageDiscount =
       ((originalPrice - currentPrice) / originalPrice) * 100;
   return percentageDiscount;
+}
+
+String _getTitleCase(String? title) {
+  if (title == null) {
+    return 'Unknown Product';
+  }
+  return titleCase(title);
+}
+
+String titleCase(String input) {
+  List<String> words = input.split(' ');
+  List<String> titleCaseWords = words.map((word) {
+    if (word.isNotEmpty) {
+      return '${word[0].toUpperCase()}${word.substring(1)}';
+    } else {
+      return '';
+    }
+  }).toList();
+  return titleCaseWords.join(' ');
 }

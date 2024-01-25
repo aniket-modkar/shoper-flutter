@@ -23,6 +23,7 @@ class AuthGuard extends RouteObserver<PageRoute<dynamic>> {
         AppRoutes.dashboardPage,
       );
     }
+    // Allow access to the register screen for both authenticated and unauthenticated users
   }
 
   bool isValidToken(String token) {

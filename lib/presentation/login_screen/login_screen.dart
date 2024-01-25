@@ -196,7 +196,16 @@ class LoginScreen extends StatelessWidget {
     }
   }
 
+  // void onTapTxtDonthaveanaccount(BuildContext context) {
+  //   Navigator.pushNamed(context, AppRoutes.registerScreen);
+
+  // }
   void onTapTxtDonthaveanaccount(BuildContext context) {
-    Navigator.pushNamed(context, AppRoutes.registerScreen);
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (context) =>
+            RegisterScreen(), // Replace with the actual widget or screen you want to navigate to
+      ),
+    );
   }
 }

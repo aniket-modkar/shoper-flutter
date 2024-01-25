@@ -166,7 +166,8 @@ class _ProductDetailsPageState extends State<ProductDetailScreen> {
         onTap: () => onTapArrowLeft(context),
       ),
       title: AppbarSubtitle(
-        text: "${productsData[0]['title'] ?? 'Unknown Product'}".tr,
+        text: "${_getTitleCase(productsData[0]['title']) ?? 'Unknown Product'}"
+            .tr,
         margin: EdgeInsets.only(left: 12.h),
       ),
       actions: [
@@ -245,7 +246,8 @@ class _ProductDetailsPageState extends State<ProductDetailScreen> {
                   child: SizedBox(
                     width: 275.h,
                     child: Text(
-                      "${productsData[0]['title'] ?? 'Unknown Product'}".tr,
+                      "${_getTitleCase(productsData[0]['title']) ?? 'Unknown Product'}"
+                          .tr,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: CustomTextStyles.titleLargeOnPrimary
@@ -358,7 +360,8 @@ class _ProductDetailsPageState extends State<ProductDetailScreen> {
             margin: EdgeInsets.only(right: 31.h),
             // margin: EdgeInsets.only(right: 31.h, top: 400.v),
             child: Text(
-              "${productsData[0]['title'] ?? 'Unknown Product'}".tr,
+              "${_getTitleCase(productsData[0]['title']) ?? 'Unknown Product'}"
+                  .tr,
               maxLines: 4,
               overflow: TextOverflow.ellipsis,
               style: theme.textTheme.bodySmall!.copyWith(height: 1.80),
@@ -569,4 +572,23 @@ void showSnackBar(BuildContext context, String message) {
       duration: Duration(seconds: 3),
     ),
   );
+}
+
+String _getTitleCase(String? title) {
+  if (title == null) {
+    return 'Unknown Product';
+  }
+  return titleCase(title);
+}
+
+String titleCase(String input) {
+  List<String> words = input.split(' ');
+  List<String> titleCaseWords = words.map((word) {
+    if (word.isNotEmpty) {
+      return '${word[0].toUpperCase()}${word.substring(1)}';
+    } else {
+      return '';
+    }
+  }).toList();
+  return titleCaseWords.join(' ');
 }

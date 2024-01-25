@@ -280,13 +280,15 @@ Widget _buildLogoutButton(BuildContext context) {
           _showLogoutConfirmationDialog(context);
         },
         style: ElevatedButton.styleFrom(
-          // Customize the button style
-          primary: Colors.red, // Example: Set the button color to red
+          primary: Colors.red, // Set the background color of the button
         ),
-        child: Text(
-          "Logout",
-          style: TextStyle(color: Colors.white), // Customize text style
-        ),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0), // Adjust the padding as needed
+          child: Text(
+            'Logout',
+            style: TextStyle(color: Colors.white),
+          ),
+        ), // Set the text color
       ),
     ),
   );
