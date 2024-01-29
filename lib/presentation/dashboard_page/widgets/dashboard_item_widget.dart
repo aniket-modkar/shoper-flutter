@@ -30,7 +30,7 @@ class DashboardItemWidget extends StatelessWidget {
           children: [
             if (product.containsKey('media') && product['media'] is List)
               Expanded(
-                child: Container(
+                child: SizedBox(
                   height: 133,
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
@@ -38,11 +38,35 @@ class DashboardItemWidget extends StatelessWidget {
                     itemBuilder: (context, index) {
                       String imageUrl =
                           baseUrl + (product['media'][index] as String);
-                      return CustomImageView(
-                        imagePath: imageUrl,
-                        height: 133,
-                        width: 133,
-                        radius: BorderRadius.circular(5),
+                      return Padding(
+                        padding: EdgeInsets.only(
+                            right: 8.0), // Add spacing between images
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(5),
+                          child: Image.network(
+                            imageUrl,
+                            height: 133,
+                            width: 133,
+                            fit: BoxFit.cover, // Adjust image fit as needed
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) {
+                                return child;
+                              }
+                              return Center(
+                                child: CircularProgressIndicator(
+                                  value: loadingProgress.expectedTotalBytes !=
+                                          null
+                                      ? loadingProgress.cumulativeBytesLoaded /
+                                          loadingProgress.expectedTotalBytes!
+                                      : null,
+                                ),
+                              );
+                            },
+                            errorBuilder: (context, error, stackTrace) {
+                              return Text('Error loading image');
+                            },
+                          ),
+                        ),
                       );
                     },
                   ),

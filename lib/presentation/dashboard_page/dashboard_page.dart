@@ -1,10 +1,6 @@
 import 'dart:convert';
 
 import 'package:shoper_flutter/core/service/api_service.dart';
-import 'package:shoper_flutter/presentation/account_page/account_page.dart';
-import 'package:shoper_flutter/presentation/cart_page/cart_page.dart';
-import 'package:shoper_flutter/presentation/explore_page/explore_page.dart';
-import 'package:shoper_flutter/presentation/offer_screen_page/offer_screen_page.dart';
 import 'package:shoper_flutter/widgets/custom_bottom_bar.dart';
 
 import '../dashboard_page/widgets/categories_item_widget.dart';
