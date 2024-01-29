@@ -3,27 +3,37 @@ import 'package:shoper_flutter/core/app_export.dart';
 import 'package:shoper_flutter/core/service/api_service.dart';
 import 'package:shoper_flutter/widgets/custom_icon_button.dart';
 
-// ignore: must_be_immutable
-class ManworkequipmentItemWidget extends StatelessWidget {
+class ManWorkEquipmentItemWidget extends StatelessWidget {
   final dynamic category;
-  const ManworkequipmentItemWidget({Key? key, required this.category})
-      : super(
-          key: key,
-        );
+  final bool hasGridView;
+
+  const ManWorkEquipmentItemWidget({
+    Key? key,
+    required this.category,
+    this.hasGridView = false,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final ApiService _apiService = ApiService();
     String baseUrl = _apiService.imgBaseUrl;
-    String imageUrl = baseUrl + (category['categoryImg'] as String);
+    String imageUrl = category['categoryImg'] != null
+        ? baseUrl + (category['categoryImg'] as String)
+        : '';
+
+    // Check if the category has child categories
+    bool hasChildCategories =
+        category['Childs'] != null && (category['Childs'] as List).isNotEmpty;
+
     return Column(
       children: [
-        CustomIconButton(
-          height: 70.adaptSize,
-          width: 70.adaptSize,
-          padding: EdgeInsets.all(23.h),
-          child: CustomImageView(
-            imagePath: imageUrl,
+        Container(
+          child: CustomIconButton(
+            height: 50.adaptSize,
+            width: 50.adaptSize,
+            child: CustomImageView(
+              imagePath: imageUrl,
+            ),
           ),
         ),
         SizedBox(height: 8.v),
@@ -31,6 +41,23 @@ class ManworkequipmentItemWidget extends StatelessWidget {
           "${category['name']}".tr,
           style: CustomTextStyles.labelMediumBluegray300,
         ),
+        // Show the GridView.builder only if the category has child categories
+        // if (hasChildCategories)
+        //   GridView.builder(
+        //     shrinkWrap: true,
+        //     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        //       mainAxisExtent: 94.v,
+        //       crossAxisCount: 4,
+        //       mainAxisSpacing: 21.h,
+        //       crossAxisSpacing: 21.h,
+        //     ),
+        //     itemCount: category['Childs'].length,
+        //     itemBuilder: (context, index) {
+        //       var subCategory = category['Childs'][index];
+        //       return ManWorkEquipmentItemWidget(category: subCategory);
+        //     },
+        //   ),
+        SizedBox(height: 8.v),
       ],
     );
   }

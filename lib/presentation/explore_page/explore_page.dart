@@ -170,7 +170,6 @@ class _ExplorePageState extends State<ExplorePage> {
         ]);
   }
 
-  /// Section Widget
   Widget _buildCategories(BuildContext context, List<dynamic> categories) {
     String baseUrl = _apiService.imgBaseUrl;
     if (categories.isNotEmpty) {
@@ -182,29 +181,50 @@ class _ExplorePageState extends State<ExplorePage> {
           var subCategories = category['Childs'];
           var categoryName = toTitleCase(category['name']);
           String imageUrl = baseUrl + (category['categoryImg'] as String);
-
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  CustomImageView(
-                    imagePath: imageUrl,
-                    height: 24.adaptSize,
-                    width: 24.adaptSize,
-                    alignment: Alignment.topLeft,
-                    onTap: () {
-                      onTapImgNotificationIcon(context);
-                    },
+              Center(
+                child: Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  SizedBox(width: 8.h), // Adjust spacing as needed
-                  Text(
-                    "${categoryName}".tr,
-                    style: theme.textTheme.titleSmall,
+                  child: SizedBox(
+                    width: 400,
+                    height: 100,
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: CustomImageView(
+                            imagePath: imageUrl,
+                            fit: BoxFit.cover,
+                            onTap: () {
+                              onTapImgNotificationIcon(context);
+                            },
+                          ),
+                        ),
+                        Center(
+                          child: Container(
+                            color:
+                                Colors.black, // Set background color to black
+                            child: Text(
+                              "${categoryName}".tr,
+                              style: theme.textTheme.titleSmall
+                                      ?.copyWith(color: Colors.white) ??
+                                  TextStyle(
+                                      color: Colors
+                                          .white), // Set text color to white
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ],
+                ),
               ),
-              SizedBox(height: 13.v),
               GridView.builder(
                 shrinkWrap: true,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -217,7 +237,7 @@ class _ExplorePageState extends State<ExplorePage> {
                 itemCount: subCategories.length,
                 itemBuilder: (context, subIndex) {
                   var subCategory = subCategories[subIndex];
-                  return ManworkequipmentItemWidget(category: subCategory);
+                  return ManWorkEquipmentItemWidget(category: subCategory);
                 },
               ),
             ],
