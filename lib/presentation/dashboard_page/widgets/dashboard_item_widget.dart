@@ -173,7 +173,8 @@ class DashboardItemWidget extends StatelessWidget {
           'api/v1/cart/incrementProductQuantity', userData);
 
       if (response.statusCode == 200) {
-        Navigator.pushNamed(context, AppRoutes.cartPage);
+        // Navigator.pushNamed(context, AppRoutes.cartPage);
+        showSnackBar(context, 'Product added to cart.');
       } else {
         showSnackBar(context, 'An error occurred. Please try again later.');
       }

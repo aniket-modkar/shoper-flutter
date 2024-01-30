@@ -98,28 +98,26 @@ class _CartPageState extends State<CartPage> {
   }
 
   Future<void> fetchData() async {
-    if (!isDataFetched) {
-      try {
-        final response = await _apiService.fetchData('api/v1/cart/fetch');
-        if (response.statusCode == 202) {
-          setState(() {
-            fetchedData = FetchedData.fromJson(json.decode(response.body));
-            isDataFetched = true;
-          });
-        } else {
-          // Handle non-200 status code, if needed
-        }
-      } catch (error) {
+    try {
+      final response = await _apiService.fetchData('api/v1/cart/fetch');
+      if (response.statusCode == 202) {
         setState(() {
-          fetchedData = FetchedData(
-            message: 'Error: $error',
-            responseCode: '',
-            result: {},
-            totalCounts: 0,
-            statusCode: 0,
-          );
+          fetchedData = FetchedData.fromJson(json.decode(response.body));
+          isDataFetched = true;
         });
+      } else {
+        // Handle non-200 status code, if needed
       }
+    } catch (error) {
+      setState(() {
+        fetchedData = FetchedData(
+          message: 'Error: $error',
+          responseCode: '',
+          result: {},
+          totalCounts: 0,
+          statusCode: 0,
+        );
+      });
     }
   }
 
@@ -156,7 +154,6 @@ class _CartPageState extends State<CartPage> {
   @override
   Widget build(BuildContext context) {
     mediaQueryData = MediaQuery.of(context);
-
     if (!isDataFetched) {
       return Scaffold(
         body: Center(
@@ -164,48 +161,93 @@ class _CartPageState extends State<CartPage> {
         ),
       );
     }
+    dynamic cartData = fetchedData.result['cart'];
 
-    return SafeArea(
-      child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        appBar: _buildAppBar(context),
-        body: Container(
-          width: double.maxFinite,
-          padding: EdgeInsets.symmetric(horizontal: 15.h, vertical: 7.v),
-          child: Column(
-            children: [
-              _buildCartList(context),
-              SizedBox(height: 52.v),
-              _buildCouponCodeRow(context),
-              SizedBox(height: 16.v),
-              // _buildAddressList(context),
-              // SizedBox(height: 20.v),
-              _buildAddressSelection(context),
-              SizedBox(height: 20.v),
-              _buildTotalPriceDetailsColumn(context),
-              SizedBox(height: 16.v),
-              CustomElevatedButton(
-                text: "lbl_check_out".tr,
-                onPressed: () {
-                  onTapCheckOut(context);
-                },
+    if (cartData != null) {
+      final List<dynamic> products = cartData[0]['products'] ?? <dynamic>[];
+
+      if (products.isNotEmpty) {
+        return SafeArea(
+          child: Scaffold(
+            resizeToAvoidBottomInset: false,
+            appBar: _buildAppBar(context),
+            body: Container(
+              width: double.maxFinite,
+              padding: EdgeInsets.symmetric(horizontal: 15.h, vertical: 7.v),
+              child: Column(
+                children: [
+                  _buildCartList(context),
+                  SizedBox(height: 52.v),
+                  _buildCouponCodeRow(context),
+                  SizedBox(height: 16.v),
+                  // _buildAddressList(context),
+                  // SizedBox(height: 20.v),
+                  _buildAddressSelection(context),
+                  SizedBox(height: 20.v),
+                  _buildTotalPriceDetailsColumn(context),
+                  SizedBox(height: 16.v),
+                  CustomElevatedButton(
+                    text: "lbl_check_out".tr,
+                    onPressed: () {
+                      onTapCheckOut(context);
+                    },
+                  ),
+                  SizedBox(height: 8.v),
+                ],
               ),
-              SizedBox(height: 8.v),
-            ],
+            ),
+          ),
+        );
+      } else {
+        return Scaffold(
+          body: Center(
+            child: SingleChildScrollView(
+              child: Container(
+                width: MediaQuery.of(context).size.width *
+                    0.8, // 80% of screen width
+                padding: EdgeInsets.all(8.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.shopping_cart,
+                      color: Colors.black,
+                      size: 48.0, // Adjust icon size as needed
+                    ),
+                    SizedBox(
+                        height: 16.0), // Add some space between icon and text
+                    Text(
+                      'Your Cart is empty!',
+                      style: TextStyle(color: Colors.black, fontSize: 24.0),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      }
+    } else {
+      // Handle the case when 'cart' is null
+      return SafeArea(
+        child: Scaffold(
+          body: Center(
+            child: Text("Error: Cart data is null"),
           ),
         ),
-      ),
-    );
+      );
+    }
   }
 
   PreferredSizeWidget _buildAppBar(BuildContext context) {
     return CustomAppBar(
       leadingWidth: 40.h,
-      // leading: AppbarLeadingImage(
-      //   imagePath: ImageConstant.imgArrowLeftBlueGray300,
-      //   margin: EdgeInsets.only(left: 16.h, top: 16.v, bottom: 15.v),
-      //   onTap: () => onTapArrowLeft(context),
-      // ),
+      leading: AppbarLeadingImage(
+        imagePath: ImageConstant.imgArrowLeftBlueGray300,
+        margin: EdgeInsets.only(left: 16.h, top: 16.v, bottom: 15.v),
+        onTap: () => onTapArrowLeft(context),
+      ),
       title: AppbarTitle(
         text: "lbl_your_cart".tr,
         margin: EdgeInsets.only(left: 16.h),
@@ -239,7 +281,12 @@ class _CartPageState extends State<CartPage> {
           },
           itemCount: cartData.length,
           itemBuilder: (context, index) {
-            return CartlistItemWidget(cartData: cartData[index]);
+            return CartlistItemWidget(
+              cartData: cartData[index],
+              onChanged: () {
+                fetchData();
+              },
+            );
           },
         );
       } else {

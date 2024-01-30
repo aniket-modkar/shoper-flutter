@@ -4,8 +4,10 @@ import 'package:shoper_flutter/core/service/api_service.dart';
 
 class CartlistItemWidget extends StatelessWidget {
   final dynamic cartData;
-
-  CartlistItemWidget({Key? key, required this.cartData}) : super(key: key);
+  final VoidCallback onChanged;
+  CartlistItemWidget(
+      {Key? key, required this.cartData, required this.onChanged})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -176,8 +178,9 @@ class CartlistItemWidget extends StatelessWidget {
 
       final response = await _apiService.postData(
           'api/v1/cart/incrementProductQuantity', userData);
-
-      Navigator.pushNamed(context, AppRoutes.cartPage);
+      if (response.statusCode == 200) {
+        _handleTap();
+      }
     } catch (error) {
       showSnackBar(context, 'An error occurred. Please try again later.');
     }
@@ -194,8 +197,10 @@ class CartlistItemWidget extends StatelessWidget {
 
       final response = await _apiService.postData(
           'api/v1/cart/decrementProductQuantity', userData);
-
-      Navigator.pushNamed(context, AppRoutes.cartPage);
+      if (response.statusCode == 200) {
+        _handleTap();
+      }
+      // Navigator.pushNamed(context, AppRoutes.cartPage);
     } catch (error) {
       showSnackBar(context, 'An error occurred. Please try again later.');
     }
@@ -212,11 +217,19 @@ class CartlistItemWidget extends StatelessWidget {
 
       final response =
           await _apiService.postData('api/v1/cart/removeProduct', userData);
-
-      Navigator.pushNamed(context, AppRoutes.cartPage);
+      if (response.statusCode == 200) {
+        _handleTap();
+      }
     } catch (error) {
       showSnackBar(context, 'An error occurred. Please try again later.');
     }
+  }
+
+  void _handleTap() {
+    // Perform any necessary logic here
+
+    // Notify the parent widget that a change has occurred
+    onChanged();
   }
 
   void showSnackBar(BuildContext context, String message) {
