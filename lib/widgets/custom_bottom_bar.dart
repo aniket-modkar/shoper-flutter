@@ -1,5 +1,38 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shoper_flutter/core/app_export.dart';
+import 'package:shoper_flutter/core/service/api_service.dart';
+
+class FetchedData {
+  final String message;
+  final String responseCode;
+  final Map<String, dynamic> result;
+  final int totalCounts;
+  final int statusCode;
+
+  FetchedData({
+    required this.message,
+    required this.responseCode,
+    required this.result,
+    required this.totalCounts,
+    required this.statusCode,
+  });
+
+  factory FetchedData.fromJson(Map<String, dynamic> json) {
+    return FetchedData(
+      message: json['message'] ?? '',
+      responseCode: json['responseCode'] ?? '',
+      result: json['result'] ?? {},
+      totalCounts: json['totalCounts'] ?? 0,
+      statusCode: json['statusCode'] ?? 0,
+    );
+  }
+
+  @override
+  String toString() {
+    return 'FetchedData { message: $message, responseCode: $responseCode, result: $result, totalCounts: $totalCounts, statusCode: $statusCode }';
+  }
+}
 
 class CustomBottomBar extends StatefulWidget {
   final Function(BottomBarEnum)? onChanged;
@@ -13,7 +46,10 @@ class CustomBottomBar extends StatefulWidget {
 
 class CustomBottomBarState extends State<CustomBottomBar> {
   int selectedIndex = 0;
+  final ApiService _apiService = ApiService();
+  late FetchedData fetchedData;
 
+  bool isDataFetched = false;
   List<BottomMenuModel> bottomMenuList = [
     BottomMenuModel(
       icon: ImageConstant.imgNavHome,
@@ -51,6 +87,31 @@ class CustomBottomBarState extends State<CustomBottomBar> {
   void initState() {
     super.initState();
     selectedIndex = getCurrentIndex(widget.currentRoute);
+    fetchData();
+  }
+
+  Future<void> fetchData() async {
+    try {
+      final response = await _apiService.fetchData('api/v1/cart/fetch');
+      if (response.statusCode == 202) {
+        setState(() {
+          fetchedData = FetchedData.fromJson(json.decode(response.body));
+          isDataFetched = true;
+        });
+      } else {
+        // Handle non-200 status code, if needed
+      }
+    } catch (error) {
+      setState(() {
+        fetchedData = FetchedData(
+          message: 'Error: $error',
+          responseCode: '',
+          result: {},
+          totalCounts: 0,
+          statusCode: 0,
+        );
+      });
+    }
   }
 
   int getCurrentIndex(String currentRoute) {
@@ -93,51 +154,109 @@ class CustomBottomBarState extends State<CustomBottomBar> {
             currentIndex: selectedIndex,
             type: BottomNavigationBarType.fixed,
             items: List.generate(bottomMenuList.length, (index) {
-              return BottomNavigationBarItem(
-                icon: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    CustomImageView(
-                      imagePath: bottomMenuList[index].icon,
-                      height: 23.v,
-                      width: 24.h,
-                      color: appTheme.blueGray300,
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 5.v),
-                      child: Text(
-                        bottomMenuList[index].title ?? "",
-                        style: CustomTextStyles.bodySmall10.copyWith(
-                          color: appTheme.blueGray300,
+              if (bottomMenuList[index].type == BottomBarEnum.Cart) {
+                String cartLabel = 'Cart';
+                if (fetchedData.result.containsKey('cart')) {
+                  dynamic cartData = fetchedData.result['cart'];
+                  dynamic products = cartData[0]['products'];
+                  if (products != null && products.isNotEmpty) {
+                    cartLabel += ' (${products.length})';
+                    print(products.length);
+                  }
+                }
+                return BottomNavigationBarItem(
+                  icon: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      CustomImageView(
+                        imagePath: bottomMenuList[index].icon,
+                        height: 23.v,
+                        width: 24.h,
+                        color: appTheme.blueGray300,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 5.v),
+                        child: Text(
+                          cartLabel,
+                          style: CustomTextStyles.bodySmall10.copyWith(
+                            color: appTheme.pink300,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                activeIcon: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    CustomImageView(
-                      imagePath: bottomMenuList[index].activeIcon,
-                      height: 23.v,
-                      width: 24.h,
-                      color: theme.colorScheme.primary.withOpacity(1),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 4.v),
-                      child: Text(
-                        bottomMenuList[index].title ?? "",
-                        style: CustomTextStyles.labelMediumPrimary.copyWith(
-                          color: theme.colorScheme.primary.withOpacity(1),
+                    ],
+                  ),
+                  activeIcon: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      CustomImageView(
+                        imagePath: bottomMenuList[index].activeIcon,
+                        height: 23.v,
+                        width: 24.h,
+                        color: theme.colorScheme.primary.withOpacity(1),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 4.v),
+                        child: Text(
+                          cartLabel,
+                          style: CustomTextStyles.labelMediumPrimary.copyWith(
+                            color: theme.colorScheme.primary.withOpacity(1),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                label: '',
-              );
+                    ],
+                  ),
+                  label: '',
+                );
+              } else {
+                // For other menu items
+                return BottomNavigationBarItem(
+                  icon: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      CustomImageView(
+                        imagePath: bottomMenuList[index].icon,
+                        height: 23.v,
+                        width: 24.h,
+                        color: appTheme.blueGray300,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 5.v),
+                        child: Text(
+                          bottomMenuList[index].title ?? "",
+                          style: CustomTextStyles.bodySmall10.copyWith(
+                            color: appTheme.blueGray300,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  activeIcon: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      CustomImageView(
+                        imagePath: bottomMenuList[index].activeIcon,
+                        height: 23.v,
+                        width: 24.h,
+                        color: theme.colorScheme.primary.withOpacity(1),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 4.v),
+                        child: Text(
+                          bottomMenuList[index].title ?? "",
+                          style: CustomTextStyles.labelMediumPrimary.copyWith(
+                            color: theme.colorScheme.primary.withOpacity(1),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  label: '',
+                );
+              }
             }),
             onTap: (index) {
               selectedIndex = index;

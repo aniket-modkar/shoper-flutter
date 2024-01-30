@@ -25,40 +25,56 @@ class ManWorkEquipmentItemWidget extends StatelessWidget {
     bool hasChildCategories =
         category['Childs'] != null && (category['Childs'] as List).isNotEmpty;
 
-    return Column(
-      children: [
-        Container(
-          child: CustomIconButton(
-            height: 50.adaptSize,
-            width: 50.adaptSize,
-            child: CustomImageView(
-              imagePath: imageUrl,
+    return GestureDetector(
+        onTap: () {
+          onProductDetailsClicked(context, category);
+        },
+        child: Column(
+          children: [
+            Container(
+              child: CustomIconButton(
+                height: 50.adaptSize,
+                width: 50.adaptSize,
+                child: CustomImageView(
+                  imagePath: imageUrl,
+                ),
+              ),
             ),
-          ),
-        ),
-        SizedBox(height: 8.v),
-        Text(
-          "${category['name']}".tr,
-          style: CustomTextStyles.labelMediumBluegray300,
-        ),
-        // Show the GridView.builder only if the category has child categories
-        // if (hasChildCategories)
-        //   GridView.builder(
-        //     shrinkWrap: true,
-        //     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        //       mainAxisExtent: 94.v,
-        //       crossAxisCount: 4,
-        //       mainAxisSpacing: 21.h,
-        //       crossAxisSpacing: 21.h,
-        //     ),
-        //     itemCount: category['Childs'].length,
-        //     itemBuilder: (context, index) {
-        //       var subCategory = category['Childs'][index];
-        //       return ManWorkEquipmentItemWidget(category: subCategory);
-        //     },
-        //   ),
-        SizedBox(height: 8.v),
-      ],
+            SizedBox(height: 8.v),
+            Text(
+              "${category['name']}".tr,
+              style: CustomTextStyles.labelMediumBluegray300,
+            ),
+            // Show the GridView.builder only if the category has child categories
+            // if (hasChildCategories)
+            //   GridView.builder(
+            //     shrinkWrap: true,
+            //     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            //       mainAxisExtent: 94.v,
+            //       crossAxisCount: 4,
+            //       mainAxisSpacing: 21.h,
+            //       crossAxisSpacing: 21.h,
+            //     ),
+            //     itemCount: category['Childs'].length,
+            //     itemBuilder: (context, index) {
+            //       var subCategory = category['Childs'][index];
+            //       return ManWorkEquipmentItemWidget(category: subCategory);
+            //     },
+            //   ),
+            SizedBox(height: 8.v),
+          ],
+        ));
+  }
+
+  void onProductDetailsClicked(
+      BuildContext context, Map<String, dynamic> category) async {
+    Navigator.pushNamed(
+      context,
+      AppRoutes.dashboardPage,
+      arguments: {
+        'categoryId': category['_id'], // Replace with the actual product ID
+        // 'otherParam': 'otherValue', // Replace with other parameters
+      },
     );
   }
 }

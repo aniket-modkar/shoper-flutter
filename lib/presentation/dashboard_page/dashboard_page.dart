@@ -65,12 +65,29 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   void initState() {
     super.initState();
-    fetchData();
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
+      // Accessing the arguments and calling fetchData
+      if (context != null) {
+        Map<String, dynamic>? arguments =
+            ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
+
+        if (arguments != null && arguments.containsKey('categoryId')) {
+          String categoryId = arguments['categoryId'];
+          // Await the fetchData method
+          fetchData(categoryId: categoryId);
+        } else {
+          fetchData();
+        }
+      }
+    });
   }
 
-  Future<void> fetchData() async {
+  Future<void> fetchData({String categoryId = ''}) async {
     if (!isDataFetched) {
-      final userData = {'status': "PUBLISHED"};
+      final userData = {
+        'status': "PUBLISHED",
+        if (categoryId.isNotEmpty) 'categoriesId': categoryId
+      };
       try {
         final response = await _apiService.fetchDataWithFilter(
             'api/v1/product/fetch', userData);
@@ -78,8 +95,13 @@ class _DashboardPageState extends State<DashboardPage> {
           setState(() {
             fetchedData = FetchedData.fromJson(json.decode(response.body));
           });
+        } else {
+          // Handle non-200 status code responses
+          // For example: Show a snackbar with an error message
+          // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to fetch data')));
         }
       } catch (error) {
+        // Handle errors
         setState(() {
           fetchedData = FetchedData(
             message: 'Error: $error',
@@ -90,7 +112,7 @@ class _DashboardPageState extends State<DashboardPage> {
           );
         });
       }
-      isDataFetched = true; // Set the flag to true after fetching data
+      isDataFetched = true;
     }
   }
 
@@ -314,28 +336,42 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget _buildDashboard(BuildContext context) {
     if (fetchedData.result.containsKey('products')) {
       dynamic products = fetchedData.result['products'];
-      if (products is List) {
-        return Padding(
-            padding: EdgeInsets.only(
-              right: 16.h,
-            ),
-            child: GridView.builder(
-                shrinkWrap: true,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    mainAxisExtent: 283.v,
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 13.h,
-                    crossAxisSpacing: 13.h),
-                physics: NeverScrollableScrollPhysics(),
-                itemCount: products.length,
-                itemBuilder: (context, index) {
-                  return DashboardItemWidget(product: products[index]);
-                }));
+      if (products.length > 0) {
+        if (products is List) {
+          return Padding(
+              padding: EdgeInsets.only(
+                right: 16.h,
+              ),
+              child: GridView.builder(
+                  shrinkWrap: true,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      mainAxisExtent: 283.v,
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 13.h,
+                      crossAxisSpacing: 13.h),
+                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: products.length,
+                  itemBuilder: (context, index) {
+                    return DashboardItemWidget(product: products[index]);
+                  }));
+        } else {
+          return _buildErrorWidget("Unexpected data type for 'Product'");
+        }
       } else {
-        return _buildErrorWidget("Unexpected data type for 'address'");
+        return Center(
+          child: Container(
+            color: Colors.black,
+            padding: EdgeInsets.all(16.0), // Adjust padding as needed
+            child: Text(
+              'No product found',
+              style: TextStyle(color: Colors.white),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        );
       }
     } else {
-      return _buildErrorWidget("address key not found.");
+      return _buildErrorWidget("product key not found.");
     }
   }
 

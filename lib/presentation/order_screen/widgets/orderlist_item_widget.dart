@@ -28,7 +28,7 @@ class OrderlistItemWidget extends StatelessWidget {
             child: Padding(
               padding: EdgeInsets.only(left: 16.h),
               child: Text(
-                "lbl_sdg1345kjd".tr,
+                "OrderId - ${order['_id']}".tr,
                 style: theme.textTheme.titleSmall,
               ),
             ),
@@ -89,7 +89,7 @@ class OrderlistItemWidget extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  "${order['products'].length}items purchased".tr,
+                  "${order['products'].length}  items purchased".tr,
                   style: CustomTextStyles.bodySmallOnPrimary,
                 ),
               ],

@@ -133,6 +133,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           String completeName =
               firstProfile['firstName'] + firstProfile['lastName'] ?? '';
           String email = firstProfile['email'] ?? '';
+          String phone = firstProfile['phone'] ?? '*****000';
           if (profiles.isNotEmpty) {
             return SafeArea(
                 child: Scaffold(
@@ -186,7 +187,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               _buildProfileDetailOption(context,
                                   dateIcon: ImageConstant.imgCreditCardIcon,
                                   birthdayText: "lbl_phone_number".tr,
-                                  birthDateValue: "lbl_307_555_0133".tr),
+                                  birthDateValue: "${phone}".tr),
                               SizedBox(height: 5.v),
                               _buildProfileDetailOption(context,
                                   dateIcon: ImageConstant.imgLockPrimary,

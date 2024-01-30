@@ -16,7 +16,7 @@ class ApiInterceptor implements InterceptorContract {
 
     // Append the 'X-auth-token' header to the request
     data.headers['X-auth-token'] = 'bearer $token';
-
+    // print('Request endpoint: ${data.url}');
     return data;
   }
 
