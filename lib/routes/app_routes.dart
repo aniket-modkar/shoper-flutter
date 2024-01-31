@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http_interceptor/http_client_with_interceptor.dart';
 import 'package:shoper_flutter/presentation/account_page/account_page.dart';
 import 'package:shoper_flutter/presentation/cart_page/cart_page.dart';
+import 'package:shoper_flutter/presentation/category_details/category_details.dart';
 import 'package:shoper_flutter/presentation/dashboard_page/dashboard_page.dart';
 import 'package:shoper_flutter/presentation/explore_page/explore_page.dart';
 import 'package:shoper_flutter/presentation/offer_screen_page/offer_screen_page.dart';
@@ -53,6 +54,7 @@ class AppRoutes {
   static const String registerScreen = 'register_screen';
 
   static const String dashboardPage = 'dashboard_page';
+  static const String categorydetails = 'category_details';
 
   static const String dashboardContainerScreen = 'dashboard_container_screen';
 
@@ -154,6 +156,7 @@ class AppRoutes {
     chooseCreditOrDebitCardScreen: (context) => ChooseCreditOrDebitCardScreen(),
     // successScreen: (context) => SuccessScreen(),
     profileScreen: (context) => ProfileScreen(),
+    categorydetails: (context) => CategoryDetailsScreen(),
     changePasswordScreen: (context) => ChangePasswordScreen(),
     orderScreen: (context) => OrderScreen(),
     orderDetailsScreen: (context) => OrderDetailsScreen(),

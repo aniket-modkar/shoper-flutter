@@ -181,72 +181,89 @@ class _ExplorePageState extends State<ExplorePage> {
           var subCategories = category['Childs'];
           var categoryName = toTitleCase(category['name']);
           String imageUrl = baseUrl + (category['categoryImg'] as String);
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: SizedBox(
-                    width: 400,
-                    height: 100,
-                    child: Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: CustomImageView(
-                            imagePath: imageUrl,
-                            fit: BoxFit.cover,
-                            onTap: () {
-                              onTapImgNotificationIcon(context);
-                            },
-                          ),
-                        ),
-                        Center(
-                          child: Container(
-                            color:
-                                Colors.black, // Set background color to black
-                            child: Text(
-                              "${categoryName}".tr,
-                              style: theme.textTheme.titleSmall
-                                      ?.copyWith(color: Colors.white) ??
-                                  TextStyle(
-                                      color: Colors
-                                          .white), // Set text color to white
-                              textAlign: TextAlign.center,
+          return GestureDetector(
+              onTap: () {
+                onProductDetailsClicked(context, category);
+              },
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: SizedBox(
+                        width: 400,
+                        height: 100,
+                        child: Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: CustomImageView(
+                                imagePath: imageUrl,
+                                fit: BoxFit.cover,
+                                onTap: () {
+                                  onTapImgNotificationIcon(context);
+                                },
+                              ),
                             ),
-                          ),
+                            Center(
+                              child: Container(
+                                color: Colors
+                                    .black, // Set background color to black
+                                child: Text(
+                                  "${categoryName}".tr,
+                                  style: theme.textTheme.titleSmall
+                                          ?.copyWith(color: Colors.white) ??
+                                      TextStyle(
+                                          color: Colors
+                                              .white), // Set text color to white
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
                   ),
-                ),
-              ),
-              GridView.builder(
-                shrinkWrap: true,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  mainAxisExtent: 94.v,
-                  crossAxisCount: 4,
-                  mainAxisSpacing: 21.h,
-                  crossAxisSpacing: 21.h,
-                ),
-                physics: NeverScrollableScrollPhysics(),
-                itemCount: subCategories.length,
-                itemBuilder: (context, subIndex) {
-                  var subCategory = subCategories[subIndex];
-                  return ManWorkEquipmentItemWidget(category: subCategory);
-                },
-              ),
-            ],
-          );
+                  GridView.builder(
+                    shrinkWrap: true,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      mainAxisExtent: 94.v,
+                      crossAxisCount: 4,
+                      mainAxisSpacing: 21.h,
+                      crossAxisSpacing: 21.h,
+                    ),
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: subCategories.length,
+                    itemBuilder: (context, subIndex) {
+                      var subCategory = subCategories[subIndex];
+                      return ManWorkEquipmentItemWidget(category: subCategory);
+                    },
+                  ),
+                ],
+              ));
         },
       );
     } else {
       return _buildErrorWidget("Unexpected data type for 'Category'");
     }
+  }
+
+  void onProductDetailsClicked(
+      BuildContext context, Map<String, dynamic> category) async {
+    Navigator.pushNamed(
+      context,
+      AppRoutes.categorydetails,
+      arguments: {
+        'categoryId': category['_id'],
+        'categoryName': category['name'], // Replace with the actual product ID
+        // 'otherParam': 'otherValue', // Replace with other parameters
+      },
+    );
   }
 
   Widget _buildErrorWidget(String errorMessage) {

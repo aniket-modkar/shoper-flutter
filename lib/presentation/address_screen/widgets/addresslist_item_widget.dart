@@ -3,6 +3,7 @@ import 'package:shoper_flutter/core/app_export.dart';
 import 'package:shoper_flutter/core/service/api_service.dart';
 import 'package:shoper_flutter/presentation/add_address_screen/add_address_screen.dart';
 import 'package:shoper_flutter/presentation/address_screen/address_screen.dart';
+import 'package:badges/badges.dart' as badges;
 
 class AddresslistItemWidget extends StatelessWidget {
   final dynamic addressData;
@@ -25,63 +26,86 @@ class AddresslistItemWidget extends StatelessWidget {
       decoration: AppDecoration.outlinePrimary.copyWith(
         borderRadius: BorderRadiusStyle.roundedBorder5,
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
+      child: Stack(
         children: [
-          Text(
-            "${addressData['firstName']} ${addressData['lastName']}".tr,
-            style: theme.textTheme.titleSmall, // Make sure 'theme' is defined
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(height: 19.v),
+              Text(
+                "${addressData['firstName']} ${addressData['lastName']}".tr,
+                style: theme.textTheme.titleSmall,
+              ),
+              SizedBox(height: 19.v),
+              Container(
+                width: 264.h,
+                margin: EdgeInsets.only(right: 30.h),
+                child: Text(
+                  "Type: ${addressData['type']}".tr,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.bodySmall!.copyWith(
+                    height: 1.80,
+                  ),
+                ),
+              ),
+              SizedBox(height: 20.v),
+              Text(
+                "${addressData['address1']} ${addressData['city']},${addressData['postalCode']}"
+                    .tr,
+                style: theme.textTheme.bodySmall,
+              ),
+              SizedBox(height: 19.v),
+              Text(
+                "Country Name: ${countryId['displayName']}",
+                style: theme.textTheme.bodySmall,
+              ),
+              SizedBox(height: 19.v),
+              Row(
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      onEditPressed(context, addressData);
+                    },
+                    child: Text(
+                      "lbl_edit".tr,
+                      style: CustomTextStyles.titleSmallPrimary,
+                    ),
+                  ),
+                  SizedBox(width: 32.h),
+                  GestureDetector(
+                    onTap: () {
+                      onDeletePressed(context, addressData['_id']);
+                    },
+                    child: Text(
+                      "lbl_delete".tr,
+                      style: CustomTextStyles.titleSmallPink300,
+                    ),
+                  ),
+                ],
+              )
+            ],
           ),
-          SizedBox(height: 19.v),
-          Container(
-            width: 264.h,
-            margin: EdgeInsets.only(right: 30.h),
-            child: Text(
-              "Type: ${addressData['type']}".tr,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.bodySmall!.copyWith(
-                height: 1.80,
+          Visibility(
+            visible: addressData['isDefault'] == true,
+            child: Positioned(
+              top: 0,
+              right: 0,
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.blue,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  'Default',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ),
           ),
-          SizedBox(height: 20.v),
-          Text(
-            "${addressData['address1']} ${addressData['city']},${addressData['postalCode']}"
-                .tr,
-            style: theme.textTheme.bodySmall,
-          ),
-          SizedBox(height: 19.v),
-          Text(
-            "Country Name: ${countryId['displayName']}",
-            style: theme.textTheme.bodySmall,
-          ),
-          SizedBox(height: 19.v),
-          Row(
-            children: [
-              GestureDetector(
-                onTap: () {
-                  onEditPressed(context, addressData);
-                },
-                child: Text(
-                  "lbl_edit".tr,
-                  style: CustomTextStyles.titleSmallPrimary,
-                ),
-              ),
-              SizedBox(width: 32.h),
-              GestureDetector(
-                onTap: () {
-                  onDeletePressed(context, addressData['_id']);
-                },
-                child: Text(
-                  "lbl_delete".tr,
-                  style: CustomTextStyles.titleSmallPink300,
-                ),
-              ),
-            ],
-          )
         ],
       ),
     );

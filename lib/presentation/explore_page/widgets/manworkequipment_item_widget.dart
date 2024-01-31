@@ -70,9 +70,11 @@ class ManWorkEquipmentItemWidget extends StatelessWidget {
       BuildContext context, Map<String, dynamic> category) async {
     Navigator.pushNamed(
       context,
-      AppRoutes.dashboardPage,
+      AppRoutes.categorydetails,
       arguments: {
-        'categoryId': category['_id'], // Replace with the actual product ID
+        'categoryId': category['_id'],
+        'categoryName': category['name'], // Replace with the actual product ID
+        // 'otherParam': 'otherValue', // Replace with other parameters
         // 'otherParam': 'otherValue', // Replace with other parameters
       },
     );

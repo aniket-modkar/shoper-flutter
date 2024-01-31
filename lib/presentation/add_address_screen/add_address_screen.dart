@@ -77,7 +77,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
   final ApiService _apiService = ApiService();
   late FetchedData fetchedData;
   bool isDataFetched = false;
-
+  bool? isDefault;
   TextEditingController countryController = TextEditingController();
   TextEditingController firstNameController = TextEditingController();
   TextEditingController lastNameController = TextEditingController();
@@ -87,11 +87,14 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
   TextEditingController zipcodeController = TextEditingController();
   TextEditingController phoneNumberController = TextEditingController();
   TextEditingController typeController = TextEditingController();
+  TextEditingController isDefaultController = TextEditingController();
+
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   @override
   void initState() {
     super.initState();
     fetchCountryData();
+    isDefault = widget.addressData['isDefault'] ?? false;
   }
 
   Future<void> fetchCountryData() async {
@@ -132,7 +135,6 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
     }
     if (widget.addressData.isNotEmpty && isDataFetched) {
       // Initialize controllers based on addressData
-      countryController.text = widget.addressData['countryId']['_id'] ?? '';
       firstNameController.text = widget.addressData['firstName'] ?? '';
       lastNameController.text = widget.addressData['lastName'] ?? '';
       streetaddressController.text = widget.addressData['address1'] ?? '';
@@ -179,6 +181,8 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                           _buildPhoneNumber(context),
                           SizedBox(height: 23.v),
                           _buildType(context),
+                          SizedBox(height: 23.v),
+                          _buildIsDefault(context),
                           SizedBox(height: 23.v),
                         ],
                       ),
@@ -331,6 +335,35 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
     );
   }
 
+  // Define a boolean variable to track the checkbox state
+  Widget _buildIsDefault(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Checkbox(
+              checkColor: Colors.greenAccent,
+              activeColor: Colors.red,
+              value: isDefault ??
+                  false, // Use null-aware operator to handle null value
+              onChanged: (newValue) {
+                setState(() {
+                  isDefault = newValue;
+                  isDefaultController.text = newValue.toString();
+                });
+              },
+            ),
+            Text(
+              "Set as default",
+              style: theme.textTheme.titleSmall,
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
   Widget _buildLastName(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -448,6 +481,10 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
   }
 
   Future<void> onTapAddAddress(BuildContext context) async {
+    if (countryController.text.isEmpty &&
+        widget.addressData['countryId']['_id']) {
+      countryController.text = widget.addressData['countryId']['_id'] ?? '';
+    }
     if (_formKey.currentState!.validate()) {
       final userData = {
         'countryId': countryController.text,
@@ -458,7 +495,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
         'city': cityController.text,
         'postalCode': zipcodeController.text,
         'type': typeController.text,
-        'isDefault': 'false',
+        'isDefault': isDefaultController.text,
       };
       try {
         final postData = userData;

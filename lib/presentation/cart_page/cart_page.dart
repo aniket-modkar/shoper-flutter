@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:shoper_flutter/core/app_export.dart';
 import 'package:shoper_flutter/core/service/api_service.dart';
 import 'package:shoper_flutter/presentation/address_screen/address_screen.dart';
-import 'package:shoper_flutter/presentation/address_screen/widgets/addresslist_item_widget.dart';
 import 'package:shoper_flutter/presentation/cart_page/widgets/cartlist_item_widget.dart';
 import 'package:shoper_flutter/widgets/app_bar/appbar_leading_image.dart';
 import 'package:shoper_flutter/widgets/app_bar/appbar_title.dart';
@@ -443,6 +442,10 @@ class _CartPageState extends State<CartPage> {
                               itemBuilder: (context, index) {
                                 return AddresslistItemSelectionWidget(
                                   addressData: addressData[index],
+                                  onChanged: () {
+                                    fetchData();
+                                    print('item onchanged');
+                                  },
                                 );
                               },
                             ),
@@ -656,8 +659,9 @@ class _CartPageState extends State<CartPage> {
 class AddresslistItemSelectionWidget extends StatelessWidget {
   final dynamic addressData;
   final ApiService _apiService = ApiService();
-
-  AddresslistItemSelectionWidget({Key? key, required this.addressData})
+  final VoidCallback onChanged;
+  AddresslistItemSelectionWidget(
+      {required this.onChanged, Key? key, required this.addressData})
       : super(key: key);
   Widget build(BuildContext context) {
     final Map<String, dynamic> countryId = addressData['countryId'];
@@ -733,7 +737,10 @@ class AddresslistItemSelectionWidget extends StatelessWidget {
           await _apiService.postData('api/v1/cart/setAddress', userData);
 
       if (response.statusCode == 200) {
-        Navigator.pushNamed(context, AppRoutes.cartPage);
+        // Navigator.pushNamed(context, AppRoutes.cartPage);
+        showSnackBar(context, 'Address Successfully Selected.');
+        _handleTap();
+        Navigator.of(context).pop();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -751,5 +758,18 @@ class AddresslistItemSelectionWidget extends StatelessWidget {
         ),
       );
     }
+  }
+
+  void _handleTap() {
+    onChanged();
+  }
+
+  void showSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: Duration(seconds: 3),
+      ),
+    );
   }
 }
