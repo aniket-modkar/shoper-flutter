@@ -61,34 +61,32 @@ class _AddressScreenState extends State<AddressScreen> {
   }
 
   Future<void> fetchData() async {
-    if (!isDataFetched) {
-      try {
-        final response = await _apiService.fetchData('api/v1/address/fetch');
-        if (response.statusCode == 200) {
-          if (mounted) {
-            setState(() {
-              fetchedData = FetchedData.fromJson(json.decode(response.body));
-              isDataFetched = true;
-            });
-          }
-        } else {
-          // Handle non-200 status code
-          print('Error: ${response.statusCode}');
-        }
-      } catch (error) {
-        // Handle errors
-        print('Error: $error');
+    try {
+      final response = await _apiService.fetchData('api/v1/address/fetch');
+      if (response.statusCode == 200) {
         if (mounted) {
           setState(() {
-            fetchedData = FetchedData(
-              message: 'Error: $error',
-              responseCode: '',
-              result: {},
-              totalCounts: 0,
-              statusCode: 0,
-            );
+            fetchedData = FetchedData.fromJson(json.decode(response.body));
+            isDataFetched = true;
           });
         }
+      } else {
+        // Handle non-200 status code
+        print('Error: ${response.statusCode}');
+      }
+    } catch (error) {
+      // Handle errors
+      print('Error: $error');
+      if (mounted) {
+        setState(() {
+          fetchedData = FetchedData(
+            message: 'Error: $error',
+            responseCode: '',
+            result: {},
+            totalCounts: 0,
+            statusCode: 0,
+          );
+        });
       }
     }
   }
@@ -157,6 +155,10 @@ class _AddressScreenState extends State<AddressScreen> {
               itemBuilder: (context, index) {
                 return AddresslistItemWidget(
                   addressData: addressData[index],
+                  onChanged: () {
+                    fetchData();
+                    print('item onchanged');
+                  },
                 );
               },
             ),
@@ -194,7 +196,12 @@ class _AddressScreenState extends State<AddressScreen> {
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => AddAddressScreen(addressData: null)));
+            builder: (context) => AddAddressScreen(
+                  addressData: null,
+                  onChanged: () {
+                    fetchData();
+                  },
+                )));
   }
 
   void onTapArrowLeft(BuildContext context) {

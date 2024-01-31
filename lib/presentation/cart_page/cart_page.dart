@@ -200,11 +200,11 @@ class _CartPageState extends State<CartPage> {
         );
       } else {
         return Scaffold(
+          appBar: _buildAppBar(context),
           body: Center(
             child: SingleChildScrollView(
               child: Container(
-                width: MediaQuery.of(context).size.width *
-                    0.8, // 80% of screen width
+                width: MediaQuery.of(context).size.width * 0.8,
                 padding: EdgeInsets.all(8.0),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -212,10 +212,9 @@ class _CartPageState extends State<CartPage> {
                     Icon(
                       Icons.shopping_cart,
                       color: Colors.black,
-                      size: 48.0, // Adjust icon size as needed
+                      size: 48.0,
                     ),
-                    SizedBox(
-                        height: 16.0), // Add some space between icon and text
+                    SizedBox(height: 16.0),
                     Text(
                       'Your Cart is empty!',
                       style: TextStyle(color: Colors.black, fontSize: 24.0),

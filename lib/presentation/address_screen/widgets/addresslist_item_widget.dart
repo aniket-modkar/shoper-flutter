@@ -7,8 +7,10 @@ import 'package:shoper_flutter/presentation/address_screen/address_screen.dart';
 class AddresslistItemWidget extends StatelessWidget {
   final dynamic addressData;
   final ApiService _apiService = ApiService();
+  final VoidCallback onChanged;
 
-  AddresslistItemWidget({Key? key, required this.addressData})
+  AddresslistItemWidget(
+      {Key? key, required this.onChanged, required this.addressData})
       : super(key: key);
 
   @override
@@ -89,7 +91,12 @@ class AddresslistItemWidget extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => AddAddressScreen(addressData: addressData),
+        builder: (context) => AddAddressScreen(
+          addressData: addressData,
+          onChanged: () {
+            _handleTap();
+          },
+        ),
       ),
     );
   }
@@ -117,8 +124,8 @@ class AddresslistItemWidget extends StatelessWidget {
                       .deteleData('api/v1/address/delete/${address}');
 
                   if (response.statusCode == 202) {
-                    Navigator.pushNamed(context, AppRoutes.addressScreen);
-                    ;
+                    _handleTap();
+                    showSnackBar(context, 'Address Successfully Deleted.');
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
@@ -144,5 +151,18 @@ class AddresslistItemWidget extends StatelessWidget {
         );
       },
     );
+  }
+
+  void showSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: Duration(seconds: 3),
+      ),
+    );
+  }
+
+  void _handleTap() {
+    onChanged();
   }
 }

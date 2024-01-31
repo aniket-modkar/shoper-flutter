@@ -63,8 +63,9 @@ class DropdownMenu<T> extends StatelessWidget {
 
 class AddAddressScreen extends StatefulWidget {
   final Map<String, dynamic> addressData;
-
-  AddAddressScreen({Key? key, Map<String, dynamic>? addressData})
+  final VoidCallback? onChanged;
+  AddAddressScreen(
+      {Key? key, this.onChanged, Map<String, dynamic>? addressData})
       : addressData = addressData ?? {},
         super(key: key);
 
@@ -131,8 +132,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
     }
     if (widget.addressData.isNotEmpty && isDataFetched) {
       // Initialize controllers based on addressData
-      // countryController.text =
-      //     widget.addressData['countryId']['displayName'] ?? '';
+      countryController.text = widget.addressData['countryId']['_id'] ?? '';
       firstNameController.text = widget.addressData['firstName'] ?? '';
       lastNameController.text = widget.addressData['lastName'] ?? '';
       streetaddressController.text = widget.addressData['address1'] ?? '';
@@ -217,12 +217,18 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
   Widget _buildCountry(BuildContext context) {
     List<Map<String, dynamic>> countries = [];
     Map<String, dynamic>? selectedType;
-    // selectedType = (widget.addressData['countryId']);
-    // final countryData =  widget.addressData['countryId']['_id'] ?? null;
     if (fetchedData.result.containsKey('countries')) {
       countries =
           List<Map<String, dynamic>>.from(fetchedData.result['countries']);
-      selectedType = null;
+    }
+    if (widget.addressData.containsKey('countryId')) {
+      final countryId = widget.addressData['countryId'];
+
+      final foundCountry = countries.firstWhere(
+        (country) => country['_id'].toString() == countryId['_id'],
+        orElse: () => Map<String, dynamic>(),
+      );
+      selectedType = foundCountry.isNotEmpty ? foundCountry : null;
     }
 
     return Column(
@@ -231,23 +237,22 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
         Text("msg_country_or_region".tr, style: theme.textTheme.titleSmall),
         SizedBox(height: 11.v),
         DropdownButtonFormField<Map<String, dynamic>>(
-          value: selectedType ?? null,
+          value: selectedType,
           onChanged: (Map<String, dynamic>? newValue) {
             if (newValue != null) {
               setState(() {
                 selectedType = newValue;
-                countryController.text = selectedType!['_id'];
+                countryController.text = newValue['_id'].toString();
               });
             }
           },
-          items: countries.map((Map<String, dynamic> country) {
-            return DropdownMenuItem<Map<String, dynamic>>(
-              value: country,
-              child: Text(
-                country != null ? country['displayName'] : 'Select',
-              ),
-            );
-          }).toList(),
+          items: countries
+              .map<DropdownMenuItem<Map<String, dynamic>>>(
+                  (country) => DropdownMenuItem<Map<String, dynamic>>(
+                        value: country,
+                        child: Text(country['displayName']),
+                      ))
+              .toList(),
           decoration: InputDecoration(
             border: OutlineInputBorder(),
             contentPadding:
@@ -426,7 +431,6 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
   }
 
   Widget _buildAddAddress(BuildContext context) {
-    print('add line: ${widget.addressData}');
     final buttonText =
         widget.addressData.isNotEmpty ? "Update".tr : "lbl_add_address".tr;
 
@@ -462,13 +466,17 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
           final response = await _apiService.postData(
               'api/v1/address/update/${widget.addressData['_id']}', postData);
           if (response.statusCode == 202) {
-            Navigator.pushNamed(context, AppRoutes.addressScreen);
+            showSnackBar(context, 'Address Successfully Updated.');
+            onTapArrowLeft(context);
+            _handleTap();
           }
         } else {
           final response =
               await _apiService.postData('api/v1/address/create', postData);
           if (response.statusCode == 201) {
-            Navigator.pushNamed(context, AppRoutes.addressScreen);
+            showSnackBar(context, 'Address Successfully Created.');
+            onTapArrowLeft(context);
+            _handleTap();
           }
         }
       } catch (error) {
@@ -481,5 +489,21 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
         );
       }
     }
+  }
+
+  void _handleTap() {
+    // Perform any necessary logic here
+
+    // Notify the parent widget that a change has occurred
+    widget.onChanged!();
+  }
+
+  void showSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: Duration(seconds: 3),
+      ),
+    );
   }
 }

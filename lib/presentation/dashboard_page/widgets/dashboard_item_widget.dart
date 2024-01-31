@@ -173,8 +173,18 @@ class DashboardItemWidget extends StatelessWidget {
           'api/v1/cart/incrementProductQuantity', userData);
 
       if (response.statusCode == 200) {
-        // Navigator.pushNamed(context, AppRoutes.cartPage);
-        showSnackBar(context, 'Product added to cart.');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Product added to cart.'),
+            action: SnackBarAction(
+              label: 'View Cart',
+              onPressed: () {
+                // Navigate to cart page
+                Navigator.pushNamed(context, AppRoutes.cartPage);
+              },
+            ),
+          ),
+        );
       } else {
         showSnackBar(context, 'An error occurred. Please try again later.');
       }
