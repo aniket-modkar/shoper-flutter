@@ -194,7 +194,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   birthdayText: "lbl_change_password".tr,
                                   birthDateValue: "msg".tr,
                                   onTapProfileDetailOption: () {
-                                onTapProfileDetailOption(context);
+                                onTapPasswordUpdateOption(context);
                               }),
                               SizedBox(height: 50.v),
                               _buildLogoutButton(
@@ -263,6 +263,110 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void onTapProfileDetailOption(BuildContext context) {}
+
+  void onTapPasswordUpdateOption(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            "Update Password",
+            style: TextStyle(color: const Color.fromARGB(255, 43, 41, 41)),
+          ),
+          content: SingleChildScrollView(
+            child: Form(
+              key: _formKey, // Assign the form key to the Form widget
+              child: Column(
+                children: [
+                  _buildPasswordField(),
+                  SizedBox(height: 20),
+                  _buildConfirmPasswordField(),
+                ],
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                // Logic for cancel button
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text(
+                "Cancel",
+                style: TextStyle(color: Color.fromARGB(255, 12, 68, 56)),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                // Validate form before updating password
+                if (_formKey.currentState!.validate()) {
+                  onUpdatePassword(context);
+                }
+              },
+              child: Text(
+                "Confirm",
+                style: TextStyle(color: Color.fromARGB(255, 12, 68, 56)),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  TextEditingController oldPasswordController = TextEditingController();
+  TextEditingController newPasswordController = TextEditingController();
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  Widget _buildPasswordField() {
+    return TextFormField(
+      decoration: InputDecoration(labelText: "OldPassword"),
+      obscureText: true,
+      controller: oldPasswordController,
+      // Add any necessary validation logic
+    );
+  }
+
+  Widget _buildConfirmPasswordField() {
+    return TextFormField(
+      decoration: InputDecoration(labelText: "New Password"),
+      obscureText: true,
+      controller: newPasswordController,
+
+      // Add any necessary validation logic
+    );
+  }
+
+  Future<void> onUpdatePassword(BuildContext context) async {
+    final userData = {
+      'oldPassword': oldPasswordController.text,
+      'newPassword': newPasswordController.text,
+    };
+    try {
+      final response =
+          await _apiService.postData('api/v1/account/changePassword', userData);
+      if (response.statusCode == 202) {
+        showSnackBar(context, 'Password Successfully Updated.');
+        Navigator.of(context).pop();
+      } else {
+        // Handle other status codes (e.g., 4xx, 5xx) by displaying an error message
+        showSnackBar(context,
+            'An error occurred (${response.statusCode}). Please try again later.');
+      }
+    } catch (error) {
+      // Display an error message
+      showSnackBar(context, 'An error occurred. Please try again later.');
+      print('Error: $error');
+    }
+  }
+}
+
+void showSnackBar(BuildContext context, String message) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(message),
+      duration: Duration(seconds: 3),
+    ),
+  );
 }
 
 void onTapArrowLeft(BuildContext context) {

@@ -138,14 +138,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           children: [
                             _buildPageHeader(context),
                             SizedBox(height: 30.v),
+                            _buildCountry(context),
+                            SizedBox(height: 23.v),
                             _buildFirstName(context),
                             SizedBox(height: 8.v),
                             _buildLastName(context),
                             SizedBox(height: 8.v),
                             _buildMobile(context),
                             SizedBox(height: 8.v),
-                            // _buildCountry(context),
-                            // SizedBox(height: 23.v),
                             _buildEmail(context),
                             SizedBox(height: 8.v),
                             _buildPassword(context),
@@ -247,28 +247,43 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   /// Section Widget
   Widget _buildCountry(BuildContext context) {
+    List<Map<String, dynamic>> countries = [];
+    Map<String, dynamic>? selectedType;
     if (fetchedData.result.containsKey('countries')) {
-      dynamic countries = fetchedData.result['countries'];
+      countries =
+          List<Map<String, dynamic>>.from(fetchedData.result['countries']);
+    }
 
-      TextEditingController countryController =
-          TextEditingController(text: countries[1]['_id']);
-
-      return CustomTextFormField(
-        controller: countryController,
-        hintText: "Country".tr,
-        prefix: Container(
-          margin: EdgeInsets.fromLTRB(16.h, 12.v, 10.h, 12.v),
-          child: CustomImageView(
-            imagePath: ImageConstant.imgUser, // Update with the correct path
-            height: 24.adaptSize,
-            width: 24.adaptSize,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text("msg_country_or_region".tr, style: theme.textTheme.titleSmall),
+        SizedBox(height: 11.v),
+        DropdownButtonFormField<Map<String, dynamic>>(
+          value: selectedType,
+          onChanged: (Map<String, dynamic>? newValue) {
+            if (newValue != null) {
+              setState(() {
+                selectedType = newValue;
+                countryController.text = newValue['_id'].toString();
+              });
+            }
+          },
+          items: countries
+              .map<DropdownMenuItem<Map<String, dynamic>>>(
+                  (country) => DropdownMenuItem<Map<String, dynamic>>(
+                        value: country,
+                        child: Text(country['displayName']),
+                      ))
+              .toList(),
+          decoration: InputDecoration(
+            border: OutlineInputBorder(),
+            contentPadding:
+                EdgeInsets.symmetric(vertical: 10.v, horizontal: 12.h),
           ),
         ),
-        prefixConstraints: BoxConstraints(maxHeight: 48.v),
-        contentPadding: EdgeInsets.only(top: 15.v, right: 30.h, bottom: 15.v),
-      );
-    }
-    return Container();
+      ],
+    );
   }
 
   /// Section Widget

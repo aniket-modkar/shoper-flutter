@@ -20,7 +20,7 @@ class LoginScreen extends StatelessWidget {
   LoginScreen({Key? key}) : super(key: key) {
     // Set default values for email and password controllers
     emailController.text = "customer@gmail.com";
-    passwordController.text = "123456";
+    passwordController.text = "1234567";
   }
 
   TextEditingController emailController = TextEditingController();
