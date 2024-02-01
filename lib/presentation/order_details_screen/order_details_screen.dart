@@ -54,7 +54,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   late FetchedData fetchedData;
   bool isDataFetched = false;
   final ApiService _apiService = ApiService();
-
+  String orderId = '';
   @override
   void initState() {
     super.initState();
@@ -65,7 +65,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
           ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
 
       if (arguments != null && arguments.containsKey('orderId')) {
-        String orderId = arguments['orderId'];
+        orderId = arguments['orderId'];
         // Await the fetchData method
         fetchData(orderId);
       }
@@ -494,6 +494,10 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   }
 
   void onTapArrowLeft(BuildContext context) {
-    Navigator.pushNamed(context, AppRoutes.dashboardPage);
+    // if (isOrderSite != null) {
+    //   Navigator.pushNamed(context, AppRoutes.dashboardPage);
+    // } else {
+    Navigator.pop(context);
+    // }
   }
 }
