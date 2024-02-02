@@ -1,5 +1,3 @@
-import 'dart:js';
-
 import 'package:flutter/material.dart';
 import 'package:http_interceptor/http_client_with_interceptor.dart';
 import 'package:shoper_flutter/presentation/account_page/account_page.dart';

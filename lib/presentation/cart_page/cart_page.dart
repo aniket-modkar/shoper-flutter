@@ -5,6 +5,7 @@ import 'package:shoper_flutter/core/app_export.dart';
 import 'package:shoper_flutter/core/service/api_service.dart';
 import 'package:shoper_flutter/presentation/address_screen/address_screen.dart';
 import 'package:shoper_flutter/presentation/cart_page/widgets/cartlist_item_widget.dart';
+import 'package:shoper_flutter/presentation/cart_page/widgets/coupon_item_list.dart';
 import 'package:shoper_flutter/widgets/app_bar/appbar_leading_image.dart';
 import 'package:shoper_flutter/widgets/app_bar/appbar_title.dart';
 import 'package:shoper_flutter/widgets/app_bar/appbar_trailing_image.dart';
@@ -40,6 +41,37 @@ class FetchedData {
   @override
   String toString() {
     return 'FetchedData { message: $message, responseCode: $responseCode, result: $result, totalCounts: $totalCounts, statusCode: $statusCode }';
+  }
+}
+
+class FetchedCouponData {
+  final String message;
+  final String responseCode;
+  final Map<String, dynamic> result;
+  final int totalCounts;
+  final int statusCode;
+
+  FetchedCouponData({
+    required this.message,
+    required this.responseCode,
+    required this.result,
+    required this.totalCounts,
+    required this.statusCode,
+  });
+
+  factory FetchedCouponData.fromJson(Map<String, dynamic> json) {
+    return FetchedCouponData(
+      message: json['message'] ?? '',
+      responseCode: json['responseCode'] ?? '',
+      result: json['result'] ?? {},
+      totalCounts: json['totalCounts'] ?? 0,
+      statusCode: json['statusCode'] ?? 0,
+    );
+  }
+
+  @override
+  String toString() {
+    return 'FetchedCouponData { message: $message, responseCode: $responseCode, result: $result, totalCounts: $totalCounts, statusCode: $statusCode }';
   }
 }
 
@@ -88,12 +120,16 @@ class _CartPageState extends State<CartPage> {
 
   bool isDataFetched = false;
   bool isAddressDataFetched = false;
+  late FetchedCouponData fetchedCouponData;
+
+  bool isCouponDataFetched = false;
 
   @override
   void initState() {
     super.initState();
     fetchData();
     fetchAddressData();
+    fetchCouponData();
   }
 
   Future<void> fetchData() async {
@@ -117,6 +153,33 @@ class _CartPageState extends State<CartPage> {
           statusCode: 0,
         );
       });
+    }
+  }
+
+  Future<void> fetchCouponData() async {
+    if (!isCouponDataFetched) {
+      try {
+        final response = await _apiService.fetchData('api/v1/discount/fetch');
+        if (response.statusCode == 200) {
+          setState(() {
+            fetchedCouponData =
+                FetchedCouponData.fromJson(json.decode(response.body));
+            isCouponDataFetched = true;
+          });
+        } else {
+          // Handle non-200 status code, if needed
+        }
+      } catch (error) {
+        setState(() {
+          fetchedCouponData = FetchedCouponData(
+            message: 'Error: $error',
+            responseCode: '',
+            result: {},
+            totalCounts: 0,
+            statusCode: 0,
+          );
+        });
+      }
     }
   }
 
@@ -305,25 +368,194 @@ class _CartPageState extends State<CartPage> {
   }
 
   Widget _buildCouponCodeRow(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Expanded(
-          child: CustomTextFormField(
-            controller: TextEditingController(), // Use the provided controller
-            hintText: "msg_enter_cupon_code".tr,
-            textInputAction: TextInputAction.done,
-            contentPadding:
-                EdgeInsets.symmetric(horizontal: 12.h, vertical: 19.v),
+    if (!isCouponDataFetched) {
+      return _buildLoadingWidget();
+    }
+    if (fetchedData.result.containsKey('cart')) {
+      dynamic cartData = fetchedData.result['cart'];
+
+      if (cartData is List) {
+        if (fetchedCouponData.result.containsKey('discounts')) {
+          final couponData = fetchedCouponData.result['discounts'];
+          if (couponData is List) {
+            if (couponData.isEmpty) {
+              return SizedBox(); // Return an empty widget if there are no coupons
+            }
+            // Cast couponData to List<Map<String, dynamic>>
+            final List<Map<String, dynamic>> typedCouponData =
+                couponData.cast<Map<String, dynamic>>();
+            return GestureDetector(
+              onTap: () {
+                if (cartData[0]['discount'].isEmpty) {
+                  _showCouponListModal(context, typedCouponData);
+                } else {
+                  // Do something when there is already a selected coupon
+                  print('A coupon is already selected.');
+                }
+              },
+              child: Container(
+                width: double.infinity, // Set width to 100%
+                padding: EdgeInsets.symmetric(horizontal: 12.h, vertical: 19.v),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      cartData[0]['discount'].isEmpty
+                          ? "Select Coupon"
+                          : "Selected Coupon : ${cartData[0]['discount']['code']}",
+                      style: TextStyle(
+                        color: cartData[0]['discount'].isEmpty
+                            ? Colors.blue
+                            : Colors.red,
+                      ),
+                    ),
+                    if (!cartData[0]['discount'].isEmpty)
+                      IconButton(
+                        icon: Icon(Icons.cancel),
+                        color: Colors.red,
+                        onPressed: () {
+                          // Call your function to remove the selected coupon
+                          _removeCouponFunction();
+                        },
+                      ),
+                  ],
+                ),
+              ),
+            );
+          } else {
+            return _buildErrorWidget("Unexpected data type for 'discounts'");
+          }
+        } else {
+          return _buildErrorWidget("Discounts key not found.");
+        }
+      } else {
+        return _buildErrorWidget("Unexpected data type for 'cart'");
+      }
+    } else {
+      return _buildErrorWidget("Cart key not found.");
+    }
+  }
+
+  void _showCouponListModal(
+      BuildContext context, List<Map<String, dynamic>> coupons) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return Container(
+              padding: EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Select Coupons',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: coupons.length,
+                      itemBuilder: (context, index) {
+                        final coupon = coupons[index];
+                        return CouponListItem(
+                          discount: coupon,
+                          onPressed: () {
+                            print(coupon);
+                            onApplyingCoupon(
+                                context, coupon); // Print the selected coupon
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _removeCouponFunction() async {
+    // try {
+    //   final userData = {
+    //     'discountCode': coupon['code'],
+    //     'discountId': coupon['_id']
+    //   };
+    //   final response = await _apiService.fetchDataWithFilter(
+    //       'api/v1/discount/applyDiscount', userData);
+
+    //   if (response.statusCode == 200) {
+    //     // Navigator.pushNamed(context, AppRoutes.cartPage);
+    //     showSnackBar(context, 'Coupon Successfully Applied.');
+    //     Navigator.pop(context);
+    //     fetchData();
+    //   } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('in Discussion.'),
+        duration: Duration(seconds: 3),
+      ),
+    );
+    // }
+    // } catch (error) {
+    //   // Display an error message
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     SnackBar(
+    //       content: Text('An error occurred. Please try again later.'),
+    //       duration: Duration(seconds: 3),
+    //     ),
+    //   );
+    // }
+  }
+
+  void onApplyingCoupon(BuildContext context, dynamic coupon) async {
+    try {
+      final userData = {
+        'discountCode': coupon['code'],
+        'discountId': coupon['_id']
+      };
+      final response = await _apiService.fetchDataWithFilter(
+          'api/v1/discount/applyDiscount', userData);
+
+      if (response.statusCode == 200) {
+        showSnackBar(context, 'Coupon Successfully Applied.');
+        Navigator.pop(context);
+        fetchData();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed. Please check.'),
+            duration: Duration(seconds: 3),
           ),
+        );
+      }
+    } catch (error) {
+      // Display an error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('An error occurred. Please try again later.'),
+          duration: Duration(seconds: 3),
         ),
-        CustomElevatedButton(
-          width: 87.h,
-          text: "lbl_apply".tr,
-          buttonStyle: CustomButtonStyles.fillPrimary,
-          buttonTextStyle: CustomTextStyles.labelLargeOnPrimaryContainer,
-        ),
-      ],
+      );
+    }
+  }
+
+  Widget _buildLoadingWidget() {
+    return Container(
+      alignment: Alignment.center,
+      child: CircularProgressIndicator(),
+      height: 100.0, // Adjust the height as needed
     );
   }
 

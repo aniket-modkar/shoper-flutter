@@ -112,7 +112,7 @@ class _ProductDetailsPageState extends State<ProductDetailScreen> {
 
   Widget _buildBody() {
     return Container(
-      width: double.maxFinite,
+      width: mediaQueryData.size.width,
       padding: EdgeInsets.symmetric(vertical: 9.v),
       child: Column(
         children: [

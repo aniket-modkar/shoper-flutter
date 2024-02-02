@@ -7,6 +7,6 @@ import io.flutter.plugins.sharedpreferences.SharedPreferencesPlugin
 class MainActivity: FlutterActivity() {
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
-        SharedPreferencesPlugin.registerWith(flutterEngine.dartExecutor.binaryMessenger)
+        flutterEngine.plugins.add(SharedPreferencesPlugin())
     }
 }
