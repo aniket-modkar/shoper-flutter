@@ -25,7 +25,7 @@ class CartlistItemWidget extends StatelessWidget {
     String baseUrl = _apiService.imgBaseUrl;
     final String title = product['productId']['title'] ?? '';
     final int quantity = product['quantity'] ?? 0;
-    final double price = product['subTotal'] ?? 0.0;
+    final int price = product['subTotal'] ?? 0.0;
     final List<String> media =
         (product['productId']['media'] as List<dynamic>).cast<String>();
     final String imageUrl = media.isNotEmpty ? media[0] : '';

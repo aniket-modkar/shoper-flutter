@@ -111,15 +111,24 @@ class _ExplorePageState extends State<ExplorePage> {
       if (categories.isNotEmpty) {
         return SafeArea(
             child: Scaffold(
+          resizeToAvoidBottomInset: false,
           appBar: _buildAppBar(context),
           body: Container(
-              width: double.maxFinite,
-              padding: EdgeInsets.symmetric(horizontal: 16.h, vertical: 25.v),
+              width: mediaQueryData.size.width,
+              padding: EdgeInsets.symmetric(horizontal: 15.v, vertical: 7.v),
               child: Column(children: [
-                _buildCategories(context, categories),
-                SizedBox(height: 37.v),
-                // _buildWomanFashion(context),
-                // SizedBox(height: 5.v)
+                SizedBox(height: 12.v),
+                Expanded(
+                    child: SingleChildScrollView(
+                  child: Padding(
+                      padding: EdgeInsets.only(bottom: 5.v),
+                      child: Column(children: [
+                        _buildCategories(context, categories),
+                        SizedBox(height: 37.v),
+                        // _buildWomanFashion(context),
+                        // SizedBox(height: 5.v)
+                      ])),
+                ))
               ])),
           bottomNavigationBar: CustomBottomBar(
             currentRoute: currentRoute,

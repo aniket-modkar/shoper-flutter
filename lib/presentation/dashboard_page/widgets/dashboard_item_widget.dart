@@ -13,8 +13,8 @@ class DashboardItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String baseUrl = _apiService.imgBaseUrl;
-    double percentageDiscount = calculatePercentageDiscount(
-        product['originalPrice'], product['currentPrice']);
+    int percentageDiscount = calculatePercentageDiscount(
+        product['originalPrice'] ?? 0, product['currentPrice'] ?? 0);
     return GestureDetector(
       onTap: () {
         onProductDetailsClicked(context, product);
@@ -203,13 +203,13 @@ class DashboardItemWidget extends StatelessWidget {
   }
 }
 
-double calculatePercentageDiscount(double originalPrice, double currentPrice) {
+int calculatePercentageDiscount(int originalPrice, int currentPrice) {
   if (originalPrice <= 0) {
-    return 0.0; // Avoid division by zero
+    return 0; // Avoid division by zero
   }
 
-  double percentageDiscount =
-      ((originalPrice - currentPrice) / originalPrice) * 100;
+  int percentageDiscount =
+      ((originalPrice - currentPrice) / originalPrice * 100).toInt();
   return percentageDiscount;
 }
 

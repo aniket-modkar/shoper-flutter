@@ -230,36 +230,44 @@ class _CartPageState extends State<CartPage> {
 
       if (products.isNotEmpty) {
         return SafeArea(
-          child: Scaffold(
-            resizeToAvoidBottomInset: false,
-            appBar: _buildAppBar(context),
-            body: Container(
-              width: double.maxFinite,
-              padding: EdgeInsets.symmetric(horizontal: 15.h, vertical: 7.v),
-              child: Column(
-                children: [
-                  _buildCartList(context),
-                  SizedBox(height: 52.v),
-                  _buildCouponCodeRow(context),
-                  SizedBox(height: 16.v),
-                  // _buildAddressList(context),
-                  // SizedBox(height: 20.v),
-                  _buildAddressSelection(context),
-                  SizedBox(height: 20.v),
-                  _buildTotalPriceDetailsColumn(context),
-                  SizedBox(height: 16.v),
-                  CustomElevatedButton(
-                    text: "lbl_check_out".tr,
-                    onPressed: () {
-                      onTapCheckOut(context);
-                    },
-                  ),
-                  SizedBox(height: 8.v),
-                ],
-              ),
-            ),
-          ),
-        );
+            child: Scaffold(
+                resizeToAvoidBottomInset: false,
+                appBar: _buildAppBar(context),
+                body: Container(
+                    width: mediaQueryData.size.width,
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 15.v, vertical: 7.v),
+                    child: Column(children: [
+                      SizedBox(height: 12.v),
+                      Expanded(
+                        child: SingleChildScrollView(
+                          child: Padding(
+                            padding: EdgeInsets.only(bottom: 5.v),
+                            child: Column(
+                              children: [
+                                _buildCartList(context),
+                                SizedBox(height: 52.v),
+                                _buildCouponCodeRow(context),
+                                SizedBox(height: 16.v),
+                                // _buildAddressList(context),
+                                // SizedBox(height: 20.v),
+                                _buildAddressSelection(context),
+                                SizedBox(height: 20.v),
+                                _buildTotalPriceDetailsColumn(context),
+                                SizedBox(height: 16.v),
+                                CustomElevatedButton(
+                                  text: "lbl_check_out".tr,
+                                  onPressed: () {
+                                    onTapCheckOut(context);
+                                  },
+                                ),
+                                SizedBox(height: 8.v),
+                              ],
+                            ),
+                          ),
+                        ),
+                      )
+                    ]))));
       } else {
         return Scaffold(
           appBar: _buildAppBar(context),
@@ -404,16 +412,20 @@ class _CartPageState extends State<CartPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      cartData[0]['discount'].isEmpty
+                      cartData.isNotEmpty && cartData[0]?['discount'] != null
                           ? "Select Coupon"
-                          : "Selected Coupon : ${cartData[0]['discount']['code']}",
+                          : "Selected Coupon : ${cartData[0]?['discount']?['code'] ?? ''}",
                       style: TextStyle(
-                        color: cartData[0]['discount'].isEmpty
-                            ? Colors.blue
-                            : Colors.red,
+                        color: cartData.isNotEmpty &&
+                                cartData[0]?['discount'] != null &&
+                                cartData[0]['discount'].isNotEmpty
+                            ? Colors.red
+                            : Colors.blue,
                       ),
                     ),
-                    if (!cartData[0]['discount'].isEmpty)
+                    if (cartData.isNotEmpty &&
+                        cartData[0]?['discount'] != null &&
+                        cartData[0]['discount'].isNotEmpty)
                       IconButton(
                         icon: Icon(Icons.cancel),
                         color: Colors.red,

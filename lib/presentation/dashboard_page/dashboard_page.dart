@@ -129,68 +129,73 @@ class _DashboardPageState extends State<DashboardPage> {
       return SafeArea(
         child: Scaffold(
           appBar: _buildAppBar(context),
-          body: SizedBox(
+          body: Container(
               width: mediaQueryData.size.width,
-              child: SingleChildScrollView(
-                  padding: EdgeInsets.only(top: 27.v),
-                  child: Padding(
-                      padding: EdgeInsets.only(left: 16.h, bottom: 5.v),
-                      child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _buildSlider(context),
-                            SizedBox(height: 16.v),
-                            Container(
-                                height: 8.v,
-                                margin: EdgeInsets.only(
-                                  left: 135.h,
-                                ),
-                                child: AnimatedSmoothIndicator(
-                                    activeIndex: sliderIndex,
-                                    count: 1,
-                                    axisDirection: Axis.horizontal,
-                                    effect: ScrollingDotsEffect(
-                                        spacing: 8,
-                                        activeDotColor: theme
-                                            .colorScheme.primary
-                                            .withOpacity(1),
-                                        dotColor: appTheme.blue50,
-                                        dotHeight: 8.v,
-                                        dotWidth: 8.h))),
-                            SizedBox(height: 25.v),
-                            // _buildCategories(context),
-                            // SizedBox(height: 23.v),
-                            // Padding(
-                            //     padding: EdgeInsets.only(right: 16.h),
-                            //     child: _buildFlashSaleHeader(context,
-                            //         flashSaleText: "lbl_flash_sale".tr,
-                            //         seeMoreText: "lbl_see_more".tr,
-                            //         onTapFlashSaleHeader: () {
-                            //       onTapFlashSaleHeader(context);
-                            //     })),
-                            // SizedBox(
-                            //   height: 12.v,
-                            // ),
-                            // _buildFsNikeAirMax(context),
-                            // SizedBox(height: 23.v),
-                            // Padding(
-                            //     padding: EdgeInsets.only(
-                            //       right: 16.h,
-                            //     ),
-                            //     child: _buildFlashSaleHeader(context,
-                            //         flashSaleText: "lbl_mega_sale".tr,
-                            //         seeMoreText: "lbl_see_more".tr)),
-                            // SizedBox(height: 10.v),
-                            // _buildMsNikeAirMax(context),
-                            // SizedBox(height: 29.v),
-                            CustomImageView(
-                                imagePath: ImageConstant.imgRecomendedProduct,
-                                height: 206.v,
-                                width: 343.h,
-                                radius: BorderRadius.circular(5.h)),
-                            SizedBox(height: 16.v),
-                            _buildDashboard(context)
-                          ])))),
+              padding: EdgeInsets.symmetric(horizontal: 15.v, vertical: 7.v),
+              child: Column(children: [
+                SizedBox(height: 12.v),
+                Expanded(
+                    child: SingleChildScrollView(
+                        child: Padding(
+                            padding: EdgeInsets.only(bottom: 5.v),
+                            child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  _buildSlider(context),
+                                  SizedBox(height: 16.v),
+                                  Container(
+                                      height: 8.v,
+                                      margin: EdgeInsets.only(
+                                        left: 135.h,
+                                      ),
+                                      child: AnimatedSmoothIndicator(
+                                          activeIndex: sliderIndex,
+                                          count: 1,
+                                          axisDirection: Axis.horizontal,
+                                          effect: ScrollingDotsEffect(
+                                              spacing: 8,
+                                              activeDotColor: theme
+                                                  .colorScheme.primary
+                                                  .withOpacity(1),
+                                              dotColor: appTheme.blue50,
+                                              dotHeight: 8.v,
+                                              dotWidth: 8.h))),
+                                  SizedBox(height: 25.v),
+                                  // _buildCategories(context),
+                                  // SizedBox(height: 23.v),
+                                  // Padding(
+                                  //     padding: EdgeInsets.only(right: 16.h),
+                                  //     child: _buildFlashSaleHeader(context,
+                                  //         flashSaleText: "lbl_flash_sale".tr,
+                                  //         seeMoreText: "lbl_see_more".tr,
+                                  //         onTapFlashSaleHeader: () {
+                                  //       onTapFlashSaleHeader(context);
+                                  //     })),
+                                  // SizedBox(
+                                  //   height: 12.v,
+                                  // ),
+                                  // _buildFsNikeAirMax(context),
+                                  // SizedBox(height: 23.v),
+                                  // Padding(
+                                  //     padding: EdgeInsets.only(
+                                  //       right: 16.h,
+                                  //     ),
+                                  //     child: _buildFlashSaleHeader(context,
+                                  //         flashSaleText: "lbl_mega_sale".tr,
+                                  //         seeMoreText: "lbl_see_more".tr)),
+                                  // SizedBox(height: 10.v),
+                                  // _buildMsNikeAirMax(context),
+                                  // SizedBox(height: 29.v),
+                                  CustomImageView(
+                                      imagePath:
+                                          ImageConstant.imgRecomendedProduct,
+                                      height: 206.v,
+                                      width: 343.h,
+                                      radius: BorderRadius.circular(5.h)),
+                                  SizedBox(height: 16.v),
+                                  _buildDashboard(context)
+                                ]))))
+              ])),
           bottomNavigationBar: CustomBottomBar(
             currentRoute: currentRoute,
             onChanged: (BottomBarEnum type) {
