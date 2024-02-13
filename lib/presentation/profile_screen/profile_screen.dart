@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:shoper_flutter/core/app_export.dart';
 import 'package:shoper_flutter/core/service/api_service.dart';
 import 'package:shoper_flutter/core/service/storage-service.dart';
+import 'package:shoper_flutter/presentation/profile_screen/widgets%20/circle.dart';
+import 'package:shoper_flutter/presentation/profile_screen/widgets%20/profile_image.dart';
 import 'package:shoper_flutter/widgets/app_bar/appbar_leading_image.dart';
 import 'package:shoper_flutter/widgets/app_bar/appbar_subtitle.dart';
 import 'package:shoper_flutter/widgets/app_bar/custom_app_bar.dart';
@@ -52,16 +54,23 @@ class ProfileScreen extends StatefulWidget {
   _ProfileScreenState createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class _ProfileScreenState extends State<ProfileScreen>
+    with SingleTickerProviderStateMixin {
   final ApiService _apiService = ApiService();
   late FetchedData fetchedData;
   bool isDataFetched = false;
   bool isError = false;
-
+  late AnimationController _controller;
   @override
   void initState() {
     super.initState();
     fetchData();
+    // for animation
+    _controller = AnimationController(
+      duration: Duration(milliseconds: 300),
+      vsync: this,
+    );
+    _controller.forward();
   }
 
   Future<void> fetchData() async {
@@ -150,12 +159,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        CustomImageView(
+                                        Padding(
+                                          padding: EdgeInsets.only(left: 16.h),
+                                          child: ProfileImage(
                                             imagePath: completeImagePath,
-                                            height: 72.adaptSize,
-                                            width: 72.adaptSize,
-                                            radius:
-                                                BorderRadius.circular(36.h)),
+                                            radius: BorderRadius.circular(36.h),
+                                            animationController: _controller,
+                                          ),
+                                        ),
+                                        // ProfileImage(
+                                        //   imagePath: completeImagePath,
+                                        //   radius: BorderRadius.circular(48.h),
+                                        // ),
                                         Padding(
                                             padding: EdgeInsets.only(
                                                 left: 16.h,
@@ -206,6 +221,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
       }
     }
     return Container();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   /// Section Widget

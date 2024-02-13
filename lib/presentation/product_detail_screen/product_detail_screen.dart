@@ -1,6 +1,8 @@
 import 'dart:convert';
 
+import 'package:provider/provider.dart';
 import 'package:shoper_flutter/core/service/api_service.dart';
+import 'package:shoper_flutter/main.dart';
 import 'package:shoper_flutter/presentation/dashboard_page/dashboard_page.dart';
 
 import 'widgets/fortyeight_item_widget.dart';
@@ -556,6 +558,8 @@ void addToCart(BuildContext context, Map<String, dynamic> product) async {
         'api/v1/cart/incrementProductQuantity', userData);
 
     if (response.statusCode == 200) {
+      Provider.of<MyDataProvider>(context, listen: false)
+          .updateData(product['_id']);
       // Navigator.pushNamed(context, AppRoutes.cartPage);
       showSnackBar(context, 'Product added to cart.');
     } else {

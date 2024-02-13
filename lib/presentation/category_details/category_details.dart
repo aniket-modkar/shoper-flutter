@@ -153,7 +153,7 @@ class _CategoryDetailsScreen extends State<CategoryDetailsScreen> {
             }),
         title: AppbarTitleEdittextOne(
             margin: EdgeInsets.only(left: 16.h),
-            hintText: "${categoryName}".tr,
+            hintText: "lbl_nike_air_max".tr,
             controller: searchController),
         actions: [
           AppbarTrailingImage(

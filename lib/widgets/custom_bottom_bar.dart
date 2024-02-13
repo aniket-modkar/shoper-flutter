@@ -1,7 +1,10 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shoper_flutter/core/app_export.dart';
 import 'package:shoper_flutter/core/service/api_service.dart';
+import 'package:shoper_flutter/main.dart';
 
 class FetchedData {
   final String message;
@@ -38,7 +41,10 @@ class CustomBottomBar extends StatefulWidget {
   final Function(BottomBarEnum)? onChanged;
   final String currentRoute;
 
-  CustomBottomBar({this.onChanged, required this.currentRoute});
+  CustomBottomBar({
+    this.onChanged,
+    required this.currentRoute,
+  });
 
   @override
   CustomBottomBarState createState() => CustomBottomBarState();
@@ -48,8 +54,9 @@ class CustomBottomBarState extends State<CustomBottomBar> {
   int selectedIndex = 0;
   final ApiService _apiService = ApiService();
   late FetchedData fetchedData;
-
   bool isDataFetched = false;
+  bool isFirstFetched = false;
+
   List<BottomMenuModel> bottomMenuList = [
     BottomMenuModel(
       icon: ImageConstant.imgNavHome,
@@ -88,18 +95,26 @@ class CustomBottomBarState extends State<CustomBottomBar> {
     super.initState();
     selectedIndex = getCurrentIndex(widget.currentRoute);
     fetchData();
+    // final data = Provider.of<MyDataProvider>(context, listen: false).data;
+    // print('check main data: ${data}');
   }
+
+  String? previousData;
+  String? data;
 
   Future<void> fetchData() async {
     try {
-      final response = await _apiService.fetchData('api/v1/cart/fetch');
-      if (response.statusCode == 202) {
-        setState(() {
-          fetchedData = FetchedData.fromJson(json.decode(response.body));
-          isDataFetched = true;
-        });
-      } else {
-        // Handle non-200 status code, if needed
+      if (data != previousData || isFirstFetched == false) {
+        final response = await _apiService.fetchData('api/v1/cart/fetch');
+        if (response.statusCode == 202) {
+          setState(() {
+            fetchedData = FetchedData.fromJson(json.decode(response.body));
+            isDataFetched = true;
+            isFirstFetched = true;
+          });
+        } else {
+          // Handle non-200 status code, if needed
+        }
       }
     } catch (error) {
       setState(() {
@@ -143,6 +158,24 @@ class CustomBottomBarState extends State<CustomBottomBar> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
+        Consumer<MyDataProvider>(
+          builder: (context, myDataProvider, child) {
+            data = myDataProvider.data;
+
+            // Check if data is not null and not empty
+            if (data != null && data!.isNotEmpty) {
+              // Compare current data with previous data
+              if (data != previousData) {
+                // Print only when data is updated
+                fetchData();
+                print('Data updated: $data');
+                previousData = data;
+              }
+            }
+
+            return Container();
+          },
+        ),
         SizedBox(
           width: double.maxFinite,
           child: Divider(),

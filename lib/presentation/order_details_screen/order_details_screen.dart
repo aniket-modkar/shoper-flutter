@@ -319,8 +319,8 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
         var order = orders.first;
 
         // Extract relevant data for shipping details
-        var billingAddress = order['billingAddress'];
-        var countryDetails = billingAddress['countryId'];
+        var billingAddress = order['billingAddressDetails'];
+        // var countryDetails = billingAddress['countryId'];
         DateTime createdAt = DateTime.parse(billingAddress['createdAt']);
         String formattedDate = DateFormat.yMMMMd().format(createdAt);
 
@@ -367,9 +367,9 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                     shippingLabel: '',
                     pOSReggular:
                         "${billingAddress['city']}, ${billingAddress['postalCode']}"),
-                _buildShipping(context,
-                    shippingLabel: '',
-                    pOSReggular: " ${countryDetails['displayName']}")
+                // _buildShipping(context,
+                //     shippingLabel: '',
+                //     pOSReggular: " ${countryDetails['displayName']}")
               ],
             ),
           ),
@@ -387,9 +387,10 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
       if (orders.isNotEmpty) {
         var order = orders.first;
 
-        // Extract relevant data for payment details
-        var orderTotal = order['orderTotal'];
-        var totalProduct = order['products'];
+        var orderTotal = order['orderTotal'] ?? 0;
+        var netPay = order['netPayable'] ?? 0;
+        var totalProduct = order['products'] ?? 0;
+        final cartTotalDiscount = orderTotal - netPay;
 
         return Container(
           padding: EdgeInsets.symmetric(horizontal: 1.h),
@@ -422,22 +423,29 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                     _buildShipping1(
                       context,
                       shippingLabel: "lbl_shipping".tr,
-                      priceLabel: "lbl_40_00".tr,
+                      priceLabel: "₹ 0 ".tr,
                     ),
                     SizedBox(height: 14.v),
                     _buildShipping1(
                       context,
                       shippingLabel: "lbl_import_charges".tr,
-                      priceLabel: "lbl_128_00".tr,
+                      priceLabel: "₹ 0 ".tr,
                     ),
                     SizedBox(height: 12.v),
                     Divider(),
                     SizedBox(height: 10.v),
                     _buildShipping1(
                       context,
-                      shippingLabel: "lbl_total_price".tr,
+                      shippingLabel: "Total Discount".tr,
                       priceLabel:
-                          "₹ $orderTotal", // Display the order total here
+                          "₹ $cartTotalDiscount", // Display the order total here
+                    ),
+                    Divider(),
+                    SizedBox(height: 10.v),
+                    _buildShipping1(
+                      context,
+                      shippingLabel: "lbl_total_price".tr,
+                      priceLabel: "₹ $netPay", // Display the order total here
                     ),
                   ],
                 ),

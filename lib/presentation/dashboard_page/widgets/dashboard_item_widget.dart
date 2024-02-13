@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shoper_flutter/core/app_export.dart';
 import 'package:shoper_flutter/core/service/api_service.dart';
+import 'package:shoper_flutter/main.dart';
 import 'package:shoper_flutter/widgets/custom_rating_bar.dart';
 
 // ignore: must_be_immutable
 class DashboardItemWidget extends StatelessWidget {
   final dynamic product;
-
-  DashboardItemWidget({Key? key, required this.product}) : super(key: key);
+  DashboardItemWidget({
+    Key? key,
+    required this.product,
+  }) : super(key: key);
   final ApiService _apiService = ApiService();
 
   @override
@@ -173,10 +177,14 @@ class DashboardItemWidget extends StatelessWidget {
           'api/v1/cart/incrementProductQuantity', userData);
 
       if (response.statusCode == 200) {
+        Provider.of<MyDataProvider>(context, listen: false)
+            .updateData(product['_id']);
+        // update value cart count
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Product added to cart.'),
             action: SnackBarAction(
+              textColor: Colors.blue,
               label: 'View Cart',
               onPressed: () {
                 // Navigate to cart page

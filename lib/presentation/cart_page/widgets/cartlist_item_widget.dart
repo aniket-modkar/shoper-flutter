@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shoper_flutter/core/app_export.dart';
 import 'package:shoper_flutter/core/service/api_service.dart';
+import 'package:shoper_flutter/main.dart';
 
 class CartlistItemWidget extends StatelessWidget {
   final dynamic cartData;
@@ -198,6 +200,8 @@ class CartlistItemWidget extends StatelessWidget {
       final response = await _apiService.postData(
           'api/v1/cart/decrementProductQuantity', userData);
       if (response.statusCode == 200) {
+        Provider.of<MyDataProvider>(context, listen: false)
+            .updateData(product['_id']);
         _handleTap();
       }
       // Navigator.pushNamed(context, AppRoutes.cartPage);
@@ -218,6 +222,8 @@ class CartlistItemWidget extends StatelessWidget {
       final response =
           await _apiService.postData('api/v1/cart/removeProduct', userData);
       if (response.statusCode == 200) {
+        Provider.of<MyDataProvider>(context, listen: false)
+            .updateData(product['_id']);
         _handleTap();
       }
     } catch (error) {

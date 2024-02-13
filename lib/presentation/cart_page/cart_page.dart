@@ -384,7 +384,7 @@ class _CartPageState extends State<CartPage> {
 
       if (cartData is List) {
         if (fetchedCouponData.result.containsKey('discounts')) {
-          final couponData = fetchedCouponData.result['discounts'];
+          final couponData = fetchedCouponData?.result['discounts'];
           if (couponData is List) {
             if (couponData.isEmpty) {
               return SizedBox(); // Return an empty widget if there are no coupons
@@ -394,7 +394,7 @@ class _CartPageState extends State<CartPage> {
                 couponData.cast<Map<String, dynamic>>();
             return GestureDetector(
               onTap: () {
-                if (cartData[0]['discount'].isEmpty) {
+                if (cartData.isNotEmpty && cartData[0]?['discount']?.isEmpty) {
                   _showCouponListModal(context, typedCouponData);
                 } else {
                   // Do something when there is already a selected coupon
@@ -412,20 +412,22 @@ class _CartPageState extends State<CartPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      cartData.isNotEmpty && cartData[0]?['discount'] != null
-                          ? "Select Coupon"
-                          : "Selected Coupon : ${cartData[0]?['discount']?['code'] ?? ''}",
+                      cartData.isNotEmpty &&
+                              cartData[0]?['discount'] != null &&
+                              cartData[0]?['discount']?.isNotEmpty
+                          ? "Selected Coupon : ${cartData[0]?['discount']?['code'] ?? ''}"
+                          : "Select Coupon",
                       style: TextStyle(
                         color: cartData.isNotEmpty &&
                                 cartData[0]?['discount'] != null &&
-                                cartData[0]['discount'].isNotEmpty
+                                cartData[0]?['discount']?.isNotEmpty
                             ? Colors.red
                             : Colors.blue,
                       ),
                     ),
                     if (cartData.isNotEmpty &&
                         cartData[0]?['discount'] != null &&
-                        cartData[0]['discount'].isNotEmpty)
+                        cartData[0]?['discount']?.isNotEmpty)
                       IconButton(
                         icon: Icon(Icons.cancel),
                         color: Colors.red,
@@ -499,36 +501,31 @@ class _CartPageState extends State<CartPage> {
   }
 
   void _removeCouponFunction() async {
-    // try {
-    //   final userData = {
-    //     'discountCode': coupon['code'],
-    //     'discountId': coupon['_id']
-    //   };
-    //   final response = await _apiService.fetchDataWithFilter(
-    //       'api/v1/discount/applyDiscount', userData);
+    try {
+      final response = await _apiService
+          .postDataWithoutBody('api/v1/discount/removeDiscount');
 
-    //   if (response.statusCode == 200) {
-    //     // Navigator.pushNamed(context, AppRoutes.cartPage);
-    //     showSnackBar(context, 'Coupon Successfully Applied.');
-    //     Navigator.pop(context);
-    //     fetchData();
-    //   } else {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('in Discussion.'),
-        duration: Duration(seconds: 3),
-      ),
-    );
-    // }
-    // } catch (error) {
-    //   // Display an error message
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     SnackBar(
-    //       content: Text('An error occurred. Please try again later.'),
-    //       duration: Duration(seconds: 3),
-    //     ),
-    //   );
-    // }
+      if (response.statusCode == 200) {
+        // Navigator.pushNamed(context, AppRoutes.cartPage);
+        showSnackBar(context, 'Coupon Removed .');
+        fetchData();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('in Discussion.'),
+            duration: Duration(seconds: 3),
+          ),
+        );
+      }
+    } catch (error) {
+      // Display an error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('An error occurred. Please try again later.'),
+          duration: Duration(seconds: 3),
+        ),
+      );
+    }
   }
 
   void onApplyingCoupon(BuildContext context, dynamic coupon) async {
@@ -791,6 +788,20 @@ class _CartPageState extends State<CartPage> {
         int cartTotal =
             int.tryParse(fetchedData.result['cartTotal']?.toString() ?? '0') ??
                 0;
+        final cartTotalString =
+            fetchedData.result['cartTotal']?.toString() ?? '0';
+        final netPayableString =
+            fetchedData.result['netPayable']?.toString() ?? '0';
+
+// Convert the retrieved strings to integers
+        final cartTotalAmmount = int.tryParse(cartTotalString) ?? 0;
+        final netPayable = int.tryParse(netPayableString) ?? 0;
+
+// Calculate the cartTotalDiscount by subtracting netPayable from cartTotal
+        final cartTotalDiscount = cartTotalAmmount - netPayable;
+        int netPay =
+            int.tryParse(fetchedData.result['netPayable']?.toString() ?? '0') ??
+                0;
         return Container(
           padding: EdgeInsets.all(15.h),
           decoration: AppDecoration.outlineBlue50.copyWith(
@@ -822,10 +833,18 @@ class _CartPageState extends State<CartPage> {
               ),
               SizedBox(height: 12.v),
               Divider(),
+
+              _buildShoppingPriceRow(
+                context,
+                shippingLabel: "Total Discount".tr,
+                priceLabel: "'₹ ${cartTotalDiscount.toString()}.00'".tr,
+              ),
+              Divider(),
+              SizedBox(height: 14.v),
               _buildShoppingPriceRow(
                 context,
                 shippingLabel: "lbl_total_price".tr,
-                priceLabel: '₹ ${cartTotal.toString()}.00',
+                priceLabel: '₹ ${netPay.toString()}.00',
               ),
 
               // Add other shopping price rows here
