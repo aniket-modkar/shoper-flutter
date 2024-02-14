@@ -99,11 +99,11 @@ class _MyAppState extends State<MyApp> {
           '',
         ),
       ],
-      navigatorObservers: [_authGuard], // Pass the AuthGuard instance
-      initialRoute: _isConnected ? AppRoutes.loginScreen : '/',
-      // initialRoute: AppRoutes.splashScreen,
+      initialRoute: _isConnected == true
+          ? AppRoutes.loginScreen
+          : AppRoutes.checkConnection,
       routes: AppRoutes.routes,
-      home: _isConnected ? null : CheckConnectionPage(),
+      navigatorObservers: [_authGuard], // Pass the AuthGuard instance
     );
   }
 }

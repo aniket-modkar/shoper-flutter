@@ -785,23 +785,25 @@ class _CartPageState extends State<CartPage> {
       final List<dynamic>? products = cartEntry['products'] as List<dynamic>?;
 
       if (products != null) {
-        int cartTotal =
-            int.tryParse(fetchedData.result['cartTotal']?.toString() ?? '0') ??
-                0;
         final cartTotalString =
             fetchedData.result['cartTotal']?.toString() ?? '0';
         final netPayableString =
             fetchedData.result['netPayable']?.toString() ?? '0';
 
-// Convert the retrieved strings to integers
-        final cartTotalAmmount = int.tryParse(cartTotalString) ?? 0;
-        final netPayable = int.tryParse(netPayableString) ?? 0;
+// Convert the retrieved strings to float or int
+        final cartTotal = double.tryParse(cartTotalString) ?? 0;
+        final netPayable = double.tryParse(netPayableString) ?? 0;
 
-// Calculate the cartTotalDiscount by subtracting netPayable from cartTotal
-        final cartTotalDiscount = cartTotalAmmount - netPayable;
-        int netPay =
-            int.tryParse(fetchedData.result['netPayable']?.toString() ?? '0') ??
-                0;
+// Calculate the cartTotalDiscount
+        final cartTotalDiscount = cartTotal - netPayable;
+
+// Ensure cartTotalDiscount is not negative
+        final cartTotalDiscountNonNegative =
+            cartTotalDiscount < 0 ? 0 : cartTotalDiscount;
+
+// Convert the result back to integer if needed
+        final cartTotalDiscountInt = cartTotalDiscountNonNegative.toInt();
+
         return Container(
           padding: EdgeInsets.all(15.h),
           decoration: AppDecoration.outlineBlue50.copyWith(
@@ -814,7 +816,7 @@ class _CartPageState extends State<CartPage> {
               _buildShoppingPriceRow(
                 context,
                 shippingLabel: "Total Cart item(${products.length})".tr,
-                priceLabel: '₹ ${cartTotal.toString()}.00',
+                priceLabel: '₹ ${cartTotal.toString()}',
               ),
               SizedBox(height: 14.v),
               Divider(),
@@ -837,14 +839,14 @@ class _CartPageState extends State<CartPage> {
               _buildShoppingPriceRow(
                 context,
                 shippingLabel: "Total Discount".tr,
-                priceLabel: "'₹ ${cartTotalDiscount.toString()}.00'".tr,
+                priceLabel: "'₹ ${cartTotalDiscountNonNegative.toString()}'".tr,
               ),
               Divider(),
               SizedBox(height: 14.v),
               _buildShoppingPriceRow(
                 context,
                 shippingLabel: "lbl_total_price".tr,
-                priceLabel: '₹ ${netPay.toString()}.00',
+                priceLabel: '₹ ${netPayableString.toString()}',
               ),
 
               // Add other shopping price rows here

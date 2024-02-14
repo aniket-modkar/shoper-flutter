@@ -7,10 +7,13 @@ class CheckConnectionPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Check Connection Page")),
+      appBar: AppBar(title: const Text("Check Connection ")),
       body: SafeArea(
         child: Center(
           child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              primary: Colors.red,
+            ),
             child: const Text("Check Connection"),
             onPressed: () async {
               final connectivityResult =
@@ -62,7 +65,7 @@ class NetworkErrorDialog extends StatelessWidget {
         children: [
           SizedBox(
               width: 200,
-              child: Image.asset('../../../assets/images/no_connection.png')),
+              child: Image.asset('/assets/images/no_connection.png')),
           const SizedBox(height: 32),
           const Text(
             "Whoops!",

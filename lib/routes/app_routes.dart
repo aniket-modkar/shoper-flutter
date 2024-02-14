@@ -8,6 +8,7 @@ import 'package:shoper_flutter/presentation/explore_page/explore_page.dart';
 import 'package:shoper_flutter/presentation/offer_screen_page/offer_screen_page.dart';
 import 'package:shoper_flutter/presentation/product_detail_screen/product_detail_screen.dart';
 import 'package:shoper_flutter/presentation/profile_screen/profile_screen.dart';
+import 'package:shoper_flutter/presentation/shared/check_connection_page.dart';
 import 'package:shoper_flutter/presentation/splash_screen/splash_screen.dart';
 import 'package:shoper_flutter/presentation/login_screen/login_screen.dart';
 import 'package:shoper_flutter/presentation/register_screen/register_screen.dart';
@@ -110,7 +111,7 @@ class AppRoutes {
   static const String changePasswordScreen = 'change_password_screen';
 
   static const String orderScreen = 'order_screen';
-
+  static const String checkConnection = 'check_connection';
   // static const String orderDetailsScreen = 'order_details_screen';
   static const String orderDetailsScreen = 'order_details_screen';
 
@@ -168,6 +169,7 @@ class AppRoutes {
     accountPage: (context) => AccountPage(),
     offerScreenPage: (context) => OfferScreenPage(),
     lailyfaFebrinaCardScreen: (context) => LailyfaFebrinaCardScreen(),
-    appNavigationScreen: (context) => AppNavigationScreen()
+    appNavigationScreen: (context) => AppNavigationScreen(),
+    checkConnection: (context) => CheckConnectionPage()
   };
 }
