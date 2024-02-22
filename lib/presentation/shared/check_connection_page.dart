@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:shoper_flutter/routes/app_routes.dart';
 
 class CheckConnectionPage extends StatelessWidget {
   const CheckConnectionPage({Key? key}) : super(key: key);
@@ -7,44 +8,45 @@ class CheckConnectionPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Check Connection ")),
+      appBar: AppBar(title: const Text("Check Connection")),
       body: SafeArea(
         child: Center(
           child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              primary: Colors.red,
-            ),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             child: const Text("Check Connection"),
             onPressed: () async {
               final connectivityResult =
                   await Connectivity().checkConnectivity();
               if (connectivityResult == ConnectivityResult.none) {
-                showDialog(
-                  barrierDismissible: false,
-                  context: context,
-                  builder: (_) => NetworkErrorDialog(
-                    onPressed: () async {
-                      final connectivityResult =
-                          await Connectivity().checkConnectivity();
-                      if (connectivityResult == ConnectivityResult.none) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text(
-                                    'Please turn on your wifi or mobile data')));
-                      } else {
-                        Navigator.pop(context);
-                      }
-                    },
-                  ),
-                );
+                _showNetworkErrorDialog(context);
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content: Text(
-                        'You\'re connected to a ${connectivityResult.name} network')));
+                        'You\'re connected to a ${connectivityResult.toString().split('.').last} network')));
+                // Navigate to the login screen
+                Navigator.pushNamed(context, AppRoutes.loginScreen);
               }
             },
           ),
         ),
+      ),
+    );
+  }
+
+  void _showNetworkErrorDialog(BuildContext context) {
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (_) => NetworkErrorDialog(
+        onPressed: () async {
+          final connectivityResult = await Connectivity().checkConnectivity();
+          if (connectivityResult == ConnectivityResult.none) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                content: Text('Please turn on your wifi or mobile data')));
+          } else {
+            Navigator.pop(context);
+          }
+        },
       ),
     );
   }

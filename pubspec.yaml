@@ -9,7 +9,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   provider: ^6.0.5
-  connectivity_plus: ^2.3.0
+  connectivity_plus: ^5.0.2
   http_interceptor:  ^0.4.1
   http: ^0.13.6 
   cached_network_image: ^3.2.1
@@ -21,10 +21,35 @@ dependencies:
   intl: ^0.18.0
   rxdart: ^0.27.0
   badges: ^3.1.2
+  firebase_messaging: ^14.7.16
+  firebase_core: ^2.25.4
+  push: ^2.1.0
+ 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  # flutter_lints: ^2.0.0
+
+flutter_launcher_icons: "^0.13.1"
+
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "https://placehold.co/21"
+  min_sdk_android: 21 # android min sdk min:16, default 21
+  web:
+    generate: true
+    image_path: "https://placehold.co/48"
+    background_color: "#hexcode"
+    theme_color: "#hexcode"
+  windows:
+    generate: true
+    image_path: "https://placehold.co/48"
+    icon_size: 48 # min:48, max:256, default: 48
+  macos:
+    generate: true
+    image_path: "assets/images/shopping-bag.png"
+flutter_test:
+    sdk: flutter   
 flutter:
   uses-material-design: true
   assets:

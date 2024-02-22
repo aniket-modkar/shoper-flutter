@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -6,6 +7,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http_interceptor/http_interceptor.dart';
 import 'package:shoper_flutter/core/service/auth_guard.dart';
+import 'package:shoper_flutter/firebase_api.dart';
 import 'package:shoper_flutter/presentation/shared/check_connection_page.dart';
 import 'core/app_export.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -45,12 +47,15 @@ void main() async {
   ThemeHelper().changeTheme('primary');
 
   // Initialize DataBloc
+
   runApp(
     ChangeNotifierProvider(
       create: (context) => MyDataProvider(),
       child: MyApp(),
     ),
   );
+  await Firebase.initializeApp();
+  await FirebaseApi().initNotification();
 }
 
 class MyApp extends StatefulWidget {

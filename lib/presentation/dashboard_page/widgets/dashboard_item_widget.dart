@@ -136,7 +136,8 @@ class DashboardItemWidget extends StatelessWidget {
                 addToCart(context, product);
               },
               style: ElevatedButton.styleFrom(
-                primary: Colors.blue, // Set the background color of the button
+                backgroundColor:
+                    Colors.blue, // Set the background color of the button
               ),
               child: Padding(
                 padding:

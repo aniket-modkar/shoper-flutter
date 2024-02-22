@@ -26,8 +26,8 @@ class CouponListItem extends StatelessWidget {
       trailing: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
-          primary: Colors.black, // background color
-          onPrimary: Colors.white, // text color
+          foregroundColor: Colors.white,
+          backgroundColor: Colors.black, // text color
         ),
         child: Text('Apply'),
       ),
