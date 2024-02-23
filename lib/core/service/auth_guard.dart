@@ -11,18 +11,18 @@ class AuthGuard extends RouteObserver<PageRoute<dynamic>> {
     final token = await _storageService.getTokenFromStorage();
 
     // Check if the route requires authentication
-    // if ((token == null || !isValidToken(token))) {
-    //   // If the user is not authenticated or the token is invalid, navigate to the login screen
-    //   Navigator.of(route.navigator!.context).pushReplacementNamed(
-    //     AppRoutes.loginScreen,
-    //   );
-    // } else
-    // if (token!.isNotEmpty && route.settings.name == AppRoutes.loginScreen) {
-    //   // If the token is valid and the current route is the login screen, navigate to the dashboardContainerScreen
-    //   Navigator.of(route.navigator!.context).pushReplacementNamed(
-    //     AppRoutes.dashboardPage,
-    //   );
-    // }
+    if ((token == null || !isValidToken(token))) {
+      // If the user is not authenticated or the token is invalid, navigate to the login screen
+      Navigator.of(route.navigator!.context).pushReplacementNamed(
+        AppRoutes.loginScreen,
+      );
+    } else if (token!.isNotEmpty &&
+        route.settings.name == AppRoutes.loginScreen) {
+      // If the token is valid and the current route is the login screen, navigate to the dashboardContainerScreen
+      Navigator.of(route.navigator!.context).pushReplacementNamed(
+        AppRoutes.dashboardPage,
+      );
+    }
     // Allow access to the register screen for both authenticated and unauthenticated users
   }
 

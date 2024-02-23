@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:shoper_flutter/core/service/api_service.dart';
+import 'package:shoper_flutter/presentation/cart_page/cart_page.dart';
 import 'package:shoper_flutter/widgets/custom_bottom_bar.dart';
 
 import '../dashboard_page/widgets/categories_item_widget.dart';
@@ -45,6 +46,66 @@ class FetchedData {
   String toString() {
     return 'FetchedData { message: $message, responseCode: $responseCode, result: $result, totalCounts: $totalCounts, statusCode: $statusCode }';
   }
+}
+
+class FetchedBannerData {
+  final String message;
+  final String responseCode;
+  final Map<String, dynamic> result;
+  final int totalCounts;
+  final int statusCode;
+
+  FetchedBannerData({
+    required this.message,
+    required this.responseCode,
+    required this.result,
+    required this.totalCounts,
+    required this.statusCode,
+  });
+
+  factory FetchedBannerData.fromJson(Map<String, dynamic> json) {
+    return FetchedBannerData(
+      message: json['message'] ?? '',
+      responseCode: json['responseCode'] ?? '',
+      result: json['result'] ?? {},
+      totalCounts: json['totalCounts'] ?? 0,
+      statusCode: json['statusCode'] ?? 0,
+    );
+  }
+  @override
+  String toString() {
+    return 'FetchedData { message: $message, responseCode: $responseCode, result: $result, totalCounts: $totalCounts, statusCode: $statusCode }';
+  }
+}
+
+class FetchedSearchAnalyticsData {
+  final String message;
+  final String responseCode;
+  final Map<String, dynamic> result;
+  final int totalCounts;
+  final int statusCode;
+
+  FetchedSearchAnalyticsData({
+    required this.message,
+    required this.responseCode,
+    required this.result,
+    required this.totalCounts,
+    required this.statusCode,
+  });
+
+  factory FetchedSearchAnalyticsData.fromJson(Map<String, dynamic> json) {
+    return FetchedSearchAnalyticsData(
+      message: json['message'] ?? '',
+      responseCode: json['responseCode'] ?? '',
+      result: json['result'] ?? {},
+      totalCounts: json['totalCounts'] ?? 0,
+      statusCode: json['statusCode'] ?? 0,
+    );
+  }
+  @override
+  String toString() {
+    return 'FetchedData { message: $message, responseCode: $responseCode, result: $result, totalCounts: $totalCounts, statusCode: $statusCode }';
+  }
 } // ignore_for_file: must_be_immutable
 
 class DashboardPage extends StatefulWidget {
@@ -60,11 +121,17 @@ class _DashboardPageState extends State<DashboardPage> {
   final ApiService _apiService = ApiService();
   int sliderIndex = 1;
   late FetchedData fetchedData;
+  late FetchedBannerData fetchedBannerData;
+  late FetchedSearchAnalyticsData fetchedSearchAnalyticsData;
+
   bool isDataFetched = false;
+  bool isBannerDataFetched = false;
+  bool isSearchAnalyticsFetched = false;
 
   @override
   void initState() {
     super.initState();
+    fetchBanner();
     WidgetsBinding.instance?.addPostFrameCallback((_) {
       // Accessing the arguments and calling fetchData
       if (context != null) {
@@ -113,6 +180,67 @@ class _DashboardPageState extends State<DashboardPage> {
         });
       }
       isDataFetched = true;
+    }
+  }
+
+  Future<void> fetchBanner() async {
+    if (!isBannerDataFetched) {
+      try {
+        final response = await _apiService.fetchData('api/v1/banners/fetch');
+        if (response.statusCode == 200) {
+          setState(() {
+            fetchedBannerData =
+                FetchedBannerData.fromJson(json.decode(response.body));
+          });
+        } else {
+          // Handle non-200 status code responses
+          // For example: Show a snackbar with an error message
+          // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to fetch data')));
+        }
+      } catch (error) {
+        // Handle errors
+        setState(() {
+          fetchedBannerData = FetchedBannerData(
+            message: 'Error: $error',
+            responseCode: '',
+            result: {},
+            totalCounts: 0,
+            statusCode: 0,
+          );
+        });
+      }
+      isBannerDataFetched = true;
+    }
+  }
+
+  Future<void> fetchSearchAnalytics() async {
+    if (!isSearchAnalyticsFetched) {
+      try {
+        final response =
+            await _apiService.fetchData('api/v1/searchAnalytics/fetch');
+        if (response.statusCode == 200) {
+          setState(() {
+            fetchedSearchAnalyticsData =
+                FetchedSearchAnalyticsData.fromJson(json.decode(response.body));
+          });
+        } else {
+          // Handle non-200 status code responses
+          // For example: Show a snackbar with an error message
+          // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to fetch data')));
+        }
+      } catch (error) {
+        // Handle errors
+        setState(() {
+          fetchedSearchAnalyticsData = FetchedSearchAnalyticsData(
+            message: 'Error: $error',
+            responseCode: '',
+            result: {},
+            totalCounts: 0,
+            statusCode: 0,
+          );
+        });
+      }
+      isSearchAnalyticsFetched = true;
     }
   }
 
@@ -425,7 +553,12 @@ class _DashboardPageState extends State<DashboardPage> {
 
   void onTapDownload(BuildContext context) {}
 
-  void onTapSearchProduct(BuildContext context) {}
+  void onTapSearchProduct(BuildContext context) {
+    Navigator.pushNamed(
+      context,
+      AppRoutes.categorydetails,
+    );
+  }
 
   String getCurrentRoute(BottomBarEnum type) {
     switch (type) {

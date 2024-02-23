@@ -8,6 +8,7 @@ import 'package:shoper_flutter/presentation/dashboard_container_screen/dashboard
 import 'package:shoper_flutter/presentation/dashboard_page/dashboard_page.dart';
 import 'package:shoper_flutter/presentation/login_screen/shared_login_preferences.dart';
 import 'package:shoper_flutter/presentation/register_screen/register_screen.dart';
+import 'package:shoper_flutter/presentation/reset_password/reset_password.dart';
 import 'package:shoper_flutter/widgets/custom_elevated_button.dart';
 import 'package:shoper_flutter/widgets/custom_icon_button.dart';
 import 'package:shoper_flutter/widgets/custom_outlined_button.dart';
@@ -86,8 +87,16 @@ class LoginScreen extends StatelessWidget {
                       SizedBox(height: 16.v),
                       _buildSocialAuthentication(context),
                       SizedBox(height: 17.v),
-                      Text("msg_forgot_password".tr,
-                          style: CustomTextStyles.labelLargePrimary),
+                      GestureDetector(
+                          onTap: () {
+                            onTapResetPassword(context);
+                          },
+                          child: RichText(
+                              text: TextSpan(children: [
+                            TextSpan(
+                                text: "Reset Password".tr,
+                                style: CustomTextStyles.labelLargePrimary)
+                          ]))),
                       SizedBox(height: 7.v),
                       GestureDetector(
                           onTap: () {
@@ -200,6 +209,15 @@ class LoginScreen extends StatelessWidget {
   //   Navigator.pushNamed(context, AppRoutes.registerScreen);
 
   // }
+  void onTapResetPassword(BuildContext context) {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (context) =>
+            ResetPasswordPage(), // Replace with the actual widget or screen you want to navigate to
+      ),
+    );
+  }
+
   void onTapTxtDonthaveanaccount(BuildContext context) {
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(

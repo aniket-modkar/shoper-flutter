@@ -66,13 +66,13 @@ class WriteReviewFillScreen extends StatelessWidget {
       Text("msg_write_your_review".tr, style: theme.textTheme.titleSmall),
       SizedBox(height: 13.v),
       CustomTextFormField(
-          controller: addReviewController,
-          hintText: "lbl_add_review".tr,
-          hintStyle: CustomTextStyles.labelLargeBluegray300,
-          textInputAction: TextInputAction.done,
-          maxLines: 8,
-          contentPadding:
-              EdgeInsets.symmetric(horizontal: 16.h, vertical: 17.v))
+        controller: addReviewController,
+        hintText: "lbl_add_review".tr,
+        hintStyle: CustomTextStyles.labelLargeBluegray300,
+        textInputAction: TextInputAction.done,
+        maxLines: 8,
+        contentPadding: EdgeInsets.symmetric(horizontal: 16.h, vertical: 17.v),
+      )
     ]);
   }
 

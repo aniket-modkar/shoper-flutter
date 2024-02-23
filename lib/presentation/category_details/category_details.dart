@@ -76,11 +76,13 @@ class _CategoryDetailsScreen extends State<CategoryDetailsScreen> {
     });
   }
 
-  Future<void> fetchData({String categoryId = ''}) async {
+  Future<void> fetchData({String categoryId = '', String}) async {
     if (!isDataFetched) {
       final userData = {
         'status': "PUBLISHED",
-        if (categoryId.isNotEmpty) 'categoriesId': categoryId
+        if (categoryId.isNotEmpty) 'categoriesId': categoryId,
+        if (searchController.text.isNotEmpty)
+          'searchText': searchController.value
       };
       try {
         final response = await _apiService.fetchDataWithFilter(
@@ -152,9 +154,10 @@ class _CategoryDetailsScreen extends State<CategoryDetailsScreen> {
               onTapArrowLeft(context);
             }),
         title: AppbarTitleEdittextOne(
-            margin: EdgeInsets.only(left: 16.h),
-            hintText: "lbl_nike_air_max".tr,
-            controller: searchController),
+          margin: EdgeInsets.only(left: 16.h),
+          hintText: "lbl_nike_air_max".tr,
+          controller: searchController,
+        ),
         actions: [
           AppbarTrailingImage(
               imagePath: ImageConstant.imgSort,
