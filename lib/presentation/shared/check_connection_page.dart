@@ -60,39 +60,34 @@ class NetworkErrorDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-      content: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SizedBox(
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+        content: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Image.asset(
+              'assets/images/no_connection.png',
               width: 200,
-              child: Image.asset('/assets/images/no_connection.png')),
-          const SizedBox(height: 32),
-          const Text(
-            "Whoops!",
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 16),
-          const Text(
-            "No internet connection found.",
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            "Check your connection and try again.",
-            style: TextStyle(fontSize: 12),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            child: const Text("Try Again"),
-            onPressed: onPressed,
-          )
-        ],
-      ),
-    );
+            ),
+            const SizedBox(height: 32),
+            Text(
+              'Whoops!',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'No internet connection found.\nCheck your connection and try again.',
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: onPressed,
+              child: Text('Try Again'),
+            )
+          ],
+        ));
   }
 }

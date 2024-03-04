@@ -312,14 +312,9 @@ class _DashboardPageState extends State<DashboardPage> {
                                   //         flashSaleText: "lbl_mega_sale".tr,
                                   //         seeMoreText: "lbl_see_more".tr)),
                                   // SizedBox(height: 10.v),
-                                  // _buildMsNikeAirMax(context),
+                                  _buildBanner(
+                                      context), // _buildMsNikeAirMax(context),
                                   // SizedBox(height: 29.v),
-                                  CustomImageView(
-                                      imagePath:
-                                          ImageConstant.imgRecomendedProduct,
-                                      height: 206.v,
-                                      width: 343.h,
-                                      radius: BorderRadius.circular(5.h)),
                                   SizedBox(height: 16.v),
                                   _buildDashboard(context)
                                 ]))))
@@ -334,6 +329,95 @@ class _DashboardPageState extends State<DashboardPage> {
           ),
         ),
       );
+    }
+  }
+
+  Widget _buildBanner(BuildContext context) {
+    String baseUrl = _apiService.imgBaseUrl;
+
+    if (fetchedBannerData.result.containsKey('banners')) {
+      List<dynamic> banners = fetchedBannerData.result['banners'];
+
+      if (banners.isNotEmpty) {
+        return CarouselSlider(
+          options: CarouselOptions(
+            height: 250,
+            aspectRatio: 16 / 9,
+            viewportFraction: 0.8,
+            enableInfiniteScroll: true,
+            autoPlay: true,
+          ),
+          items: banners.map((banner) {
+            String imageUrl = baseUrl + (banner['mediaPath'] as String);
+            String title = banner['title'];
+            String subtitle = banner['subtitle'];
+
+            return Builder(
+              builder: (BuildContext context) {
+                return Container(
+                  height: 250,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      Image.network(
+                        imageUrl,
+                        fit: BoxFit.cover,
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        child: Container(
+                          padding: EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.5),
+                            borderRadius: BorderRadius.only(
+                              bottomLeft: Radius.circular(10),
+                              bottomRight: Radius.circular(10),
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                title,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                subtitle,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
+          }).toList(),
+        );
+      } else {
+        return CustomImageView(
+          imagePath: ImageConstant.imgRecomendedProduct,
+          height: 206.v,
+          width: 343.h,
+          radius: BorderRadius.circular(5.h),
+        );
+      }
+    } else {
+      return _buildErrorWidget("banner not found.");
     }
   }
 
