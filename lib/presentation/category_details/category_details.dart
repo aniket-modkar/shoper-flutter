@@ -62,11 +62,9 @@ class _CategoryDetailsScreenState extends State<CategoryDetailsScreen> {
   void initState() {
     super.initState();
 
-    // Add a listener to the searchController
     searchController.addListener(_onSearchTextChanged);
 
     WidgetsBinding.instance?.addPostFrameCallback((_) {
-      // Accessing the arguments and calling fetchData
       if (context != null) {
         Map<String, dynamic>? arguments =
             ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
@@ -74,7 +72,6 @@ class _CategoryDetailsScreenState extends State<CategoryDetailsScreen> {
         if (arguments != null && arguments.containsKey('categoryId')) {
           String categoryId = arguments['categoryId'];
           categoryName = arguments['categoryName'];
-          // Await the fetchData method
           fetchData(categoryId: categoryId);
         } else {
           fetchData();
@@ -83,25 +80,16 @@ class _CategoryDetailsScreenState extends State<CategoryDetailsScreen> {
     });
   }
 
-  // Method to be called whenever the text changes in the searchController
   void _onSearchTextChanged() {
-    // Cancel the previous debounce operation if it exists
     _debounceOperation?.cancel();
-
-    // Start a new debounce operation
     _debounceOperation = CancelableOperation.fromFuture(
       Future.delayed(Duration(milliseconds: 2000), () {
         searchText = searchController.text;
-        print('Search Text Changed: $searchText');
         fetchData();
-
-        // Call your search functionality here
-        // e.g., fetchData(searchText: searchText);
       }),
     );
   }
 
-  // Dispose of the debounce operation when the widget is disposed
   @override
   void dispose() {
     _debounceOperation?.cancel();
