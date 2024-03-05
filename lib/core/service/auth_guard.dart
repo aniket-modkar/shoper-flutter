@@ -8,22 +8,33 @@ class AuthGuard extends RouteObserver<PageRoute<dynamic>> {
   @override
   void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) async {
     super.didPush(route, previousRoute);
+
     final token = await _storageService.getTokenFromStorage();
 
-    // Check if the route requires authentication
-    // if ((token == null || !isValidToken(token))) {
-    //   // If the user is not authenticated or the token is invalid, navigate to the login screen
-    //   Navigator.of(route.navigator!.context).pushReplacementNamed(
-    //     AppRoutes.loginScreen,
-    //   );
-    // } else
-    if (token!.isNotEmpty && route.settings.name == AppRoutes.loginScreen) {
-      // If the token is valid and the current route is the login screen, navigate to the dashboardContainerScreen
+    if (route.settings.name == AppRoutes.initialScreen) {
+      return;
+    }
+
+    if (token == null || !isValidToken(token)) {
+      if (route.settings.name == AppRoutes.loginScreen ||
+          route.settings.name == AppRoutes.registerScreen) {
+        return;
+      } else {
+        Navigator.of(route.navigator!.context).pushReplacementNamed(
+          AppRoutes.loginScreen,
+        );
+      }
+    } else if (token.isNotEmpty &&
+        route.settings.name == AppRoutes.loginScreen) {
+      Navigator.of(route.navigator!.context).pushReplacementNamed(
+        AppRoutes.dashboardPage,
+      );
+    } else if (token.isNotEmpty &&
+        route.settings.name == AppRoutes.registerScreen) {
       Navigator.of(route.navigator!.context).pushReplacementNamed(
         AppRoutes.dashboardPage,
       );
     }
-    // Allow access to the register screen for both authenticated and unauthenticated users
   }
 
   bool isValidToken(String token) {

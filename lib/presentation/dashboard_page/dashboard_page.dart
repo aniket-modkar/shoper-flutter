@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:shoper_flutter/core/service/api_service.dart';
+import 'package:shoper_flutter/presentation/cart_page/cart_page.dart';
 import 'package:shoper_flutter/widgets/custom_bottom_bar.dart';
 
 import '../dashboard_page/widgets/categories_item_widget.dart';
@@ -45,6 +46,66 @@ class FetchedData {
   String toString() {
     return 'FetchedData { message: $message, responseCode: $responseCode, result: $result, totalCounts: $totalCounts, statusCode: $statusCode }';
   }
+}
+
+class FetchedBannerData {
+  final String message;
+  final String responseCode;
+  final Map<String, dynamic> result;
+  final int totalCounts;
+  final int statusCode;
+
+  FetchedBannerData({
+    required this.message,
+    required this.responseCode,
+    required this.result,
+    required this.totalCounts,
+    required this.statusCode,
+  });
+
+  factory FetchedBannerData.fromJson(Map<String, dynamic> json) {
+    return FetchedBannerData(
+      message: json['message'] ?? '',
+      responseCode: json['responseCode'] ?? '',
+      result: json['result'] ?? {},
+      totalCounts: json['totalCounts'] ?? 0,
+      statusCode: json['statusCode'] ?? 0,
+    );
+  }
+  @override
+  String toString() {
+    return 'FetchedData { message: $message, responseCode: $responseCode, result: $result, totalCounts: $totalCounts, statusCode: $statusCode }';
+  }
+}
+
+class FetchedSearchAnalyticsData {
+  final String message;
+  final String responseCode;
+  final Map<String, dynamic> result;
+  final int totalCounts;
+  final int statusCode;
+
+  FetchedSearchAnalyticsData({
+    required this.message,
+    required this.responseCode,
+    required this.result,
+    required this.totalCounts,
+    required this.statusCode,
+  });
+
+  factory FetchedSearchAnalyticsData.fromJson(Map<String, dynamic> json) {
+    return FetchedSearchAnalyticsData(
+      message: json['message'] ?? '',
+      responseCode: json['responseCode'] ?? '',
+      result: json['result'] ?? {},
+      totalCounts: json['totalCounts'] ?? 0,
+      statusCode: json['statusCode'] ?? 0,
+    );
+  }
+  @override
+  String toString() {
+    return 'FetchedData { message: $message, responseCode: $responseCode, result: $result, totalCounts: $totalCounts, statusCode: $statusCode }';
+  }
 } // ignore_for_file: must_be_immutable
 
 class DashboardPage extends StatefulWidget {
@@ -60,11 +121,17 @@ class _DashboardPageState extends State<DashboardPage> {
   final ApiService _apiService = ApiService();
   int sliderIndex = 1;
   late FetchedData fetchedData;
+  late FetchedBannerData fetchedBannerData;
+  late FetchedSearchAnalyticsData fetchedSearchAnalyticsData;
+
   bool isDataFetched = false;
+  bool isBannerDataFetched = false;
+  bool isSearchAnalyticsFetched = false;
 
   @override
   void initState() {
     super.initState();
+    fetchBanner();
     WidgetsBinding.instance?.addPostFrameCallback((_) {
       // Accessing the arguments and calling fetchData
       if (context != null) {
@@ -113,6 +180,67 @@ class _DashboardPageState extends State<DashboardPage> {
         });
       }
       isDataFetched = true;
+    }
+  }
+
+  Future<void> fetchBanner() async {
+    if (!isBannerDataFetched) {
+      try {
+        final response = await _apiService.fetchData('api/v1/banners/fetch');
+        if (response.statusCode == 200) {
+          setState(() {
+            fetchedBannerData =
+                FetchedBannerData.fromJson(json.decode(response.body));
+          });
+        } else {
+          // Handle non-200 status code responses
+          // For example: Show a snackbar with an error message
+          // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to fetch data')));
+        }
+      } catch (error) {
+        // Handle errors
+        setState(() {
+          fetchedBannerData = FetchedBannerData(
+            message: 'Error: $error',
+            responseCode: '',
+            result: {},
+            totalCounts: 0,
+            statusCode: 0,
+          );
+        });
+      }
+      isBannerDataFetched = true;
+    }
+  }
+
+  Future<void> fetchSearchAnalytics() async {
+    if (!isSearchAnalyticsFetched) {
+      try {
+        final response =
+            await _apiService.fetchData('api/v1/searchAnalytics/fetch');
+        if (response.statusCode == 200) {
+          setState(() {
+            fetchedSearchAnalyticsData =
+                FetchedSearchAnalyticsData.fromJson(json.decode(response.body));
+          });
+        } else {
+          // Handle non-200 status code responses
+          // For example: Show a snackbar with an error message
+          // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to fetch data')));
+        }
+      } catch (error) {
+        // Handle errors
+        setState(() {
+          fetchedSearchAnalyticsData = FetchedSearchAnalyticsData(
+            message: 'Error: $error',
+            responseCode: '',
+            result: {},
+            totalCounts: 0,
+            statusCode: 0,
+          );
+        });
+      }
+      isSearchAnalyticsFetched = true;
     }
   }
 
@@ -184,14 +312,9 @@ class _DashboardPageState extends State<DashboardPage> {
                                   //         flashSaleText: "lbl_mega_sale".tr,
                                   //         seeMoreText: "lbl_see_more".tr)),
                                   // SizedBox(height: 10.v),
-                                  // _buildMsNikeAirMax(context),
+                                  _buildBanner(
+                                      context), // _buildMsNikeAirMax(context),
                                   // SizedBox(height: 29.v),
-                                  CustomImageView(
-                                      imagePath:
-                                          ImageConstant.imgRecomendedProduct,
-                                      height: 206.v,
-                                      width: 343.h,
-                                      radius: BorderRadius.circular(5.h)),
                                   SizedBox(height: 16.v),
                                   _buildDashboard(context)
                                 ]))))
@@ -206,6 +329,95 @@ class _DashboardPageState extends State<DashboardPage> {
           ),
         ),
       );
+    }
+  }
+
+  Widget _buildBanner(BuildContext context) {
+    String baseUrl = _apiService.imgBaseUrl;
+
+    if (fetchedBannerData.result.containsKey('banners')) {
+      List<dynamic> banners = fetchedBannerData.result['banners'];
+
+      if (banners.isNotEmpty) {
+        return CarouselSlider(
+          options: CarouselOptions(
+            height: 250,
+            aspectRatio: 16 / 9,
+            viewportFraction: 0.8,
+            enableInfiniteScroll: true,
+            autoPlay: true,
+          ),
+          items: banners.map((banner) {
+            String imageUrl = baseUrl + (banner['mediaPath'] as String);
+            String title = banner['title'];
+            String subtitle = banner['subtitle'];
+
+            return Builder(
+              builder: (BuildContext context) {
+                return Container(
+                  height: 250,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      Image.network(
+                        imageUrl,
+                        fit: BoxFit.cover,
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        child: Container(
+                          padding: EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.5),
+                            borderRadius: BorderRadius.only(
+                              bottomLeft: Radius.circular(10),
+                              bottomRight: Radius.circular(10),
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                title,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                subtitle,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
+          }).toList(),
+        );
+      } else {
+        return CustomImageView(
+          imagePath: ImageConstant.imgRecomendedProduct,
+          height: 206.v,
+          width: 343.h,
+          radius: BorderRadius.circular(5.h),
+        );
+      }
+    } else {
+      return _buildErrorWidget("banner not found.");
     }
   }
 
@@ -425,7 +637,12 @@ class _DashboardPageState extends State<DashboardPage> {
 
   void onTapDownload(BuildContext context) {}
 
-  void onTapSearchProduct(BuildContext context) {}
+  void onTapSearchProduct(BuildContext context) {
+    Navigator.pushNamed(
+      context,
+      AppRoutes.categorydetails,
+    );
+  }
 
   String getCurrentRoute(BottomBarEnum type) {
     switch (type) {

@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -6,9 +7,12 @@ import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http_interceptor/http_interceptor.dart';
 import 'package:shoper_flutter/core/service/auth_guard.dart';
+import 'package:shoper_flutter/core/service/storage-service.dart';
+import 'package:shoper_flutter/firebase_api.dart';
 import 'package:shoper_flutter/presentation/shared/check_connection_page.dart';
 import 'core/app_export.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 class ApiInterceptor implements InterceptorContract {
   final HttpClientWithInterceptor _client;
@@ -34,6 +38,23 @@ class ApiInterceptor implements InterceptorContract {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  try {
+    print('init');
+    await Firebase.initializeApp(
+      options: FirebaseOptions(
+          apiKey: "AIzaSyABNq5_6F602wafP5_spG4u8DrS4KQ2984",
+          authDomain: "com.example.shoper",
+          projectId: "shoper-d7dbc",
+          appId: '1:122379848461:android:a049be66aaa7e22144be44',
+          messagingSenderId: '122379848461'),
+    );
+
+    await FirebaseApi().initNotification();
+  } catch (e) {
+    // Handle initialization or notification initialization errors
+    print("Error initializing Firebase or setting up notifications: $e");
+    // You can display a user-friendly message or perform other error handling actions based on your requirements.
+  }
   SharedPreferences prefs = await SharedPreferences.getInstance();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
@@ -45,6 +66,7 @@ void main() async {
   ThemeHelper().changeTheme('primary');
 
   // Initialize DataBloc
+
   runApp(
     ChangeNotifierProvider(
       create: (context) => MyDataProvider(),
@@ -59,24 +81,45 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  final StorageService _storageService = StorageService();
+
   final AuthGuard _authGuard = AuthGuard(); // Instantiate the AuthGuard
   bool _isConnected = true; // Initially assuming connected
 
   @override
   void initState() {
     super.initState();
-    _initConnectivity();
-    Connectivity().onConnectivityChanged.listen((result) {
-      setState(() {
-        _isConnected = result != ConnectivityResult.none;
-      });
-    });
+    // _initConnectivity();
+    // Connectivity().onConnectivityChanged.listen((result) {
+    //   setState(() {
+    //     _isConnected = result != ConnectivityResult.none;
+    //     print('internet Connection:$_isConnected');
+    //     if (_isConnected == false) {
+    //       Navigator.pushReplacement(
+    //         context,
+    //         MaterialPageRoute(
+    //           builder: (context) => CheckConnectionPage(),
+    //         ),
+    //       );
+    //     }
+    //   });
+    // });
+    final fcm = _storageService.getStoredResponseFromLocalStorage('FCM Token');
+    print(fcm);
   }
 
   Future<void> _initConnectivity() async {
     final connectivityResult = await Connectivity().checkConnectivity();
     setState(() {
       _isConnected = connectivityResult != ConnectivityResult.none;
+      if (_isConnected == false) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CheckConnectionPage(),
+          ),
+        );
+      }
     });
   }
 
@@ -99,9 +142,8 @@ class _MyAppState extends State<MyApp> {
           '',
         ),
       ],
-      initialRoute: _isConnected == true
-          ? AppRoutes.loginScreen
-          : AppRoutes.checkConnection,
+      initialRoute: AppRoutes.loginScreen,
+
       routes: AppRoutes.routes,
       navigatorObservers: [_authGuard], // Pass the AuthGuard instance
     );

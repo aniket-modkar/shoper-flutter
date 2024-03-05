@@ -33,9 +33,10 @@ class SearchResultScreen extends StatelessWidget {
   PreferredSizeWidget _buildAppBar(BuildContext context) {
     return CustomAppBar(
         title: AppbarTitleEdittextOne(
-            margin: EdgeInsets.only(left: 16.h),
-            hintText: "lbl_nike_air_max".tr,
-            controller: searchController),
+          margin: EdgeInsets.only(left: 16.h),
+          hintText: "lbl_nike_air_max".tr,
+          controller: searchController,
+        ),
         actions: [
           AppbarTrailingImage(
               imagePath: ImageConstant.imgSort,

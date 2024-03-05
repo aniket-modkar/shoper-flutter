@@ -406,7 +406,7 @@ Widget _buildLogoutButton(BuildContext context) {
           _showLogoutConfirmationDialog(context);
         },
         style: ElevatedButton.styleFrom(
-          primary: Colors.red, // Set the background color of the button
+          backgroundColor: Colors.red, // Set the background color of the button
         ),
         child: Padding(
           padding: const EdgeInsets.all(8.0), // Adjust the padding as needed

@@ -45,6 +45,8 @@ import 'package:shoper_flutter/presentation/lailyfa_febrina_card_screen/lailyfa_
 import 'package:shoper_flutter/presentation/app_navigation_screen/app_navigation_screen.dart';
 
 class AppRoutes {
+  static Route<dynamic> get initialScreen =>
+      MaterialPageRoute(builder: (_) => LoginScreen());
   static late HttpClientWithInterceptor client;
   static const String splashScreen = 'splash_screen';
 

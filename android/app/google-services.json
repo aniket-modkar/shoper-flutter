@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "122379848461",
+    "project_id": "shoper-d7dbc",
+    "storage_bucket": "shoper-d7dbc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:122379848461:android:a049be66aaa7e22144be44",
+        "android_client_info": {
+          "package_name": "com.example.shoper"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyABNq5_6F602wafP5_spG4u8DrS4KQ2984"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
